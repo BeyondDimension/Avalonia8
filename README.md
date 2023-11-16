@@ -1,4 +1,4 @@
-# Avalonia8
+ï»¿# Avalonia8
 
 ### BD.Avalonia8.AnimatedImage
-Ìá¹©¶¯Í¼¿Ø¼ş£¬Ö§³Ö Gif/Apng
+æä¾›åŠ¨å›¾æ§ä»¶ï¼Œæ”¯æŒ Gif/Apng
