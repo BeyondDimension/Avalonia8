@@ -5,6 +5,8 @@
 #pragma warning disable SA1209 // Using alias directives should be placed after other using directives
 #pragma warning disable SA1211 // Using alias directives should be ordered alphabetically by alias name
 
-global using BD.Avalonia8.UnitTest;
-global using BD.Avalonia8.UnitTest.Apps;
-global using BD.Avalonia8.UnitTest.Utils;
+global using ApprovalTests;
+global using ApprovalTests.Approvers;
+global using ApprovalTests.Core;
+global using ApprovalTests.Core.Exceptions;
+global using ApprovalTests.Reporters;

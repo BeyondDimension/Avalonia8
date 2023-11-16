@@ -97,7 +97,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
 
     public bool IsDisposed { get; private set; }
 
-    public Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
+    public AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
     {
         if (!IterationCount.IsInfinite && _iterationCount > IterationCount.Value)
             return null;
@@ -119,7 +119,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         return ProcessFrameIndex(currentFrame);
     }
 
-    internal WriteableBitmap ProcessFrameIndex(int frameIndex)
+    public WriteableBitmap ProcessFrameIndex(int frameIndex)
     {
         _gifDecoder.RenderFrame(frameIndex, _targetBitmap.ThrowIsNull());
         _currentFrameIndex = frameIndex;

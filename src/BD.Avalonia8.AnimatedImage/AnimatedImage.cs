@@ -307,7 +307,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
         backingRTB = DecodeImage(value);
     }
 
-    Bitmap? DecodeImage(Stream stream)
+    AvaBitmap? DecodeImage(Stream stream)
     {
         try
         {
@@ -349,7 +349,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
         _customVisual.Offset = new Vector3((float)destRect.Position.X, (float)destRect.Position.Y, 0);
     }
 
-    class CustomVisualHandler : CompositionCustomVisualHandler
+    sealed class CustomVisualHandler : CompositionCustomVisualHandler
     {
         TimeSpan _animationElapsed;
         TimeSpan? _lastServerTime;

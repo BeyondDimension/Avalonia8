@@ -2,7 +2,6 @@ namespace BD.Avalonia8.AnimatedImage;
 
 #pragma warning disable SA1600 // Elements should be documented
 
-[DebuggerStepThrough]
 internal static partial class StreamExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

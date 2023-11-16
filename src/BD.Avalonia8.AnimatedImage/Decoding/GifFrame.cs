@@ -2,7 +2,7 @@ namespace BD.Avalonia8.AnimatedImage.Decoding;
 
 #pragma warning disable SA1600 // Elements should be documented
 
-public record struct GifFrame
+public record class GifFrame
 {
     public bool HasTransparency;
     public bool IsInterlaced;

@@ -14,6 +14,41 @@
 		<Compile Include="..\..\ref\Common\src\BD.Common8.UnitTest\Templates\*.cs">
 			<LinkBase>Templates</LinkBase>
 		</Compile>
+		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Avalonia.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Windows.System.Drawing.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.ApprovalTests.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.AnimatedImage.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Remove="Inputs\*.gif" />
+		<EmbeddedResource Include="Inputs\*.gif" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Apps\App.axaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Simple" />
+		<PackageReference Include="ApprovalTests" />
+		<PackageReference Include="System.Drawing.Common" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BD.Avalonia8.AnimatedImage\BD.Avalonia8.AnimatedImage.csproj" />
 	</ItemGroup>
 
 </Project>

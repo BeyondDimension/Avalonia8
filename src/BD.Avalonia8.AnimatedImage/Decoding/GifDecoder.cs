@@ -55,20 +55,16 @@ public sealed class GifDecoder : IDisposable
         _fileStream = fileStream;
         _currentCtsToken = currentCtsToken;
 
-        var header = ProcessHeaderData();
-        var iterationCount = ProcessFrameData();
-        if (iterationCount.HasValue)
-            header.Iterations = iterationCount.Value;
+        ProcessHeaderData();
+        ProcessFrameData();
 
-        header.IterationCount = header.Iterations switch
+        Header!.IterationCount = Header.Iterations switch
         {
             -1 => new GifRepeatBehavior { Count = 1 },
             0 => new GifRepeatBehavior { LoopForever = true },
-            > 0 => new GifRepeatBehavior { Count = header.Iterations },
-            _ => header.IterationCount,
+            > 0 => new GifRepeatBehavior { Count = Header.Iterations },
+            _ => Header.IterationCount,
         };
-
-        Header = header;
 
         var pixelCount = _gifDimensions.TotalPixels;
 
@@ -438,7 +434,7 @@ public sealed class GifDecoder : IDisposable
     /// <summary>
     /// Processes GIF Header.
     /// </summary>
-    GifHeader ProcessHeaderData()
+    void ProcessHeaderData()
     {
         var str = _fileStream;
         var tmpB = ArrayPool<byte>.Shared.Rent(MaxTempBuf);
@@ -460,7 +456,7 @@ public sealed class GifDecoder : IDisposable
 
         ProcessScreenDescriptor(tmpB);
 
-        var header = new GifHeader
+        Header = new GifHeader
         {
             Dimensions = _gifDimensions,
             HasGlobalColorTable = _gctUsed,
@@ -471,8 +467,6 @@ public sealed class GifDecoder : IDisposable
         };
 
         ArrayPool<byte>.Shared.Return(tmpB);
-
-        return header;
     }
 
     /// <summary>
@@ -522,10 +516,8 @@ public sealed class GifDecoder : IDisposable
     /// <summary>
     /// Parses all frame data.
     /// </summary>
-    int? ProcessFrameData()
+    void ProcessFrameData()
     {
-        int? iterationCount = null;
-
         _fileStream.Position = Header.HeaderSize;
 
         var tempBuf = ArrayPool<byte>.Shared.Rent(MaxTempBuf);
@@ -533,7 +525,7 @@ public sealed class GifDecoder : IDisposable
         var terminate = false;
         var curFrame = 0;
 
-        Frames.Add(default);
+        Frames.Add(new());
 
         do
         {
@@ -545,7 +537,7 @@ public sealed class GifDecoder : IDisposable
                     break;
 
                 case BlockTypes.Extension:
-                    iterationCount = ProcessExtensions(ref curFrame, tempBuf);
+                    ProcessExtensions(ref curFrame, tempBuf);
                     break;
 
                 case BlockTypes.ImageDescriptor:
@@ -569,8 +561,6 @@ public sealed class GifDecoder : IDisposable
         } while (!terminate);
 
         ArrayPool<byte>.Shared.Return(tempBuf);
-
-        return iterationCount;
     }
 
     /// <summary>
@@ -606,16 +596,14 @@ public sealed class GifDecoder : IDisposable
         currentFrame.LzwStreamPosition = str.Position;
 
         curFrame += 1;
-        Frames.Add(default);
+        Frames.Add(new());
     }
 
     /// <summary>
     /// Parses GIF Extension Blocks.
     /// </summary>
-    int? ProcessExtensions(ref int curFrame, byte[] tempBuf)
+    void ProcessExtensions(ref int curFrame, byte[] tempBuf)
     {
-        int? iterationCount = null;
-
         var extType = (ExtensionType)_fileStream.ReadByteS(tempBuf);
 
         switch (extType)
@@ -658,7 +646,7 @@ public sealed class GifDecoder : IDisposable
                     while (count > 0)
                         count = _fileStream.ReadBlock(tempBuf);
 
-                    iterationCount = SpanToShort(tempBuf.AsSpan(1));
+                    Header.Iterations = SpanToShort(tempBuf.AsSpan(1));
                 }
                 else
                     _fileStream.SkipBlocks(tempBuf);
@@ -669,7 +657,5 @@ public sealed class GifDecoder : IDisposable
                 _fileStream.SkipBlocks(tempBuf);
                 break;
         }
-
-        return iterationCount;
     }
 }

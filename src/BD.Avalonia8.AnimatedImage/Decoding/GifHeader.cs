@@ -5,7 +5,7 @@ namespace BD.Avalonia8.AnimatedImage.Decoding;
 
 #pragma warning disable SA1600 // Elements should be documented
 
-public record struct GifHeader
+public record class GifHeader
 {
     public bool HasGlobalColorTable;
     public int GlobalColorTableSize;
@@ -16,8 +16,4 @@ public record struct GifHeader
     public GifRepeatBehavior? IterationCount;
     public GifRect Dimensions;
     public GifColor[]? GlobarColorTable;
-
-    public GifHeader()
-    {
-    }
 }
