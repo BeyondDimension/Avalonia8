@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+		<UseCommon8Bcl>true</UseCommon8Bcl>
+		<UseCommon8HttpClientFactory>true</UseCommon8HttpClientFactory>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Avalonia.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.ReactiveUI.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Compile Update="**\*.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<AvaloniaResource Include="Images\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Simple" />
+		<PackageReference Include="Avalonia.ReactiveUI" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\BD.Avalonia8.AnimatedImage\BD.Avalonia8.AnimatedImage.csproj" />
+	</ItemGroup>
+
+</Project>
