@@ -13,14 +13,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\LibAPNG\**\*.cs">
-			<LinkBase>_SourceReference\LibAPNG</LinkBase>
-		</Compile>
-		<Compile Remove="..\LibAPNG\bin\**\*.cs" />
-		<Compile Remove="..\LibAPNG\obj\**\*.cs" />
-		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.LibAPNG.cs">
-			<LinkBase>Properties\GlobalUsings</LinkBase>
-		</Compile>
 		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Avalonia.cs">
 			<LinkBase>Properties\GlobalUsings</LinkBase>
 		</Compile>
@@ -30,5 +22,7 @@
 		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.ReactiveUI" />
 	</ItemGroup>
+	
+	<Import Project="..\Sdk\BD.Avalonia8.AnimatedImage.Reference.props" />
 
 </Project>

@@ -1,0 +1,25 @@
+<Project>
+
+	<ItemGroup>
+		<Compile Include="..\LibAPNG\**\*.cs">
+			<LinkBase>_SourceReference\LibAPNG</LinkBase>
+		</Compile>
+		<Compile Remove="..\LibAPNG\bin\**\*.cs" />
+		<Compile Remove="..\LibAPNG\obj\**\*.cs" />
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.LibAPNG.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(MSBuildProjectName) != 'BD.Avalonia8.AnimatedImage' ">
+		<Compile Include="..\BD.Avalonia8.AnimatedImage\**\*.cs">
+			<LinkBase>_SourceReference\BD.Avalonia8.AnimatedImage</LinkBase>
+		</Compile>
+		<Compile Remove="..\BD.Avalonia8.AnimatedImage\bin\**\*.cs" />
+		<Compile Remove="..\BD.Avalonia8.AnimatedImage\obj\**\*.cs" />
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.AnimatedImage.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+</Project>
