@@ -29,7 +29,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
 
     IImageInstance? gifInstance;
     CompositionCustomVisual? _customVisual;
-    Bitmap? backingRTB;
+    AvaBitmap? backingRTB;
     ImageFormat imageFormat;
     bool isSimplePNG;
     CancellationTokenSource _tokenSource = new();
@@ -165,7 +165,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
 
     public override void Render(DrawingContext context)
     {
-        if (backingRTB is not Bitmap bitmap) return;
+        if (backingRTB is not AvaBitmap bitmap) return;
 
         if (bitmap is not null && IsVisible && Bounds.Width > 0 && Bounds.Height > 0)
         {
@@ -240,7 +240,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
             return;
 
         Stream? value;
-        if (e.NewValue is Bitmap bitmap)
+        if (e.NewValue is AvaBitmap bitmap)
         {
             IsFailed = false;
             backingRTB = bitmap;
@@ -316,7 +316,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
             stream.Position = 0;
 
             //https://github.com/mono/SkiaSharp/issues/1551
-            return new Bitmap(stream);
+            return new AvaBitmap(stream);
         }
         catch (Exception e)
         {

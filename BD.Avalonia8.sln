@@ -65,9 +65,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimatedImage.Sample", "src\AnimatedImage.Sample\AnimatedImage.Sample.csproj", "{D30DE822-D36E-4258-8B0E-7F8702C70740}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Sdk", "0.Sdk", "{0265DE1B-8580-4C9D-B461-63AB1D600E55}"
-	ProjectSection(SolutionItems) = preProject
-		src\Sdk\BD.Avalonia8.AnimatedImage.Reference.props = src\Sdk\BD.Avalonia8.AnimatedImage.Reference.props
-	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Avalonia8.Sdk", "src\Sdk\BD.Avalonia8.Sdk.csproj", "{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -111,6 +110,10 @@ Global
 		{D30DE822-D36E-4258-8B0E-7F8702C70740}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D30DE822-D36E-4258-8B0E-7F8702C70740}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D30DE822-D36E-4258-8B0E-7F8702C70740}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +138,7 @@ Global
 		{1AF7DCA3-CBD2-4FDD-9815-9F4A9591916E} = {A7F91BCF-CF3E-411C-86B8-D3DFE5D4CBAA}
 		{D30DE822-D36E-4258-8B0E-7F8702C70740} = {1AF7DCA3-CBD2-4FDD-9815-9F4A9591916E}
 		{0265DE1B-8580-4C9D-B461-63AB1D600E55} = {5CC669E3-1104-401E-9F4A-13B7E549F541}
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5} = {0265DE1B-8580-4C9D-B461-63AB1D600E55}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A4D29FF1-958E-40B2-A768-E3125381B7F0}

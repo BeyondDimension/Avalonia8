@@ -1,0 +1,33 @@
+<Project>
+
+	<PropertyGroup>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<UseCommon8Bcl>true</UseCommon8Bcl>
+		<UseCommon8HttpClientFactory>true</UseCommon8HttpClientFactory>
+		<UseAvalonia>true</UseAvalonia>
+		<UseAvaloniaReactiveUI>true</UseAvaloniaReactiveUI>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="$(MSBuildThisFileDirectory)..\LibAPNG\**\*.cs">
+			<LinkBase>_SourceReference\LibAPNG</LinkBase>
+		</Compile>
+		<Compile Remove="$(MSBuildThisFileDirectory)..\LibAPNG\bin\**\*.cs" />
+		<Compile Remove="$(MSBuildThisFileDirectory)..\LibAPNG\obj\**\*.cs" />
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.LibAPNG.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup Condition=" $(MSBuildProjectName) != 'BD.Avalonia8.AnimatedImage' ">
+		<Compile Include="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\**\*.cs">
+			<LinkBase>_SourceReference\BD.Avalonia8.AnimatedImage</LinkBase>
+		</Compile>
+		<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\bin\**\*.cs" />
+		<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\obj\**\*.cs" />
+		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.AnimatedImage.cs">
+			<LinkBase>Properties\GlobalUsings</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+</Project>

@@ -82,7 +82,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
     public AvaSize GetSize(double scaling) => ApngPixelSize.ToSize(scaling);
 
-    public Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
+    public AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
     {
         if (!IterationCount.IsInfinite && _iterationCount > IterationCount.Value)
             return null;
@@ -104,7 +104,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         return ProcessFrameIndex(currentFrame);
     }
 
-    internal Bitmap ProcessFrameIndex(int frameIndex)
+    internal AvaBitmap ProcessFrameIndex(int frameIndex)
     {
         var currentFrame = _apng.Frames[frameIndex];
         _hasNewFrame = frameIndex == 0 || currentFrame.fcTLChunk.ThrowIsNull().BlendOp == BlendOps.APNGBlendOpSource;

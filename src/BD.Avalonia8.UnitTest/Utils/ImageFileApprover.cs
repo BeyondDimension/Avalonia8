@@ -31,7 +31,7 @@ public sealed class ImageFileApprover(IApprovalWriter writer, IApprovalNamer nam
 
     static byte[] BitmapToByte(SDBitmap bmp)
     {
-        var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        var rect = new SDRectangle(0, 0, bmp.Width, bmp.Height);
         var bDt = bmp.LockBits(rect, ImageLockMode.ReadOnly, SDPixelFormat.Format24bppRgb);
 
         var bary = new byte[bmp.Width * bmp.Height * 3];

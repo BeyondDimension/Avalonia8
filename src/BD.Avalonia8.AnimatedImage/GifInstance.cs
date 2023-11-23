@@ -47,7 +47,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         _gifDecoder = new GifDecoder(currentStream, CurrentCts.Token);
         var pixSize = new PixelSize(_gifDecoder.Header.Dimensions.Width, _gifDecoder.Header.Dimensions.Height);
 
-        _targetBitmap = new WriteableBitmap(pixSize, new AvaVector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
+        _targetBitmap = new WriteableBitmap(pixSize, new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
         GifPixelSize = pixSize;
 
         _totalTime = TimeSpan.Zero;

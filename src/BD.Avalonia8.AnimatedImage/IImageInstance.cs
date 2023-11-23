@@ -10,7 +10,7 @@ public interface IImageInstance : IDisposable
 
     double Width { get; }
 
-    Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed);
+    AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed);
 
     AvaSize GetSize(double scaling);
 }
