@@ -1,14 +1,17 @@
 <Project>
-
-	<PropertyGroup>
+	<!-- 当前项目 或 源码引用此项目 -->
+	<PropertyGroup Condition="$(MSBuildProjectName) == $(MSBuildThisFileName) OR $(IsSourceReference) == 'true'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<UseCommon8Bcl>true</UseCommon8Bcl>
-		<UseCommon8HttpClientFactory>true</UseCommon8HttpClientFactory>
-		<UseAvalonia>true</UseAvalonia>
-		<UseAvaloniaReactiveUI>true</UseAvaloniaReactiveUI>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<PropertyGroup>
+		<UseAvalonia>true</UseAvalonia>
+		<UseAvaloniaReactiveUI>true</UseAvaloniaReactiveUI>
+		<UseCommon8Bcl>true</UseCommon8Bcl>
+		<UseCommon8HttpClientFactory>true</UseCommon8HttpClientFactory>
+	</PropertyGroup>
+
+	<ItemGroup Condition="$(MSBuildProjectName) == $(MSBuildThisFileName) OR $(IsSourceReference) == 'true'">
 		<Compile Include="$(MSBuildThisFileDirectory)..\LibAPNG\**\*.cs">
 			<LinkBase>_SourceReference\LibAPNG</LinkBase>
 		</Compile>
@@ -19,15 +22,28 @@
 		</Compile>
 	</ItemGroup>
 
-	<ItemGroup Condition=" $(MSBuildProjectName) != 'BD.Avalonia8.AnimatedImage' ">
-		<Compile Include="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\**\*.cs">
-			<LinkBase>_SourceReference\BD.Avalonia8.AnimatedImage</LinkBase>
+	<!-- 全局 using 当前项目 -->
+	<ItemGroup>
+		<Compile Condition="$(MSBuildProjectName) == $(MSBuildThisFileName)" Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.$(MSBuildThisFileName).cs">
+			<LinkBase>Properties</LinkBase>
 		</Compile>
-		<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\bin\**\*.cs" />
-		<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.AnimatedImage\obj\**\*.cs" />
-		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.AnimatedImage.cs">
+		<Compile Condition="$(MSBuildProjectName) != $(MSBuildThisFileName)" Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.$(MSBuildThisFileName).cs">
 			<LinkBase>Properties\GlobalUsings</LinkBase>
 		</Compile>
+	</ItemGroup>
+
+	<!-- 源码引用此项目 -->
+	<ItemGroup Condition="$(MSBuildProjectName) != $(MSBuildThisFileName) AND $(IsSourceReference) == 'true'">
+		<Compile Include="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)\**\*.cs">
+			<LinkBase>_SourceReference\$(MSBuildThisFileName)</LinkBase>
+		</Compile>
+		<Compile Remove="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)\bin\**" />
+		<Compile Remove="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)\obj\**" />
+	</ItemGroup>
+
+	<!-- 项目引用此项目 -->
+	<ItemGroup Condition="$(MSBuildProjectName) != $(MSBuildThisFileName) AND $(IsSourceReference) != 'true'">
+		<ProjectReference Include="$(MSBuildThisFileDirectory)..\$(MSBuildThisFileName)\$(MSBuildThisFileName).csproj" />
 	</ItemGroup>
 
 </Project>

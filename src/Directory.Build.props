@@ -3,7 +3,7 @@
 
 	<PropertyGroup>
 		<!--<Version>1.yy.1MMdd.1hhmm</Version>-->
-		<Version>8.23.11102.11336</Version>
+		<Version>8.23.11129.12114</Version>
 		<IsCommon8Project>false</IsCommon8Project>
 		<IsAvalonia8Project>true</IsAvalonia8Project>
 	</PropertyGroup>
