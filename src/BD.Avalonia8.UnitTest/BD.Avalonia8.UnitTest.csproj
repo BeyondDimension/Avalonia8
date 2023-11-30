@@ -44,7 +44,6 @@
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="Avalonia.Themes.Simple" />
 		<PackageReference Include="ApprovalTests" />
-		<PackageReference Include="System.Drawing.Common" />
 	</ItemGroup>
 
 	<ItemGroup>
