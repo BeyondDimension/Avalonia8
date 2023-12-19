@@ -8,22 +8,17 @@
 		<IsTestProject>true</IsTestProject>
 		<IsGlobalUsingsMSBuildProjectName>true</IsGlobalUsingsMSBuildProjectName>
 		<UseCommon8Bcl>true</UseCommon8Bcl>
+		<UseAvalonia8AnimatedImage>true</UseAvalonia8AnimatedImage>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<Compile Include="..\..\ref\Common\src\BD.Common8.UnitTest\Templates\*.cs">
 			<LinkBase>Templates</LinkBase>
 		</Compile>
-		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Avalonia.cs">
-			<LinkBase>Properties\GlobalUsings</LinkBase>
-		</Compile>
 		<Compile Include="$(MSBuildThisFileDirectory)..\..\ref\Common\src\Shared\GlobalUsings.Windows.System.Drawing.cs">
 			<LinkBase>Properties\GlobalUsings</LinkBase>
 		</Compile>
 		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.ApprovalTests.cs">
-			<LinkBase>Properties\GlobalUsings</LinkBase>
-		</Compile>
-		<Compile Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.AnimatedImage.cs">
 			<LinkBase>Properties\GlobalUsings</LinkBase>
 		</Compile>
 	</ItemGroup>
@@ -40,14 +35,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="Avalonia.Themes.Simple" />
 		<PackageReference Include="ApprovalTests" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\BD.Avalonia8.AnimatedImage\BD.Avalonia8.AnimatedImage.csproj" />
-	</ItemGroup>
+	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\BD.Avalonia8.AnimatedImage.props" />
 
 </Project>
