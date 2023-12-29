@@ -37,6 +37,12 @@
 		<Compile Condition="$(MSBuildProjectName) != $(MSBuildThisFileName)" Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.$(MSBuildThisFileName).cs">
 			<LinkBase>Properties\GlobalUsings</LinkBase>
 		</Compile>
+		<Compile Condition="$(MSBuildProjectName) == $(MSBuildThisFileName)" Include="$(MSBuildProjectDirectory)\..\Shared\XmlnsDefinition.$(MSBuildThisFileName).cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+		<Compile Condition="$(MSBuildProjectName) != $(MSBuildThisFileName) AND $(UseAvalonia8AnimatedImage) == 'src'" Include="$(MSBuildProjectDirectory)\..\Shared\XmlnsDefinition.$(MSBuildThisFileName).cs">
+			<LinkBase>Properties\XmlnsDefinition</LinkBase>
+		</Compile>
 	</ItemGroup>
 
 	<!-- 源码引用此项目 -->
