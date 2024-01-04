@@ -14,8 +14,8 @@
 	<PropertyGroup>
 		<UseAvalonia>true</UseAvalonia>
 		<UseAvaloniaReactiveUI>true</UseAvaloniaReactiveUI>
-		<UseCommon8Bcl>true</UseCommon8Bcl>
-		<UseCommon8HttpClientFactory>true</UseCommon8HttpClientFactory>
+		<UseCommon8Bcl Condition="$(UseCommon8Bcl) == ''">true</UseCommon8Bcl>
+		<UseCommon8HttpClientFactory Condition="$(UseCommon8HttpClientFactory) == ''">true</UseCommon8HttpClientFactory>
 	</PropertyGroup>
 
 	<ItemGroup Condition="$(MSBuildProjectName) == $(MSBuildThisFileName) OR $(UseAvalonia8AnimatedImage) == 'src'">

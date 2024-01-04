@@ -2,9 +2,9 @@ namespace BD.Avalonia8.AnimatedImage;
 
 #pragma warning disable SA1600 // Elements should be documented
 
-partial class AnimatedImage
+partial class Image2
 {
-    public static async ValueTask<Stream?> ResolveObjectToStream(object? obj, AnimatedImage img, CancellationToken token = default)
+    public static async ValueTask<Stream?> ResolveObjectToStream(object? obj, Image2 img, CancellationToken token = default)
     {
         Stream? value = null;
         if (obj is string rawUri)

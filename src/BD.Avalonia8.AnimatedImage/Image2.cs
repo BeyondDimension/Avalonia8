@@ -7,27 +7,27 @@ using Logger = Avalonia.Logging.Logger;
 /// <summary>
 /// 动图控件，支持 Gif/Apng
 /// </summary>
-public sealed partial class AnimatedImage : Control, IDisposable
+public sealed partial class Image2 : Control, IDisposable
 {
-    public static readonly StyledProperty<object> SourceProperty = AvaloniaProperty.Register<AnimatedImage, object>(nameof(Source));
+    public static readonly StyledProperty<object> SourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(Source));
 
-    public static readonly StyledProperty<object> FallbackSourceProperty = AvaloniaProperty.Register<AnimatedImage, object>(nameof(FallbackSource));
+    public static readonly StyledProperty<object> FallbackSourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(FallbackSource));
 
-    public static readonly StyledProperty<bool> IsFailedProperty = AvaloniaProperty.Register<AnimatedImage, bool>(nameof(IsFailed), true);
+    public static readonly StyledProperty<bool> IsFailedProperty = AvaloniaProperty.Register<Image2, bool>(nameof(IsFailed), true);
 
-    public static readonly StyledProperty<bool> AutoStartProperty = AvaloniaProperty.Register<AnimatedImage, bool>(nameof(AutoStart), true);
+    public static readonly StyledProperty<bool> AutoStartProperty = AvaloniaProperty.Register<Image2, bool>(nameof(AutoStart), true);
 
-    public static readonly StyledProperty<int> DecodeWidthProperty = AvaloniaProperty.Register<AnimatedImage, int>(nameof(DecodeWidth));
+    public static readonly StyledProperty<int> DecodeWidthProperty = AvaloniaProperty.Register<Image2, int>(nameof(DecodeWidth));
 
-    public static readonly StyledProperty<int> DecodeHeightProperty = AvaloniaProperty.Register<AnimatedImage, int>(nameof(DecodeHeight));
+    public static readonly StyledProperty<int> DecodeHeightProperty = AvaloniaProperty.Register<Image2, int>(nameof(DecodeHeight));
 
-    public static readonly StyledProperty<bool> EnableCacheProperty = AvaloniaProperty.Register<AnimatedImage, bool>(nameof(EnableCache), true);
+    public static readonly StyledProperty<bool> EnableCacheProperty = AvaloniaProperty.Register<Image2, bool>(nameof(EnableCache), true);
 
-    public static readonly StyledProperty<bool> EnableCancelTokenProperty = AvaloniaProperty.Register<AnimatedImage, bool>(nameof(EnableCancelToken), true);
+    public static readonly StyledProperty<bool> EnableCancelTokenProperty = AvaloniaProperty.Register<Image2, bool>(nameof(EnableCancelToken), true);
 
-    public static readonly StyledProperty<StretchDirection> StretchDirectionProperty = AvaloniaProperty.Register<AnimatedImage, StretchDirection>(nameof(StretchDirection), StretchDirection.Both);
+    public static readonly StyledProperty<StretchDirection> StretchDirectionProperty = AvaloniaProperty.Register<Image2, StretchDirection>(nameof(StretchDirection), StretchDirection.Both);
 
-    public static readonly StyledProperty<Stretch> StretchProperty = AvaloniaProperty.Register<AnimatedImage, Stretch>(nameof(Stretch), Stretch.UniformToFill);
+    public static readonly StyledProperty<Stretch> StretchProperty = AvaloniaProperty.Register<Image2, Stretch>(nameof(Stretch), Stretch.UniformToFill);
 
     IImageInstance? gifInstance;
     CompositionCustomVisual? _customVisual;
@@ -100,7 +100,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
 
     static void IterationCountChanged(AvaloniaPropertyChangedEventArgs e)
     {
-        if (e.Sender is not AnimatedImage)
+        if (e.Sender is not Image2)
             return;
     }
 
@@ -418,7 +418,7 @@ public sealed partial class AnimatedImage : Control, IDisposable
             }
             catch (Exception e)
             {
-                Logger.Sink?.Log(LogEventLevel.Error, "AnimatedImage Renderer ", this, e.ToString());
+                Logger.Sink?.Log(LogEventLevel.Error, "Image2 Renderer ", this, e.ToString());
             }
         }
     }
