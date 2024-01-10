@@ -110,9 +110,6 @@ public sealed partial class Image2 : Control, IDisposable
         {
             case nameof(Source):
                 SourceChanged(change);
-                InvalidateArrange();
-                InvalidateMeasure();
-                Update();
                 break;
             case nameof(Stretch):
             case nameof(StretchDirection):
@@ -285,9 +282,8 @@ public sealed partial class Image2 : Control, IDisposable
             }
             catch
             { }
-            return;
         }
-        if (imageFormat == ImageFormat.PNG)
+        else if (imageFormat == ImageFormat.PNG)
         {
             var apngInstance = new ApngInstance(value);
             if (apngInstance.IsSimplePNG)
@@ -304,9 +300,14 @@ public sealed partial class Image2 : Control, IDisposable
                 gifInstance = apngInstance;
                 _customVisual?.SendHandlerMessage(gifInstance);
             }
-            return;
         }
-        backingRTB = DecodeImage(value);
+        else
+        {
+            backingRTB = DecodeImage(value);
+        }
+        InvalidateArrange();
+        InvalidateMeasure();
+        Update();
     }
 
     AvaBitmap? DecodeImage(Stream stream)
