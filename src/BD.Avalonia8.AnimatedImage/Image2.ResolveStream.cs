@@ -9,7 +9,8 @@ partial class Image2
         Stream? value = null;
         if (obj is string rawUri)
         {
-            if (rawUri == string.Empty) return null;
+            if (rawUri == string.Empty)
+                return null;
 
             if (File.Exists(rawUri))
                 value = new FileStream(rawUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
@@ -61,15 +62,45 @@ partial class Image2
                 { }
         }
         else if (obj is Uri uri)
+        {
             if (uri.OriginalString.Trim().StartsWith("resm"))
+            {
                 if (AssetLoader.Exists(uri))
+                {
                     value = AssetLoader.Open(uri);
-                else if (obj is Stream stream)
-                    value = stream;
-                else if (obj is byte[] bytes)
-                    value = new MemoryStream(bytes);
-                else if (obj is CommonImageSource commonImageSource)
-                    value = commonImageSource.Stream;
+                }
+            }
+        }
+        else if (obj is Stream stream)
+        {
+            value = stream;
+        }
+        else if (obj is byte[] bytes)
+        {
+            value = new MemoryStream(bytes);
+        }
+        else if (obj is ReadOnlyMemory<byte> rom)
+        {
+            value = new MemoryStream();
+            value.Write(rom.Span);
+        }
+        else if (obj is Memory<byte> m)
+        {
+            value = new MemoryStream();
+            value.Write(m.Span);
+        }
+        else if (obj is IEnumerable<byte> byte_enum)
+        {
+            value = new MemoryStream();
+            foreach (var item in byte_enum)
+            {
+                value.WriteByte(item);
+            }
+        }
+        else if (obj is CommonImageSource commonImageSource)
+        {
+            value = commonImageSource.Stream;
+        }
 
         if (value == null || !value.CanRead || value.Length == 0)
             return null;
