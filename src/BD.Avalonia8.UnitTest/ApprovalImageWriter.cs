@@ -1,5 +1,3 @@
-#pragma warning disable SA1600 // Elements should be documented
-
 namespace BD.Avalonia8.UnitTest;
 
 public sealed class ApprovalImageWriter(AvaBitmap image, object parameter) : IApprovalWriter

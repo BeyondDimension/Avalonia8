@@ -1,0 +1,7 @@
+<Project>
+	<!-- 版本号 | Version -->
+	<PropertyGroup>
+		<!--8.yy.1MMdd.1hhmm-->
+		<Version_Avalonia8>8.24.10401.11000</Version_Avalonia8>
+	</PropertyGroup>
+</Project>

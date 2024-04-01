@@ -1,7 +1,5 @@
 namespace LibAPNG;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 public class APNG : IDisposable
 {
     Frame defaultImage = new();

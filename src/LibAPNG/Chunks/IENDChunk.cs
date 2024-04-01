@@ -1,7 +1,5 @@
 namespace LibAPNG.Chunks;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 public class IENDChunk : Chunk
 {
     public IENDChunk(byte[] bytes)

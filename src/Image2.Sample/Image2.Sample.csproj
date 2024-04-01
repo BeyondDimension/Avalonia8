@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+	</PropertyGroup>
+
+
+	<ItemGroup>
+		<Compile Update="**\*.xaml.cs">
+			<DependentUpon>%(Filename)</DependentUpon>
+		</Compile>
+		<AvaloniaResource Include="Images\**\*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia.Desktop" />
+		<PackageReference Include="Avalonia.Themes.Simple" />
+		<PackageReference Include="ReactiveUI" />
+		<PackageReference Include="ReactiveUI.Fody" />
+		<PackageReference Include="Avalonia.ReactiveUI" />
+	</ItemGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectReference\BD.Avalonia8.Image2.props" />
+	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.ReactiveUI.props" />
+	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.ReactiveUI.Fody.props" />
+	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.Avalonia.ReactiveUI.props" />
+
+</Project>

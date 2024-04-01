@@ -1,7 +1,5 @@
 namespace LibAPNG.Chunks;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 #pragma warning disable IDE1006 // 命名样式
 internal class fdATChunk : Chunk
 #pragma warning restore IDE1006 // 命名样式

@@ -1,7 +1,5 @@
 namespace BD.Avalonia8.UnitTest.Apps;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 public sealed class App : AvaApplication
 {
     public override void Initialize()

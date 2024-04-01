@@ -1,7 +1,5 @@
 namespace BD.Avalonia8.UnitTest.Utils;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
 public sealed class RunOnUiAttribute : Attribute, IWrapTestMethod
 {

@@ -1,7 +1,5 @@
 namespace BD.Avalonia8.UnitTest;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 [UseReporter(typeof(DiffReporter))]
 public sealed class UnitTest1
 {

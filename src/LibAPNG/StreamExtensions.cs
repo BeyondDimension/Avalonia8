@@ -1,8 +1,6 @@
 namespace LibAPNG;
 
-#pragma warning disable SA1600 // Elements should be documented
-
-internal static class StreamExtensions
+internal static partial class StreamExtensions
 {
     #region Peek
 

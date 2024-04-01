@@ -33,7 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Root", "0.Root", "{5CC669
 		src\.editorconfig = src\.editorconfig
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
-		ref\Common\src\Directory.Packages.props = ref\Common\src\Directory.Packages.props
+		src\Directory.Packages.props = src\Directory.Packages.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Reference", "1.Reference", "{0E0A88A6-DDBC-4D01-83E0-716737CE505D}"
@@ -54,15 +54,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools.DocFX", "src\Tools.Do
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Avalonia8.UnitTest", "src\BD.Avalonia8.UnitTest\BD.Avalonia8.UnitTest.csproj", "{5BE64069-0431-4B09-8DA5-D6B351BB8FE2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Avalonia8.AnimatedImage", "src\BD.Avalonia8.AnimatedImage\BD.Avalonia8.AnimatedImage.csproj", "{2D6F671E-CF4E-48BC-A932-8788C84AB39D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Avalonia8.Image2", "src\BD.Avalonia8.Image2\BD.Avalonia8.Image2.csproj", "{2D6F671E-CF4E-48BC-A932-8788C84AB39D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Common8.Http.ClientFactory", "ref\Common\src\BD.Common8.Http.ClientFactory\BD.Common8.Http.ClientFactory.csproj", "{B6759168-74AE-433F-B0C6-8FF16D08A18B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "5.Sample", "5.Sample", "{1AF7DCA3-CBD2-4FDD-9815-9F4A9591916E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnimatedImage.Sample", "src\AnimatedImage.Sample\AnimatedImage.Sample.csproj", "{D30DE822-D36E-4258-8B0E-7F8702C70740}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Sdk", "0.Sdk", "{0265DE1B-8580-4C9D-B461-63AB1D600E55}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Image2.Sample", "src\Image2.Sample\Image2.Sample.csproj", "{D30DE822-D36E-4258-8B0E-7F8702C70740}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Avalonia8.Sdk", "src\Sdk\BD.Avalonia8.Sdk.csproj", "{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5}"
 EndProject
@@ -136,8 +134,7 @@ Global
 		{B6759168-74AE-433F-B0C6-8FF16D08A18B} = {0E0A88A6-DDBC-4D01-83E0-716737CE505D}
 		{1AF7DCA3-CBD2-4FDD-9815-9F4A9591916E} = {A7F91BCF-CF3E-411C-86B8-D3DFE5D4CBAA}
 		{D30DE822-D36E-4258-8B0E-7F8702C70740} = {1AF7DCA3-CBD2-4FDD-9815-9F4A9591916E}
-		{0265DE1B-8580-4C9D-B461-63AB1D600E55} = {5CC669E3-1104-401E-9F4A-13B7E549F541}
-		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5} = {0265DE1B-8580-4C9D-B461-63AB1D600E55}
+		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5} = {5CC669E3-1104-401E-9F4A-13B7E549F541}
 		{96D5D9AA-C457-4C97-AD1C-EEF45550BD0B} = {0E0A88A6-DDBC-4D01-83E0-716737CE505D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

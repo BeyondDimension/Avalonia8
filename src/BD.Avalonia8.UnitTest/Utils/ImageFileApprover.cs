@@ -1,7 +1,5 @@
 namespace BD.Avalonia8.UnitTest.Utils;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 [SupportedOSPlatform("windows")]
 public sealed class ImageFileApprover(IApprovalWriter writer, IApprovalNamer namer, bool normalizeLineEndingsForTextFiles = false) : FileApprover(writer, namer, normalizeLineEndingsForTextFiles)
 {

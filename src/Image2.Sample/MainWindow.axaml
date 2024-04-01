@@ -1,0 +1,43 @@
+<Window
+    x:Class="Image2.Sample.MainWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:gif="using:BD.Avalonia8.Image2"
+    Title="Image2 on Avalonia!"
+    Width="1080"
+    Height="600"
+    WindowStartupLocation="CenterScreen">
+    <TabControl>
+        <TabItem Header="Test1">
+            <Grid ColumnDefinitions="2*, 3*">
+                <DockPanel Grid.Column="0">
+                    <ComboBox
+                        DockPanel.Dock="Top"
+                        ItemsSource="{Binding Path=Stretches}"
+                        SelectedItem="{Binding Path=Stretch}" />
+                    <ListBox ItemsSource="{Binding Path=AvailableGifs}" SelectedItem="{Binding Path=SelectedGif}" />
+                </DockPanel>
+                <ScrollViewer Grid.Column="1">
+                    <StackPanel Spacing="20">
+                        <Panel>
+                            <TextBlock
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="50"
+                                Text="Transparent Test" />
+                            <gif:Image2
+                                AutoStart="True"
+                                DecodeWidth="200"
+                                FallbackSource="resm:AvaloniaGif.Demo.Images.avater_default.png"
+                                Source="{Binding Path=SelectedGif.Path}"
+                                Stretch="{Binding Path=Stretch}"
+                                StretchDirection="Both" />
+                        </Panel>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </TabItem>
+        <TabItem Header="Test2" />
+    </TabControl>
+
+</Window>

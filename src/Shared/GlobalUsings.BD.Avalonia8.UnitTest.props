@@ -1,0 +1,7 @@
+<Project>
+	<ItemGroup>
+		<Using Include="BD.Avalonia8.UnitTest;" />
+		<Using Include="BD.Avalonia8.UnitTest.Apps;" />
+		<Using Include="BD.Avalonia8.UnitTest.Utils;" />
+	</ItemGroup>
+</Project>

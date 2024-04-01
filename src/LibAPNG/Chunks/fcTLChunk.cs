@@ -1,7 +1,5 @@
 namespace LibAPNG.Chunks;
 
-#pragma warning disable SA1600 // Elements should be documented
-
 public enum DisposeOps : byte
 {
     APNGDisposeOpNone = 0,
