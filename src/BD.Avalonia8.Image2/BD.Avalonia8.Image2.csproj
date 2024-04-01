@@ -8,4 +8,12 @@
 	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\GeneratePackage.props" />
 	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectReference\$(MSBuildProjectName).props" />
 
+	<ItemGroup>
+		<PackageReference Remove="Avalonia.Android" />
+		<PackageReference Remove="Avalonia.iOS" />
+		<PackageReference Remove="Avalonia.Native" />
+		<PackageReference Remove="Avalonia.Win32" />
+		<PackageReference Remove="Avalonia.X11" />
+	</ItemGroup>
+
 </Project>

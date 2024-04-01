@@ -1,4 +1,5 @@
 ﻿# Avalonia8
+[次元超越 Avalonia8 类库文档](https://beyonddimension.github.io/Avalonia8)
 
 ### BD.Avalonia8.Image2
 提供动图控件，支持 Gif/Apng
