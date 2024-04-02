@@ -1,9 +1,0 @@
-<Project>
-	<ItemGroup>
-		<Using Include="ApprovalTests" />
-		<Using Include="ApprovalTests.Approvers" />
-		<Using Include="ApprovalTests.Core" />
-		<Using Include="ApprovalTests.Core.Exceptions" />
-		<Using Include="ApprovalTests.Reporters" />
-	</ItemGroup>
-</Project>

@@ -1,3 +1,0 @@
-<Project>
-	<Import Project="..\ref\Common\src\Directory.Packages.props" />
-</Project>

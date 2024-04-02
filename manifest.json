@@ -1,0 +1,380 @@
+{
+  "source_base_path": "C:/Users/CYCY/source/repos/Avalonia8",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Conceptual",
+      "source_relative_path": "README.md",
+      "output": {
+        ".html": {
+          "relative_path": "README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "README.md",
+      "output": {
+        "resource": {
+          "relative_path": "README.md"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.ApngInstance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.ApngInstance.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.FrameDisposal.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.FrameDisposal.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifColor.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifColor.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifDecoder.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifDecoder.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifFrame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifFrame.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifHeader.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifHeader.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifRect.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifRect.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifRepeatBehavior.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.GifRepeatBehavior.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.InvalidGifStreamException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.InvalidGifStreamException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.LzwDecompressionException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.LzwDecompressionException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Decoding.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.GifInstance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.GifInstance.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.IImageInstance.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.IImageInstance.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Image2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.Image2.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/BD.Avalonia8.Image2.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.APNG.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.APNG.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.BlendOps.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.BlendOps.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.Chunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.Chunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.DisposeOps.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.DisposeOps.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IDATChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IDATChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IENDChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IENDChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IHDRChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.IHDRChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.OtherChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.OtherChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.acTLChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.acTLChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.fcTLChunk.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.fcTLChunk.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Chunks.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Frame.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.Frame.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.LibAPNGException.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.LibAPNGException.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BD.Avalonia8.Image2/LibAPNG.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/LibAPNG.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/BD.Avalonia8.Image2/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BD.Avalonia8.Image2/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/BD.Avalonia8.Image2/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Redirection",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
