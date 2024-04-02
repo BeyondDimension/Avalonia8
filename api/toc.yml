@@ -1,0 +1,16 @@
+items:
+- name: SharedLibrary
+  items:
+  - name: BD.Avalonia8.Image2
+    href: BD.Avalonia8.Image2/toc.yml
+- name: Sample
+  items:
+  - name: Image2.Sample
+    href: Image2.Sample/toc.yml
+- name: Tools
+  items:
+  - name: Tools.Build
+  - name: Tools.DocFX
+- name : UnitTest
+  items:
+  - name: BD.Avalonia8.UnitTest
