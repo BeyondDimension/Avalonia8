@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - dev8
+      - main
     tags:
       - "*"
   pull_request:
