@@ -51,11 +51,8 @@ jobs:
       - name: Verify dotnet info
         run: dotnet --info
 
-      - name: Build tools
-        run: dotnet build -c Release src\Tools.Build\Tools.Build.csproj --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false
-
       - name: Build projects
-        run: .\src\artifacts\bin\Tools.Build\release\Tools.Build.exe build --test
+        run: dotnet build -c Release BD.Avalonia8.sln
         
       - name: Install DocFX
         run: dotnet tool update -g docfx
