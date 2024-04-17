@@ -2,9 +2,9 @@
   href: api/
   homepage: api/index.md
 - name: Common
-  href: https://beyonddimension.github.io/Common/doc/Code-Style.html
+  href: https://beyonddimension.github.io/Common
 - name: SteamClient
-  href: https://beyonddimension.github.io/SteamClient/articles/Protobuf.html
+  href: https://beyonddimension.github.io/SteamClient
 - name: Watt Toolkit
   href: https://steampp.net/
 - name: WattGame
