@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0.Root", "0.Root", "{5CC669
 		src\Directory.Build.props = src\Directory.Build.props
 		src\Directory.Build.targets = src\Directory.Build.targets
 		src\Directory.Packages.props = src\Directory.Packages.props
+		src\Version.props = src\Version.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Reference", "1.Reference", "{0E0A88A6-DDBC-4D01-83E0-716737CE505D}"
