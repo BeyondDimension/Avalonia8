@@ -89,7 +89,7 @@ Class App  <a class="header-action link-secondary" title="View source" href="htt
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class App : Application, INotifyPropertyChanged, IDataContextProvider, IGlobalDataTemplates, IDataTemplateHost, IGlobalStyles, IStyleHost, IThemeVariantHost, IResourceHost, IResourceNode, IApplicationPlatformEvents</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class App : Application, INotifyPropertyChanged, IDataContextProvider, IGlobalDataTemplates, IDataTemplateHost, IGlobalStyles, IStyleHost, IThemeVariantHost, IResourceHost, IResourceNode, IApplicationPlatformEvents, IOptionalFeatureProvider</code></pre>
   </div>
 
 
@@ -118,6 +118,7 @@ Class App  <a class="header-action link-secondary" title="View source" href="htt
       <div><span class="xref">IResourceHost</span></div>
       <div><span class="xref">IResourceNode</span></div>
       <div><span class="xref">IApplicationPlatformEvents</span></div>
+      <div><span class="xref">IOptionalFeatureProvider</span></div>
     </dd>
   </dl>
 
@@ -142,6 +143,9 @@ Class App  <a class="header-action link-secondary" title="View source" href="htt
     </div>
     <div>
       <span class="xref">Application.RegisterServices()</span>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.type">Application.TryGetFeature(Type)</a>
     </div>
     <div>
       <span class="xref">Application.DataContext</span>
@@ -238,6 +242,9 @@ Class App  <a class="header-action link-secondary" title="View source" href="htt
     </div>
     <div>
       <span class="xref">AvaloniaObject.SetCurrentValue&lt;T&gt;(StyledProperty&lt;T&gt;, T)</span>
+    </div>
+    <div>
+      <span class="xref">AvaloniaObject.Bind(AvaloniaProperty, IBinding)</span>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">AvaloniaObject.Bind(AvaloniaProperty, IObservable&lt;object&gt;, BindingPriority)</a>

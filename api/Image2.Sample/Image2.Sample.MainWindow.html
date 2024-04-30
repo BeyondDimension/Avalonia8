@@ -89,7 +89,7 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class MainWindow : Window, INotifyPropertyChanged, IDataContextProvider, IThemeVariantHost, IResourceHost, IResourceNode, ISetLogicalParent, ISetInheritanceParent, ISupportInitialize, IStyleable, IDataTemplateHost, INamed, ISetterValue, IRenderRoot, ICloseable, IStyleHost, ILogicalRoot, ILogical, ITextInputMethodRoot, IInputRoot, IInputElement, IFocusScope, ILayoutRoot</code></pre>
+    <pre><code class="lang-csharp hljs">public class MainWindow : Window, INotifyPropertyChanged, IDataContextProvider, IThemeVariantHost, IResourceHost, IResourceNode, ISetLogicalParent, ISetInheritanceParent, ISupportInitialize, IStyleable, INamed, IDataTemplateHost, ISetterValue, IRenderRoot, ICloseable, IStyleHost, ILogicalRoot, ILogical, ITextInputMethodRoot, IInputRoot, IInputElement, IFocusScope, ILayoutRoot</code></pre>
   </div>
 
 
@@ -128,8 +128,8 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
       <div><span class="xref">ISetInheritanceParent</span></div>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.componentmodel.isupportinitialize">ISupportInitialize</a></div>
       <div><span class="xref">IStyleable</span></div>
-      <div><span class="xref">IDataTemplateHost</span></div>
       <div><span class="xref">INamed</span></div>
+      <div><span class="xref">IDataTemplateHost</span></div>
       <div><span class="xref">ISetterValue</span></div>
       <div><span class="xref">IRenderRoot</span></div>
       <div><span class="xref">ICloseable</span></div>
@@ -177,6 +177,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">Window.ShowInTaskbarProperty</span>
+    </div>
+    <div>
+      <span class="xref">Window.ClosingBehaviorProperty</span>
     </div>
     <div>
       <span class="xref">Window.WindowStateProperty</span>
@@ -233,6 +236,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
       <span class="xref">Window.ShowDialog&lt;TResult&gt;(Window)</span>
     </div>
     <div>
+      <span class="xref">Window.SortWindowsByZOrder(Window[])</span>
+    </div>
+    <div>
       <span class="xref">Window.MeasureOverride(Size)</span>
     </div>
     <div>
@@ -285,6 +291,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">Window.ShowInTaskbar</span>
+    </div>
+    <div>
+      <span class="xref">Window.ClosingBehavior</span>
     </div>
     <div>
       <span class="xref">Window.WindowState</span>
@@ -395,6 +404,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
       <span class="xref">TopLevel.SystemBarColorProperty</span>
     </div>
     <div>
+      <span class="xref">TopLevel.AutoSafeAreaPaddingProperty</span>
+    </div>
+    <div>
       <span class="xref">TopLevel.BackRequestedEvent</span>
     </div>
     <div>
@@ -405,6 +417,12 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">TopLevel.GetSystemBarColor(Control)</span>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">TopLevel.SetAutoSafeAreaPadding(Control, bool)</a>
+    </div>
+    <div>
+      <span class="xref">TopLevel.GetAutoSafeAreaPadding(Control)</span>
     </div>
     <div>
       <span class="xref">TopLevel.GetTopLevel(Visual)</span>
@@ -459,6 +477,12 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">TopLevel.InsetsManager</span>
+    </div>
+    <div>
+      <span class="xref">TopLevel.InputPane</span>
+    </div>
+    <div>
+      <span class="xref">TopLevel.Launcher</span>
     </div>
     <div>
       <span class="xref">TopLevel.Clipboard</span>
@@ -518,6 +542,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
       <span class="xref">TemplatedControl.BackgroundProperty</span>
     </div>
     <div>
+      <span class="xref">TemplatedControl.BackgroundSizingProperty</span>
+    </div>
+    <div>
       <span class="xref">TemplatedControl.BorderBrushProperty</span>
     </div>
     <div>
@@ -528,6 +555,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">TemplatedControl.FontFamilyProperty</span>
+    </div>
+    <div>
+      <span class="xref">TemplatedControl.FontFeaturesProperty</span>
     </div>
     <div>
       <span class="xref">TemplatedControl.FontSizeProperty</span>
@@ -581,6 +611,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
       <span class="xref">TemplatedControl.Background</span>
     </div>
     <div>
+      <span class="xref">TemplatedControl.BackgroundSizing</span>
+    </div>
+    <div>
       <span class="xref">TemplatedControl.BorderBrush</span>
     </div>
     <div>
@@ -591,6 +624,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">TemplatedControl.FontFamily</span>
+    </div>
+    <div>
+      <span class="xref">TemplatedControl.FontFeatures</span>
     </div>
     <div>
       <span class="xref">TemplatedControl.FontSize</span>
@@ -1296,6 +1332,9 @@ Class MainWindow  <a class="header-action link-secondary" title="View source" hr
     </div>
     <div>
       <span class="xref">AvaloniaObject.SetCurrentValue&lt;T&gt;(StyledProperty&lt;T&gt;, T)</span>
+    </div>
+    <div>
+      <span class="xref">AvaloniaObject.Bind(AvaloniaProperty, IBinding)</span>
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iobservable-1">AvaloniaObject.Bind(AvaloniaProperty, IObservable&lt;object&gt;, BindingPriority)</a>
