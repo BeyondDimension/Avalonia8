@@ -2,7 +2,6 @@
 	<Import Project="$(MSBuildThisFileDirectory)Version.props" />
 
 	<PropertyGroup>
-		<Version>$(Version_Avalonia8)</Version>
 		<Path_Submodule>$(MSBuildThisFileDirectory)..\ref\</Path_Submodule>
 	</PropertyGroup>
 
@@ -10,11 +9,15 @@
 		<Path_Submodule>$(MSBuildThisFileDirectory)..\..\</Path_Submodule>
 	</PropertyGroup>
 
+	<Import Project="$(Path_Submodule)Common\src\Sdk\Global.props" />
+
+	<PropertyGroup>
+		<Version>$(Version_Avalonia8)</Version>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Compile Condition="$(MSBuildProjectName) != 'BD.Avalonia8.UnitTest' AND $(IsTestProject) != 'true'" Include="$(MSBuildThisFileDirectory)Shared\InternalsVisibleTo.BD.Avalonia8.UnitTest.cs">
 			<LinkBase>Properties\InternalsVisibleTo</LinkBase>
 		</Compile>
 	</ItemGroup>
-
-	<Import Project="$(Path_Submodule)Common\src\Sdk\Global.props" />
 </Project>
