@@ -11,10 +11,6 @@
 		<Compile Remove="$(Path_Submodule)Common\src\Tools.DocFX\bin\**\*.cs" />
 		<Compile Remove="$(Path_Submodule)Common\src\Tools.DocFX\obj\**\*.cs" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\BD.Avalonia8.Image2\BD.Avalonia8.Image2.csproj" />
-	</ItemGroup>
 	
 	<Import Project="$(Path_Submodule)Common\src\Sdk\ProjectReference\BD.Common8.Bcl.props" />
 
