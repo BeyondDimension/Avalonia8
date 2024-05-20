@@ -12,8 +12,31 @@
 	<Import Project="$(Path_Submodule)Common\src\Sdk\Global.props" />
 
 	<PropertyGroup>
+		<GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+		<GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+		<GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+		<GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+		<!--<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>-->
+		<!--<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>-->
+		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+		<!--<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>-->
+		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+	</PropertyGroup>
+
+	<PropertyGroup>
 		<Version>$(Version_Avalonia8)</Version>
 	</PropertyGroup>
+
+	<!-- Avalonia -->
+	<PropertyGroup>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\AssemblyInfo.Attribute.cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Condition="$(MSBuildProjectName) != 'BD.Avalonia8.UnitTest' AND $(IsTestProject) != 'true'" Include="$(MSBuildThisFileDirectory)Shared\InternalsVisibleTo.BD.Avalonia8.UnitTest.cs">

@@ -5,6 +5,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<Compile Include="$(MSBuildThisFileDirectory)..\AssemblyInfo.cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="../Shared/**/*">
 			<LinkBase>Shared</LinkBase>
 		</None>

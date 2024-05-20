@@ -6,6 +6,12 @@
 		<PackageDescription>提供动图控件，支持 Gif/Apng</PackageDescription>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<Compile Include="$(MSBuildThisFileDirectory)..\AssemblyInfo.cs">
+			<LinkBase>Properties</LinkBase>
+		</Compile>
+	</ItemGroup>
+
 	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\GeneratePackage.props" />
 	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectReference\$(MSBuildProjectName).props" />
 

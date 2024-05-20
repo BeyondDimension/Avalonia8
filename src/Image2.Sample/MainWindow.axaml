@@ -3,9 +3,11 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:gif="using:BD.Avalonia8.Image2"
+    xmlns:local="using:Image2.Sample"
     Title="Image2 on Avalonia!"
     Width="1080"
     Height="600"
+    x:DataType="local:MainWindowViewModel"
     WindowStartupLocation="CenterScreen">
     <TabControl>
         <TabItem Header="Test1">
