@@ -1693,6 +1693,60 @@ references:
   commentId: F:BD.Avalonia8.Image2.Image2.StretchProperty
   fullName: BD.Avalonia8.Image2.Image2.StretchProperty
   nameWithType: Image2.StretchProperty
+- uid: BD.SteamClient8
+  name: BD.SteamClient8
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.html
+  commentId: N:BD.SteamClient8
+  fullName: BD.SteamClient8
+  nameWithType: BD.SteamClient8
+- uid: BD.SteamClient8.AssemblyInfo
+  name: AssemblyInfo
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html
+  commentId: T:BD.SteamClient8.AssemblyInfo
+  fullName: BD.SteamClient8.AssemblyInfo
+  nameWithType: AssemblyInfo
+- uid: BD.SteamClient8.AssemblyInfo.Company
+  name: Company
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Company
+  commentId: F:BD.SteamClient8.AssemblyInfo.Company
+  fullName: BD.SteamClient8.AssemblyInfo.Company
+  nameWithType: AssemblyInfo.Company
+- uid: BD.SteamClient8.AssemblyInfo.Copyright
+  name: Copyright
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Copyright
+  commentId: F:BD.SteamClient8.AssemblyInfo.Copyright
+  fullName: BD.SteamClient8.AssemblyInfo.Copyright
+  nameWithType: AssemblyInfo.Copyright
+- uid: BD.SteamClient8.AssemblyInfo.CultureName_SimplifiedChinese
+  name: CultureName_SimplifiedChinese
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_CultureName_SimplifiedChinese
+  commentId: F:BD.SteamClient8.AssemblyInfo.CultureName_SimplifiedChinese
+  fullName: BD.SteamClient8.AssemblyInfo.CultureName_SimplifiedChinese
+  nameWithType: AssemblyInfo.CultureName_SimplifiedChinese
+- uid: BD.SteamClient8.AssemblyInfo.Description
+  name: Description
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Description
+  commentId: F:BD.SteamClient8.AssemblyInfo.Description
+  fullName: BD.SteamClient8.AssemblyInfo.Description
+  nameWithType: AssemblyInfo.Description
+- uid: BD.SteamClient8.AssemblyInfo.Product
+  name: Product
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Product
+  commentId: F:BD.SteamClient8.AssemblyInfo.Product
+  fullName: BD.SteamClient8.AssemblyInfo.Product
+  nameWithType: AssemblyInfo.Product
+- uid: BD.SteamClient8.AssemblyInfo.Title
+  name: Title
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Title
+  commentId: F:BD.SteamClient8.AssemblyInfo.Title
+  fullName: BD.SteamClient8.AssemblyInfo.Title
+  nameWithType: AssemblyInfo.Title
+- uid: BD.SteamClient8.AssemblyInfo.Trademark
+  name: Trademark
+  href: api/BD.Avalonia8.Image2/BD.SteamClient8.AssemblyInfo.html#BD_SteamClient8_AssemblyInfo_Trademark
+  commentId: F:BD.SteamClient8.AssemblyInfo.Trademark
+  fullName: BD.SteamClient8.AssemblyInfo.Trademark
+  nameWithType: AssemblyInfo.Trademark
 - uid: Image2.Sample
   name: Image2.Sample
   href: api/Image2.Sample/Image2.Sample.html
