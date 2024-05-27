@@ -10,7 +10,7 @@
     x:DataType="local:MainWindowViewModel"
     WindowStartupLocation="CenterScreen">
     <TabControl>
-        <TabItem Header="Test1">
+        <TabItem Header="Test1 字体">
             <Grid ColumnDefinitions="2*, 3*">
                 <DockPanel Grid.Column="0">
                     <ComboBox

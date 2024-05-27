@@ -4,3 +4,6 @@
 
 ### BD.Avalonia8.Image2
 提供动图控件，支持 Gif/Apng
+
+### BD.Avalonia8.Fonts.HarmonyOS_Sans_SC
+提供 HarmonyOS 字体

@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BD.Common8.Primitives.ApiRs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common8", "Common8", "{FDFCD3EF-5300-44AF-BCE2-AF485C37C36C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.Avalonia8.Fonts.HarmonyOS_Sans_SC", "src\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj", "{1689166B-3BFE-4178-B681-6F49ED941741}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -115,6 +117,10 @@ Global
 		{96D5D9AA-C457-4C97-AD1C-EEF45550BD0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96D5D9AA-C457-4C97-AD1C-EEF45550BD0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96D5D9AA-C457-4C97-AD1C-EEF45550BD0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1689166B-3BFE-4178-B681-6F49ED941741}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1689166B-3BFE-4178-B681-6F49ED941741}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1689166B-3BFE-4178-B681-6F49ED941741}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1689166B-3BFE-4178-B681-6F49ED941741}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{C9D44908-D7DA-4DC3-8179-FCDBD9448FA5} = {5CC669E3-1104-401E-9F4A-13B7E549F541}
 		{96D5D9AA-C457-4C97-AD1C-EEF45550BD0B} = {FDFCD3EF-5300-44AF-BCE2-AF485C37C36C}
 		{FDFCD3EF-5300-44AF-BCE2-AF485C37C36C} = {0E0A88A6-DDBC-4D01-83E0-716737CE505D}
+		{1689166B-3BFE-4178-B681-6F49ED941741} = {689EF440-E9DE-43C1-843D-60A12EA6AE4D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A4D29FF1-958E-40B2-A768-E3125381B7F0}

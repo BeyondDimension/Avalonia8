@@ -1,4 +1,5 @@
 using Image2.Sample;
+using BD.Avalonia8.Fonts;
 
 Ioc.ConfigureServices(static s =>
 {
@@ -9,8 +10,20 @@ Ioc.ConfigureServices(static s =>
 });
 
 static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
+{
+    FontManagerOptions options = new()
+    {
+        DefaultFamilyName = CustomFont.Name,
+        FontFallbacks =
+        [
+            new FontFallback { FontFamily = CustomFont.Instance },
+            new FontFallback { FontFamily = AvaFontFamily.Default },
+        ],
+    };
+    return AppBuilder.Configure<App>()
+                .With(options)
                 .UsePlatformDetect()
                 .LogToTrace();
+}
 
 BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);

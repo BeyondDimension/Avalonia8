@@ -20,7 +20,7 @@ public static partial class AssemblyInfo
     /// 与应用程序关联的产品名称。
     /// <para><see cref="AssemblyTrademarkAttribute"/></para>
     /// </summary>
-    public const string Trademark = "BD.Avalonia8.Image2";
+    public const string Trademark = "BD.Avalonia8";
 
     /// <summary>
     /// 与应用程序关联的产品名称。
@@ -32,7 +32,7 @@ public static partial class AssemblyInfo
     /// 提供程序集的文本说明。
     /// <para><see cref="AssemblyDescriptionAttribute"/></para>
     /// </summary>
-    public const string Description = "提供动图控件，支持 Gif/Apng";
+    public const string Description = "Avalonia 相关类库";
 
     /// <summary>
     /// 与该应用程序关联的公司名称。

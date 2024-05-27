@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -19,6 +19,10 @@
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="Avalonia.ReactiveUI" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
 	</ItemGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectReference\BD.Avalonia8.Image2.props" />
