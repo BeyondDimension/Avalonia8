@@ -1,5 +1,3 @@
-using Avalonia.Media;
-
 namespace BD.Avalonia8.Fonts;
 
 /// <summary>
@@ -12,10 +10,10 @@ public static class CustomFont
     /// </summary>
     public const string Name = "avares://BD.Avalonia8.Fonts.HarmonyOS_Sans_SC/HarmonyOS_Sans_SC_Regular.ttf#HarmonyOS Sans SC";
 
-    static readonly Lazy<FontFamily> mInstance = new(() => new(Name), LazyThreadSafetyMode.ExecutionAndPublication);
+    static readonly Lazy<AvaFontFamily> mInstance = new(() => new(Name), LazyThreadSafetyMode.ExecutionAndPublication);
 
     /// <summary>
-    /// 自定义字体的 <see cref="FontFamily"/>
+    /// 自定义字体的 <see cref="AvaFontFamily"/>
     /// </summary>
-    public static FontFamily Instance => mInstance.Value;
+    public static AvaFontFamily Instance => mInstance.Value;
 }

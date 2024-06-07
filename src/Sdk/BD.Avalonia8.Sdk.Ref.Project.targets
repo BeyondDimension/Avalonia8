@@ -1,0 +1,11 @@
+<Project>
+	<!-- 📄 SDK 项目引用 -->
+
+	<!-- 👇 源生成器 -->
+	<ItemGroup Condition="$(IsSourceGeneratorProject) != 'true' AND !$(TargetFramework.StartsWith('net3')) AND !$(TargetFramework.StartsWith('net4'))">
+		<!-- 👇 类库项目引用 -->
+		<ProjectReference Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Image2;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Image2'" Include="$(MSBuildThisFileDirectory)..\BD.Avalonia8.Image2\BD.Avalonia8.Image2.csproj" />
+		<ProjectReference Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Fonts.HarmonyOS_Sans_SC;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Fonts.HarmonyOS_Sans_SC'" Include="$(MSBuildThisFileDirectory)..\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
+	</ItemGroup>
+
+</Project>

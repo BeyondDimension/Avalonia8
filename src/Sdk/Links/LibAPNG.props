@@ -1,0 +1,11 @@
+<Project>
+	<!-- 📄 源码引用 LibAPNG -->
+	<ItemGroup>
+		<Compile Include="$(MSBuildThisFileDirectory)..\..\LibAPNG\**\*.cs">
+			<LinkBase>_SourceReference\LibAPNG</LinkBase>
+		</Compile>
+		<Compile Remove="$(MSBuildThisFileDirectory)..\..\LibAPNG\bin\**\*.cs" />
+		<Compile Remove="$(MSBuildThisFileDirectory)..\..\LibAPNG\obj\**\*.cs" />
+	</ItemGroup>
+	<Import Project="$(MSBuildThisFileDirectory)..\..\Shared\GlobalUsings.LibAPNG.props" />
+</Project>

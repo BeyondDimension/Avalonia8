@@ -1,0 +1,11 @@
+<Project>
+	<!-- 📄 SDK 配置 -->
+	<!--## Common8Reference Start -->
+
+	<ImportGroup Condition="$(IsSourceGeneratorProject) != 'true'">
+		<Import Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Image2;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Image2'" Project="$(MSBuildThisFileDirectory)Projects\BD.Avalonia8.Image2.props" />
+		<Import Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Fonts.HarmonyOS_Sans_SC;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Fonts.HarmonyOS_Sans_SC'" Project="$(MSBuildThisFileDirectory)Projects\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.props" />
+	</ImportGroup>
+
+	<!-- ## Common8Reference End -->
+</Project>

@@ -36,7 +36,7 @@ public partial class MainWindowViewModel : ReactiveObject
             Stretch.UniformToFill,
         };
 
-        var list = AssetLoader.GetAssets(new Uri("avares://Image2.Sample/Images/"), null)
+        var list = AssetLoader.GetAssets(new Uri($"avares://{App.AssemblyName}/Images/"), null)
               .Select(x =>
               {
                   using var stream = AssetLoader.Open(x);

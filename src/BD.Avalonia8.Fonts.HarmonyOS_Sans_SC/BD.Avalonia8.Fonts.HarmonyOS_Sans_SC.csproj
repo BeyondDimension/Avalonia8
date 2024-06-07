@@ -1,21 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
+		<IsPackable Condition="'$(Configuration)'=='Release'">true</IsPackable>
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<PackageDescription>提供 HarmonyOS 字体</PackageDescription>
+		<Description>提供 HarmonyOS 字体</Description>
 		<RootNamespace>BD.Avalonia8.Fonts</RootNamespace>
 		<Version>8.24.10527.11800</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Avalonia" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<AvaloniaResource Include="**\*.ttf" />
 	</ItemGroup>
-
-	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\GeneratePackage.props" />
 
 </Project>

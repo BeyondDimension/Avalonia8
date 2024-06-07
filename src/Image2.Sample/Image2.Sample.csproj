@@ -1,10 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
+		<AssemblyName>img2</AssemblyName>
+		<BeyondDimensionFeatures>
+			BD.Common8.Bcl;
+			BD.Avalonia8.Image2;
+			BD.Avalonia8.Fonts.HarmonyOS_Sans_SC;
+		</BeyondDimensionFeatures>
+		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<TrimmerRootAssembly Include="$(AssemblyName)" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<Compile Update="**\*.xaml.cs">
@@ -14,20 +24,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="Avalonia.Themes.Simple" />
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="Avalonia.ReactiveUI" />
+		<PackageReference Include="Avalonia.Diagnostics" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
-	</ItemGroup>
-
-	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\ProjectReference\BD.Avalonia8.Image2.props" />
-	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.ReactiveUI.props" />
-	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.ReactiveUI.Fody.props" />
-	<Import Project="$(Path_Submodule)Common\src\Shared\GlobalUsings.Avalonia.ReactiveUI.props" />
 
 </Project>

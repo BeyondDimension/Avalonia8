@@ -1,7 +1,17 @@
 <Project>
 	<ItemGroup>
+		<Using Include="NUnit.Framework" />
+		<Using Include="NUnit.Framework.Interfaces" />
+		<Using Include="NUnit.Framework.Internal" />
+		<Using Include="NUnit.Framework.Internal.Commands" />
+		<Using Alias="Ignore" Include="NUnit.Framework.IgnoreAttribute" />
 		<Using Include="BD.Avalonia8.UnitTest" />
 		<Using Include="BD.Avalonia8.UnitTest.Apps" />
 		<Using Include="BD.Avalonia8.UnitTest.Utils" />
+		<Using Alias="SDBitmap" Include="System.Drawing.Bitmap" />
+		<Using Alias="SDRectangle" Include="System.Drawing.Rectangle" />
+		<Using Alias="SDPixelFormat" Include="System.Drawing.Imaging.PixelFormat" />
+		<Using Alias="SDImageFormat" Include="System.Drawing.Imaging.ImageFormat" />
 	</ItemGroup>
+	<Import Project="$(MSBuildThisFileDirectory)GlobalUsings.ApprovalTests.props" />
 </Project>

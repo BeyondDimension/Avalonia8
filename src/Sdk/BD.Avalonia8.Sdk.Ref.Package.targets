@@ -1,0 +1,11 @@
+<Project>
+	<!-- 📄 SDK 包引用 -->
+
+	<!-- 👇 源生成器 -->
+	<ItemGroup Condition="$(IsSourceGeneratorProject) != 'true'">
+		<!-- 👇 类库项目包引用 -->
+		<PackageReference Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Image2;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Image2'" Include="BD.Avalonia8.Image2" />
+		<PackageReference Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Fonts.HarmonyOS_Sans_SC;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Fonts.HarmonyOS_Sans_SC'" Include="BD.Avalonia8.Fonts.HarmonyOS_Sans_SC" />
+	</ItemGroup>
+
+</Project>

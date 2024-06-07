@@ -1,0 +1,15 @@
+<Project>
+	<!-- 📄 SDK 源码引用 -->
+
+	<ItemGroup Condition="$(IsSourceGeneratorProject) != 'true'">
+		<!-- 👇 类库项目源码引用 -->
+		<ItemGroup Condition="$(BeyondDimensionFeatures.Contains('BD.Avalonia8.Image2;')) AND $(MSBuildProjectName) != 'BD.Avalonia8.Image2'">
+			<Compile Include="$(MSBuildThisFileDirectory)..\BD.Avalonia8.Image2\**\*.cs">
+				<LinkBase>_SourceReference\BD.Avalonia8.Image2</LinkBase>
+			</Compile>
+			<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.Image2\bin\**" />
+			<Compile Remove="$(MSBuildThisFileDirectory)..\BD.Avalonia8.Image2\obj\**" />
+		</ItemGroup>
+	</ItemGroup>
+
+</Project>

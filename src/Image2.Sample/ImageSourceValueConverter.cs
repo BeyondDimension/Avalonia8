@@ -10,7 +10,7 @@ sealed class ImageSourceValueConverter : IValueConverter
         {
             var valueStr = value!.ToString();
             using var stream = AssetLoader.Open(new Uri(
-                $"avares://Image2.Sample/Images/{valueStr}"));
+                $"avares://{App.AssemblyName}/Images/{valueStr}"));
             if (FileFormat.IsImage(stream, out var format))
             {
                 return $"[{format}] {valueStr}";

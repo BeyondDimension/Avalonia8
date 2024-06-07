@@ -1,7 +1,0 @@
-<Project>
-	<!-- 全局 using | Global usings -->
-	<ImportGroup>
-		<Import Project="$(MSBuildThisFileDirectory)..\..\Shared\GlobalUsings.Avalonia.props" />
-		<Import Project="$(MSBuildThisFileDirectory)..\..\Shared\GlobalUsings.LibAPNG.props" />
-	</ImportGroup>
-</Project>

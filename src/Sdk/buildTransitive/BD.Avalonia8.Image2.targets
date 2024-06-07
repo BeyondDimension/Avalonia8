@@ -1,0 +1,3 @@
+<Project>
+	<Import Project="$(MSBuildThisFileDirectory)src\Sdk\BD.Avalonia8.Sdk.targets" />
+</Project>
