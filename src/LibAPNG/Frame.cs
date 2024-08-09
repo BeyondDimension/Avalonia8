@@ -100,25 +100,25 @@ public class Frame
 
 #if DEBUG
 
-        var s = new MemoryStream();
-        ihdrChunk.WriteRawData(s);
-        var ihdrChunk_raw = Hashs.String.MD5(s.ToArray());
-        s.Dispose();
+        //var s = new MemoryStream();
+        //ihdrChunk.WriteRawData(s);
+        //var ihdrChunk_raw = Hashs.String.MD5(s.ToArray());
+        //s.Dispose();
 
-        s = new();
-        otherChunks.ForEach(o => o.WriteRawData(s));
-        var otherChunks_raw = Hashs.String.MD5(s.ToArray());
-        s.Dispose();
+        //s = new();
+        //otherChunks.ForEach(o => o.WriteRawData(s));
+        //var otherChunks_raw = Hashs.String.MD5(s.ToArray());
+        //s.Dispose();
 
-        s = new();
-        idatChunks.ForEach(o => o.WriteRawData(s));
-        var idatChunks_raw = Hashs.String.MD5(s.ToArray());
-        s.Dispose();
+        //s = new();
+        //idatChunks.ForEach(o => o.WriteRawData(s));
+        //var idatChunks_raw = Hashs.String.MD5(s.ToArray());
+        //s.Dispose();
 
-        s = new();
-        IENDChunk.ThrowIsNull().WriteRawData(s);
-        var iENDChunk_raw = Hashs.String.MD5(s.ToArray());
-        s.Dispose();
+        //s = new();
+        //IENDChunk.ThrowIsNull().WriteRawData(s);
+        //var iENDChunk_raw = Hashs.String.MD5(s.ToArray());
+        //s.Dispose();
 
 #endif
 
