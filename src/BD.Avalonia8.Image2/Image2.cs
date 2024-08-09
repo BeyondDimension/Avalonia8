@@ -1,3 +1,5 @@
+using Logger = Avalonia.Logging.Logger;
+
 namespace BD.Avalonia8.Image2;
 
 /// <summary>
