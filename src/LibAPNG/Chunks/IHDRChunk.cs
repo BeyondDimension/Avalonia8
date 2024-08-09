@@ -7,7 +7,7 @@ public class IHDRChunk : Chunk
     {
     }
 
-    public IHDRChunk(MemoryStream ms)
+    public IHDRChunk(Stream ms)
         : base(ms)
     {
     }
@@ -31,14 +31,29 @@ public class IHDRChunk : Chunk
 
     public byte InterlaceMethod { get; private set; }
 
-    protected override void ParseData(MemoryStream ms)
+    //protected override void ParseData(MemoryStream ms)
+    //{
+    //    Width = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
+    //    Height = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
+    //    BitDepth = Convert.ToByte(ms.ReadByte());
+    //    ColorType = Convert.ToByte(ms.ReadByte());
+    //    CompressionMethod = Convert.ToByte(ms.ReadByte());
+    //    FilterMethod = Convert.ToByte(ms.ReadByte());
+    //    InterlaceMethod = Convert.ToByte(ms.ReadByte());
+    //}
+
+    protected override unsafe void ParseData(ReadOnlySpan<byte> bytes)
     {
-        Width = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
-        Height = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
-        BitDepth = Convert.ToByte(ms.ReadByte());
-        ColorType = Convert.ToByte(ms.ReadByte());
-        CompressionMethod = Convert.ToByte(ms.ReadByte());
-        FilterMethod = Convert.ToByte(ms.ReadByte());
-        InterlaceMethod = Convert.ToByte(ms.ReadByte());
+        fixed (byte* pointer = bytes)
+        {
+            using UnmanagedMemoryStream ms = new(pointer, bytes.Length);
+            Width = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
+            Height = LibAPNGHelper.ConvertEndian(ms.ReadInt32());
+            BitDepth = Convert.ToByte(ms.ReadByte());
+            ColorType = Convert.ToByte(ms.ReadByte());
+            CompressionMethod = Convert.ToByte(ms.ReadByte());
+            FilterMethod = Convert.ToByte(ms.ReadByte());
+            InterlaceMethod = Convert.ToByte(ms.ReadByte());
+        }
     }
 }

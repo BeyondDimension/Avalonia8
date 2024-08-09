@@ -2,32 +2,54 @@ namespace LibAPNG.Chunks;
 
 public class Chunk
 {
-    internal Chunk() { }
-
-    internal Chunk(byte[] bytes)
+    internal Chunk(string chunkType, byte[] chunkData, uint length, uint crc)
     {
-        var ms = new MemoryStream(bytes);
-        Length = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        ChunkType = Encoding.ASCII.GetString(ms.ReadBytes(4));
-        ChunkData = ms.ReadBytes((int)Length);
-        Crc = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-
-        if (ms.Position != ms.Length)
-            throw new LibAPNGException("Chunk length not correct.");
-        if (Length != ChunkData.Length)
-            throw new LibAPNGException("Chunk data length not correct.");
-
-        ParseData(new MemoryStream(ChunkData));
+        ChunkType = chunkType;
+        ChunkData = chunkData;
+        Length = length;
+        Crc = crc;
     }
 
-    internal Chunk(MemoryStream ms)
+    internal unsafe Chunk(byte[] bytes)
+    {
+        fixed (byte* pointer = bytes)
+        {
+            using UnmanagedMemoryStream ms = new(pointer, bytes.LongLength);
+
+            Length = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+
+            Span<byte> chunkType = stackalloc byte[4];
+            ms.Read(chunkType);
+            ChunkType = Encoding.ASCII.GetString(chunkType);
+
+            ChunkData = GC.AllocateUninitializedArray<byte>(unchecked((int)Length));
+            ms.Read(ChunkData);
+
+            Crc = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+
+            if (ms.Position != ms.Length)
+                throw new LibAPNGException("Chunk length not correct.");
+            if (Length != ChunkData.Length)
+                throw new LibAPNGException("Chunk data length not correct.");
+
+            ParseData(ChunkData);
+        }
+    }
+
+    internal Chunk(Stream ms)
     {
         Length = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        ChunkType = Encoding.ASCII.GetString(ms.ReadBytes(4));
-        ChunkData = ms.ReadBytes((int)Length);
+
+        Span<byte> chunkType = stackalloc byte[4];
+        ms.Read(chunkType);
+        ChunkType = Encoding.ASCII.GetString(chunkType);
+
+        ChunkData = GC.AllocateUninitializedArray<byte>(unchecked((int)Length));
+        ms.Read(ChunkData);
+
         Crc = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
 
-        ParseData(new MemoryStream(ChunkData));
+        ParseData(ChunkData);
     }
 
     internal Chunk(Chunk chunk)
@@ -37,30 +59,35 @@ public class Chunk
         ChunkData = chunk.ChunkData.ThrowIsNull();
         Crc = chunk.Crc;
 
-        ParseData(new MemoryStream(ChunkData));
+        ParseData(ChunkData);
     }
 
-    public uint Length { get; set; }
+    public uint Length { get; protected set; }
 
-    public string ChunkType { get; set; } = string.Empty;
+    public string ChunkType { get; protected set; } = string.Empty;
 
-    public byte[]? ChunkData { get; set; }
+    public byte[] ChunkData { get; protected set; }
 
-    public uint Crc { get; set; }
+    public uint Crc { get; protected set; }
+
+    public void WriteRawData(Stream stream)
+    {
+        stream.WriteUInt32(LibAPNGHelper.ConvertEndian(Length));
+        stream.Write(Encoding.ASCII.GetBytes(ChunkType));
+        stream.Write(ChunkData.ThrowIsNull());
+        stream.WriteUInt32(LibAPNGHelper.ConvertEndian(Crc));
+    }
 
     /// <summary>
     ///     Get raw data of the chunk
     /// </summary>
+    [Obsolete("use WriteRawData")]
     public byte[] RawData
     {
         get
         {
             var ms = new MemoryStream();
-            ms.WriteUInt32(LibAPNGHelper.ConvertEndian(Length));
-            ms.WriteBytes(Encoding.ASCII.GetBytes(ChunkType));
-            ms.WriteBytes(ChunkData.ThrowIsNull());
-            ms.WriteUInt32(LibAPNGHelper.ConvertEndian(Crc));
-
+            WriteRawData(ms);
             return ms.ToArray();
         }
     }
@@ -72,11 +99,22 @@ public class Chunk
     {
         Array.Copy(newData, 0, ChunkData.ThrowIsNull(), position, newData.Length);
 
-        using var msCrc = new MemoryStream();
-        msCrc.WriteBytes(Encoding.ASCII.GetBytes(ChunkType));
-        msCrc.WriteBytes(ChunkData);
+        #region Calculate by MemoryStream
 
-        Crc = CrcHelper.Calculate(msCrc.ToArray());
+        //using var msCrc = new MemoryStream();
+        //msCrc.WriteUtf16StrToUtf8OrCustom(ChunkType, Encoding.ASCII);
+        //msCrc.Write(ChunkData);
+
+        //Crc = CrcHelper.Calculate(msCrc.ToEnumerable());
+
+        #endregion
+
+        #region Calculate by Concat
+
+        var enumerable = Encoding.ASCII.GetBytes(ChunkType).Concat(ChunkData);
+        Crc = CrcHelper.Calculate(enumerable);
+
+        #endregion
     }
 
     /// <summary>
@@ -87,7 +125,7 @@ public class Chunk
         ModifyChunkData(position, BitConverter.GetBytes(newData));
     }
 
-    protected virtual void ParseData(MemoryStream ms)
+    protected virtual void ParseData(ReadOnlySpan<byte> bytes)
     {
     }
 }

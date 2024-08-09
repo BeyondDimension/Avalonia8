@@ -3,7 +3,7 @@ namespace BD.Avalonia8.Image2;
 internal static partial class StreamExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ushort SpanToShort(Span<byte> b) => (ushort)(b[0] | b[1] << 8);
+    public static ushort SpanToShort(Span<byte> b) => unchecked((ushort)(b[0] | b[1] << 8));
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void Skip(this Stream stream, long count)

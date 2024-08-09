@@ -9,7 +9,7 @@ public class acTLChunk : Chunk
     {
     }
 
-    public acTLChunk(MemoryStream ms)
+    public acTLChunk(Stream ms)
         : base(ms)
     {
     }
@@ -23,9 +23,13 @@ public class acTLChunk : Chunk
 
     public uint NumPlays { get; private set; }
 
-    protected override void ParseData(MemoryStream ms)
+    protected override unsafe void ParseData(ReadOnlySpan<byte> bytes)
     {
-        NumFrames = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        NumPlays = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+        fixed (byte* pointer = bytes)
+        {
+            using UnmanagedMemoryStream ms = new(pointer, bytes.Length);
+            NumFrames = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            NumPlays = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+        }
     }
 }

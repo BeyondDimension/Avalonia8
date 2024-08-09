@@ -22,7 +22,7 @@ public class fcTLChunk : Chunk
     {
     }
 
-    public fcTLChunk(MemoryStream ms)
+    public fcTLChunk(Stream ms)
         : base(ms)
     {
     }
@@ -77,16 +77,20 @@ public class fcTLChunk : Chunk
     /// </summary>
     public BlendOps BlendOp { get; private set; }
 
-    protected override void ParseData(MemoryStream ms)
+    protected override unsafe void ParseData(ReadOnlySpan<byte> bytes)
     {
-        SequenceNumber = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        Width = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        Height = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        XOffset = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        YOffset = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        DelayNum = LibAPNGHelper.ConvertEndian(ms.ReadUInt16());
-        DelayDen = LibAPNGHelper.ConvertEndian(ms.ReadUInt16());
-        DisposeOp = (DisposeOps)ms.ReadByte();
-        BlendOp = (BlendOps)ms.ReadByte();
+        fixed (byte* pointer = bytes)
+        {
+            using UnmanagedMemoryStream ms = new(pointer, bytes.Length);
+            SequenceNumber = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            Width = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            Height = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            XOffset = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            YOffset = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            DelayNum = LibAPNGHelper.ConvertEndian(ms.ReadUInt16());
+            DelayDen = LibAPNGHelper.ConvertEndian(ms.ReadUInt16());
+            DisposeOp = (DisposeOps)ms.ReadByte();
+            BlendOp = (BlendOps)ms.ReadByte();
+        }
     }
 }

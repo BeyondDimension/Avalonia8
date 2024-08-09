@@ -24,6 +24,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     public CancellationTokenSource CurrentCts { get; } = new();
 
     APNG _apng;
+    //private RenderTargetBitmap? _bcakBitmap;
     WriteableBitmap? _targetBitmap;
     TimeSpan _totalTime;
     readonly List<TimeSpan> _frameTimes;
@@ -46,8 +47,15 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
         stream.Seek(0, SeekOrigin.Begin);
 
-        _apng = new APNG(Stream);
-        IsSimplePNG = _apng.IsSimplePNG;
+        try
+        {
+            _apng = new APNG(Stream);
+            IsSimplePNG = _apng.IsSimplePNG;
+        }
+        finally
+        {
+            Stream.Position = 0;
+        }
 
         if (IsSimplePNG)
         {
@@ -102,7 +110,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         if (_currentFrameIndex == currentFrame)
             return _targetBitmap;
 
-        _iterationCount = (uint)(elapsedTicks / _totalTime.Ticks);
+        _iterationCount = unchecked((uint)(elapsedTicks / _totalTime.Ticks));
 
         return ProcessFrameIndex(currentFrame);
     }
@@ -114,7 +122,8 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         _disposeOps = currentFrame.fcTLChunk.ThrowIsNull().DisposeOp;
         _targetOffset = new(currentFrame.fcTLChunk.XOffset, currentFrame.fcTLChunk.YOffset);
 
-        _targetBitmap = WriteableBitmap.Decode(currentFrame.GetStream());
+        var stream = currentFrame.GetStream();
+        _targetBitmap = WriteableBitmap.Decode(stream);
 
         _currentFrameIndex = frameIndex;
 

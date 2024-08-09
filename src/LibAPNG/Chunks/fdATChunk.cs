@@ -9,7 +9,7 @@ internal class fdATChunk : Chunk
     {
     }
 
-    public fdATChunk(MemoryStream ms)
+    public fdATChunk(Stream ms)
         : base(ms)
     {
     }
@@ -21,32 +21,61 @@ internal class fdATChunk : Chunk
 
     public uint SequenceNumber { get; private set; }
 
-    public byte[]? FrameData { get; private set; }
+    //public byte[]? FrameData { get; private set; }
 
-    protected override void ParseData(MemoryStream ms)
+    int startFrameData;
+
+    public ReadOnlySpan<byte> GetFrameData()
     {
-        SequenceNumber = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
-        FrameData = ms.ReadBytes((int)Length - 4);
+        var chunkData = ChunkData;
+        return chunkData.AsSpan().Slice(startFrameData, unchecked((int)Length) - 4);
+    }
+
+    //protected override void ParseData(MemoryStream ms)
+    //{
+    //    SequenceNumber = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+    //    FrameData = ms.ReadBytes((int)Length - 4);
+    //}
+
+    protected override unsafe void ParseData(ReadOnlySpan<byte> bytes)
+    {
+        fixed (byte* pointer = bytes)
+        {
+            using UnmanagedMemoryStream ms = new(pointer, bytes.Length);
+            SequenceNumber = LibAPNGHelper.ConvertEndian(ms.ReadUInt32());
+            startFrameData = unchecked((int)ms.Position);
+            //FrameData = GC.AllocateUninitializedArray<byte>(unchecked((int)Length) - 4);
+            //ms.Read(FrameData);
+        }
     }
 
     public IDATChunk ToIDATChunk()
     {
-        uint newCrc;
-        using (var msCrc = new MemoryStream())
-        {
-            msCrc.WriteBytes([(byte)'I', (byte)'D', (byte)'A', (byte)'T']);
-            msCrc.WriteBytes(FrameData.ThrowIsNull());
+        var frameData = GetFrameData();
+        var frameDataArray = frameData.ToArray();
 
-            newCrc = CrcHelper.Calculate(msCrc.ToArray());
-        }
+        #region Calculate by MemoryStream
 
-        using var ms = new MemoryStream();
-        ms.WriteUInt32(LibAPNGHelper.ConvertEndian(Length - 4));
-        ms.WriteBytes([(byte)'I', (byte)'D', (byte)'A', (byte)'T']);
-        ms.WriteBytes(FrameData);
-        ms.WriteUInt32(LibAPNGHelper.ConvertEndian(newCrc));
-        ms.Position = 0;
+        //uint newCrc;
+        //using (var msCrc = new MemoryStream())
+        //{
+        //    LibAPNGHelper.WriteIDAT(msCrc);
+        //    msCrc.Write(frameData);
 
-        return new IDATChunk(ms);
+        //    msCrc.Position = 0;
+
+        //    newCrc = CrcHelper.Calculate(msCrc.ToEnumerable());
+        //}
+
+        #endregion
+
+        #region Calculate by Concat
+
+        var enumerable = new byte[] { (byte)'I', (byte)'D', (byte)'A', (byte)'T' }.Concat(frameDataArray);
+        var newCrc = CrcHelper.Calculate(enumerable);
+
+        #endregion
+
+        return new IDATChunk("IDAT", frameDataArray, Length - 4, newCrc);
     }
 }

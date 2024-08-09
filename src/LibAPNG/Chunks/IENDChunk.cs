@@ -7,7 +7,7 @@ public class IENDChunk : Chunk
     {
     }
 
-    public IENDChunk(MemoryStream ms)
+    public IENDChunk(Stream ms)
         : base(ms)
     {
     }

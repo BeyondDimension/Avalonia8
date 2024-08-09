@@ -12,6 +12,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
     readonly List<TimeSpan> _frameTimes;
     uint _iterationCount;
     int _currentFrameIndex;
+    //readonly List<ulong> _colorTableIdList;
 
     public CancellationTokenSource CurrentCts { get; }
 
@@ -59,7 +60,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         _gifDecoder.RenderFrame(0, _targetBitmap);
     }
 
-    private static Stream GetStreamFromString(string str)
+    static Stream GetStreamFromString(string str)
     {
         if (!Uri.TryCreate(str, UriKind.RelativeOrAbsolute, out var res))
             throw new InvalidCastException("The string provided can't be converted to URI.");
@@ -67,7 +68,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         return GetStreamFromUri(res);
     }
 
-    private static Stream GetStreamFromUri(Uri uri)
+    static Stream GetStreamFromUri(Uri uri)
     {
         var uriString = uri.OriginalString.Trim();
 
@@ -117,7 +118,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         if (_currentFrameIndex == currentFrame)
             return _targetBitmap;
 
-        _iterationCount = (uint)(elapsedTicks / _totalTime.Ticks);
+        _iterationCount = unchecked((uint)(elapsedTicks / _totalTime.Ticks));
 
         return ProcessFrameIndex(currentFrame);
     }

@@ -77,7 +77,7 @@ internal static class CrcHelper
     #endregion Consts
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static uint Calculate(byte[] what)
+    public static uint Calculate(IEnumerable<byte> what)
     {
         uint crc = what.Aggregate(
                                     0xffffffff,

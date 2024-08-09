@@ -1,7 +1,5 @@
 namespace BD.Avalonia8.Image2;
 
-using Logger = Avalonia.Logging.Logger;
-
 /// <summary>
 /// 动图控件，支持 Gif/Apng
 /// </summary>
@@ -10,6 +8,8 @@ public sealed partial class Image2 : Control, IDisposable
     public static readonly StyledProperty<object> SourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(Source));
 
     public static readonly StyledProperty<object> FallbackSourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(FallbackSource));
+
+    //public static readonly StyledProperty<IterationCount> IterationCountProperty = AvaloniaProperty.Register<Image2, IterationCount>(nameof(IterationCount));
 
     public static readonly StyledProperty<bool> IsFailedProperty = AvaloniaProperty.Register<Image2, bool>(nameof(IsFailed), true);
 
@@ -47,6 +47,12 @@ public sealed partial class Image2 : Control, IDisposable
         get => GetValue(FallbackSourceProperty);
         set => SetValue(FallbackSourceProperty, value);
     }
+
+    //public IterationCount IterationCount
+    //{
+    //    get => GetValue(IterationCountProperty);
+    //    set => SetValue(IterationCountProperty, value);
+    //}
 
     public bool AutoStart
     {
@@ -96,11 +102,11 @@ public sealed partial class Image2 : Control, IDisposable
         set => SetValue(StretchProperty, value);
     }
 
-    static void IterationCountChanged(AvaloniaPropertyChangedEventArgs e)
-    {
-        if (e.Sender is not Image2)
-            return;
-    }
+    //static void IterationCountChanged(AvaloniaPropertyChangedEventArgs e)
+    //{
+    //    if (e.Sender is not Image2)
+    //        return;
+    //}
 
     /// <inheritdoc/>
     protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
@@ -117,7 +123,7 @@ public sealed partial class Image2 : Control, IDisposable
                 Update();
                 break;
             case nameof(IterationCount):
-                IterationCountChanged(change);
+                //IterationCountChanged(change);
                 break;
             case nameof(Bounds):
                 Update();
@@ -154,7 +160,9 @@ public sealed partial class Image2 : Control, IDisposable
             _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
 
             if (gifInstance is not null)
+            {
                 _customVisual?.SendHandlerMessage(gifInstance);
+            }
 
             Update();
         }
@@ -169,17 +177,17 @@ public sealed partial class Image2 : Control, IDisposable
 
         if (bitmap is not null && IsVisible && Bounds.Width > 0 && Bounds.Height > 0)
         {
-            var viewPort = new Rect(Bounds.Size);
+            var viewPort = new AvaRect(Bounds.Size);
             var sourceSize = bitmap.Size;
 
             var scale = Stretch.CalculateScaling(Bounds.Size, sourceSize, StretchDirection);
             var scaledSize = sourceSize * scale;
             var destRect = viewPort
-                .CenterRect(new Rect(scaledSize))
+                .CenterRect(new AvaRect(scaledSize))
                 .Intersect(viewPort);
 
-            var sourceRect = new Rect(sourceSize)
-                .CenterRect(new Rect(destRect.Size / scale));
+            var sourceRect = new AvaRect(sourceSize)
+                .CenterRect(new AvaRect(destRect.Size / scale));
 
             //var interpolationMode = RenderOptions.GetBitmapInterpolationMode(this);
             context.DrawImage(bitmap, sourceRect, destRect);
@@ -200,7 +208,9 @@ public sealed partial class Image2 : Control, IDisposable
                 StretchDirection);
         }
         else if (backingRTB != null)
+        {
             return Stretch.CalculateSize(availableSize, backingRTB.Size, StretchDirection);
+        }
 
         return default;
     }
@@ -222,6 +232,13 @@ public sealed partial class Image2 : Control, IDisposable
         return default;
     }
 
+    void StopAndDispose()
+    {
+        backingRTB?.Dispose();
+        gifInstance?.Dispose();
+        _customVisual = null;
+    }
+
     async void SourceChanged(AvaloniaPropertyChangedEventArgs e)
     {
         if (EnableCancelToken)
@@ -237,7 +254,9 @@ public sealed partial class Image2 : Control, IDisposable
         IsFailed = true;
 
         if (e.NewValue == null && FallbackSource == null)
+        {
             return;
+        }
 
         Stream? value;
         if (e.NewValue is AvaBitmap bitmap)
@@ -263,7 +282,12 @@ public sealed partial class Image2 : Control, IDisposable
         }
 
         if (value == null)
+        {
+            InvalidateArrange();
+            InvalidateMeasure();
+            Update();
             return;
+        }
 
         IsFailed = false;
         imageFormat = FileFormat.IsImage(value, out var imageFormat_) ? imageFormat_ : default;
@@ -277,12 +301,15 @@ public sealed partial class Image2 : Control, IDisposable
                     IterationCount = IterationCount.Infinite,
                 };
                 if (gifInstance.GifPixelSize.Width < 1 || gifInstance.GifPixelSize.Height < 1)
+                {
                     return;
+                }
                 this.gifInstance = gifInstance;
                 _customVisual?.SendHandlerMessage(gifInstance);
             }
             catch
-            { }
+            {
+            }
         }
         else if (imageFormat == ImageFormat.PNG)
         {
@@ -297,7 +324,9 @@ public sealed partial class Image2 : Control, IDisposable
             {
                 apngInstance.IterationCount = IterationCount.Infinite;
                 if (apngInstance.ApngPixelSize.Width < 1 || apngInstance.ApngPixelSize.Height < 1)
+                {
                     return;
+                }
                 gifInstance = apngInstance;
                 _customVisual?.SendHandlerMessage(gifInstance);
             }
@@ -316,8 +345,24 @@ public sealed partial class Image2 : Control, IDisposable
         try
         {
             if (stream == null || stream.CanRead == false || stream.Length == 0)
+            {
                 return null;
+            }
             stream.Position = 0;
+
+            #region 😣 因为 Bitmap.DecodeTo 有一定内存泄露问题暂时注释
+
+            //var interpolationMode = RenderOptions.GetBitmapInterpolationMode(this);
+            //if (DecodeWidth > 0)
+            //{
+            //    return Bitmap.DecodeToWidth(stream, DecodeWidth, interpolationMode);
+            //}
+            //else if (DecodeHeight > 0)
+            //{
+            //    return Bitmap.DecodeToHeight(stream, DecodeHeight, interpolationMode);
+            //}
+
+            #endregion
 
             //https://github.com/mono/SkiaSharp/issues/1551
             return new AvaBitmap(stream);
@@ -330,27 +375,31 @@ public sealed partial class Image2 : Control, IDisposable
         }
     }
 
-    private void Update()
+    void Update()
     {
         if (_customVisual is null || gifInstance is null)
             return;
 
-        var dpi = this.GetVisualRoot()?.RenderScaling ?? 1.0;
+        var dpi = this.GetVisualRoot()?.RenderScaling ?? 1.0d;
         var sourceSize = gifInstance.GetSize(dpi);
-        var viewPort = new Rect(Bounds.Size);
+        var viewPort = new AvaRect(Bounds.Size);
 
         var scale = Stretch.CalculateScaling(Bounds.Size, sourceSize, StretchDirection);
         var scaledSize = sourceSize * scale;
         var destRect = viewPort
-            .CenterRect(new Rect(scaledSize))
+            .CenterRect(new AvaRect(scaledSize))
             .Intersect(viewPort);
 
         if (Stretch == Stretch.None)
+        {
             _customVisual.Size = new Vector2((float)sourceSize.Width, (float)sourceSize.Height);
+        }
         else
+        {
             _customVisual.Size = new Vector2((float)destRect.Size.Width, (float)destRect.Size.Height);
+        }
 
-        _customVisual.Offset = new Vector3((float)destRect.Position.X, (float)destRect.Position.Y, 0);
+        _customVisual.Offset = new Vector3((float)destRect.Position.X, (float)destRect.Position.Y, 0f);
     }
 
     sealed class CustomVisualHandler : CompositionCustomVisualHandler
@@ -372,7 +421,9 @@ public sealed partial class Image2 : Control, IDisposable
                 RegisterForNextAnimationFrameUpdate();
             }
             else if (message == StopMessage)
+            {
                 _running = false;
+            }
             else if (message is IImageInstance instance)
             {
                 _currentInstance?.Dispose();
@@ -382,7 +433,8 @@ public sealed partial class Image2 : Control, IDisposable
 
         public override void OnAnimationFrameUpdate()
         {
-            if (!_running) return;
+            if (!_running)
+                return;
             Invalidate();
             RegisterForNextAnimationFrameUpdate();
         }
@@ -397,26 +449,32 @@ public sealed partial class Image2 : Control, IDisposable
 
             try
             {
-                if (_currentInstance is null || _currentInstance.IsDisposed) return;
+                if (_currentInstance is null || _currentInstance.IsDisposed)
+                    return;
 
                 var bitmap = _currentInstance.ProcessFrameTime(_animationElapsed);
                 if (bitmap is not null)
+                {
                     try
                     {
                         if (_currentInstance is ApngInstance apngInstance)
                         {
-                            var ts = new Rect(_currentInstance.GetSize(1));
+                            var ts = new AvaRect(_currentInstance.GetSize(1));
                             var rect = GetRenderBounds();
                             var scale = rect.Size / ts.Size;
                             var offsetP = new AvaPoint(apngInstance._targetOffset.X * scale.X, apngInstance._targetOffset.Y * scale.Y);
-                            var ns = new Rect(offsetP, rect.Size);
+                            var ns = new AvaRect(offsetP, rect.Size);
                             drawingContext.DrawBitmap(bitmap, ts, ns);
                         }
                         else
-                            drawingContext.DrawBitmap(bitmap, new Rect(_currentInstance.GetSize(1)), GetRenderBounds());
+                        {
+                            drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)), GetRenderBounds());
+                        }
                     }
                     catch
-                    { }
+                    {
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -432,14 +490,11 @@ public sealed partial class Image2 : Control, IDisposable
             if (disposing)
             {
                 // 释放托管状态(托管对象)
-                backingRTB?.Dispose();
-                gifInstance?.Dispose();
-                gifInstance?.Dispose();
+                StopAndDispose();
             }
 
             // 释放未托管的资源(未托管的对象)并重写终结器
             // 将大型字段设置为 null
-            _customVisual = null;
 
             disposedValue = true;
         }

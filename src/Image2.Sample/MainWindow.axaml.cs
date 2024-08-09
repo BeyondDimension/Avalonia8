@@ -2,7 +2,7 @@ namespace Image2.Sample;
 
 public partial class MainWindow : Window
 {
-    readonly TabItem mTabItem1;
+    readonly TabItem mTabItem2;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MainWindow"/> class.
@@ -13,7 +13,7 @@ public partial class MainWindow : Window
 
         DataContext = new MainWindowViewModel();
 
-        mTabItem1 = this.Find<TabItem>("TabItem1")!;
-        mTabItem1.Header = $"{mTabItem1.Header} {mTabItem1.FontFamily}";
+        mTabItem2 = this.Find<TabItem>("TabItem2")!;
+        mTabItem2.Header = $"{mTabItem2.Header} {mTabItem2.FontFamily}";
     }
 }

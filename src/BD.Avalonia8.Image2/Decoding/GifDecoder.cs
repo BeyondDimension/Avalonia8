@@ -48,6 +48,11 @@ public sealed class GifDecoder : IDisposable
 
     public PixelSize Size => new(Header.Dimensions.Width, Header.Dimensions.Height);
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GifDecoder"/> class.
+    /// </summary>
+    /// <param name="fileStream"></param>
+    /// <param name="currentCtsToken"></param>
     public GifDecoder(Stream fileStream, CancellationToken currentCtsToken)
     {
         _fileStream = fileStream;
@@ -210,13 +215,14 @@ public sealed class GifDecoder : IDisposable
 
         if (curFrame.IsInterlaced)
         {
+            int curSrcRow = 0;
             for (var i = 0; i < 4; i++)
             {
                 var (start, step) = Pass[i];
                 var y = start;
                 while (y < cH)
                 {
-                    DrawRow(y);
+                    DrawRow(curSrcRow++, y);
                     y += step;
                 }
             }
@@ -224,17 +230,17 @@ public sealed class GifDecoder : IDisposable
         else
         {
             for (var i = 0; i < cH; i++)
-                DrawRow(i);
+                DrawRow(i, i);
         }
 
         //for (var row = 0; row < cH; row++)
-        void DrawRow(int row)
+        void DrawRow(int srcRow, int destRow)
         {
             // Get the starting point of the current row on frame's index stream.
-            var indexOffset = row * cW;
+            var indexOffset = srcRow * cW;
 
             // Get the target backbuffer offset from the frames coords.
-            var targetOffset = PixCoord(cX, row + cY);
+            var targetOffset = PixCoord(cX, destRow + cY);
             var len = _bitmapBackBuffer.Length;
 
             for (var i = 0; i < cW; i++)
@@ -379,13 +385,13 @@ public sealed class GifDecoder : IDisposable
                     }
 
                     first = _suffixBuf[code];
-                    _pixelStack[top++] = (byte)first;
+                    _pixelStack[top++] = unchecked((byte)first);
 
                     // Add new code to the dictionary
                     if (available < MaxStackSize)
                     {
-                        _prefixBuf[available] = (short)oldCode;
-                        _suffixBuf[available] = (byte)first;
+                        _prefixBuf[available] = unchecked((short)oldCode);
+                        _suffixBuf[available] = unchecked((byte)first);
                         available++;
 
                         if ((available & codeMask) == 0 && available < MaxStackSize)
@@ -459,6 +465,7 @@ public sealed class GifDecoder : IDisposable
         {
             Dimensions = _gifDimensions,
             HasGlobalColorTable = _gctUsed,
+            // GlobalColorTableCacheID = _globalColorTable,
             GlobarColorTable = ProcessColorTable(ref str, tmpB, _gctSize),
             GlobalColorTableSize = _gctSize,
             BackgroundColorIndex = _bgIndex,
@@ -576,8 +583,8 @@ public sealed class GifDecoder : IDisposable
         var frameW = str.ReadUShortS(tempBuf);
         var frameH = str.ReadUShortS(tempBuf);
 
-        frameW = (ushort)Math.Min(frameW, _gifDimensions.Width - frameX);
-        frameH = (ushort)Math.Min(frameH, _gifDimensions.Height - frameY);
+        frameW = unchecked((ushort)Math.Min(frameW, _gifDimensions.Width - frameX));
+        frameH = unchecked((ushort)Math.Min(frameH, _gifDimensions.Height - frameY));
 
         currentFrame.Dimensions = new GifRect(frameX, frameY, frameW, frameH);
 
@@ -585,7 +592,7 @@ public sealed class GifDecoder : IDisposable
         var packed = str.ReadByteS(tempBuf);
         currentFrame.IsInterlaced = (packed & 0x40) != 0;
         currentFrame.IsLocalColorTableUsed = (packed & 0x80) != 0;
-        currentFrame.LocalColorTableSize = (int)Math.Pow(2, (packed & 0x07) + 1);
+        currentFrame.LocalColorTableSize = unchecked((int)Math.Pow(2, (packed & 0x07) + 1));
 
         if (currentFrame.IsLocalColorTableUsed)
             currentFrame.LocalColorTable =

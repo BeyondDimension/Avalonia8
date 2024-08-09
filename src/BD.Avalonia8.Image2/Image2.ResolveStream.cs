@@ -2,6 +2,18 @@ namespace BD.Avalonia8.Image2;
 
 partial class Image2
 {
+    static bool TryFileExists(string filePath)
+    {
+        try
+        {
+            return File.Exists(filePath);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public static async ValueTask<Stream?> ResolveObjectToStream(object? obj, Image2 img, CancellationToken token = default)
     {
         Stream? value = null;
@@ -10,14 +22,17 @@ partial class Image2
             if (rawUri == string.Empty)
                 return null;
 
-            if (File.Exists(rawUri))
+            if (TryFileExists(rawUri))
+            {
                 value = new FileStream(rawUri, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+            }
             else if (String2.IsHttpUrl(rawUri))
             {
                 var isCache = img.EnableCache;
 
                 // Android doesn't allow network requests on the main thread, even though we are using async apis.
                 if (OperatingSystem.IsAndroid())
+                {
                     await Task.Run(async () =>
                     {
                         var imageHttpClientService = Ioc.Get_Nullable<IImageHttpClientService>();
@@ -29,6 +44,7 @@ partial class Image2
                         if (value == null)
                             return;
                     }, CancellationToken.None);
+                }
                 else
                 {
                     var imageHttpClientService = Ioc.Get_Nullable<IImageHttpClientService>();
@@ -51,13 +67,16 @@ partial class Image2
                 }, DispatcherPriority.Render, CancellationToken.None);
             }
             else if (Uri.TryCreate(rawUri, UriKind.RelativeOrAbsolute, out var uri))
+            {
                 try
                 {
                     if (AssetLoader.Exists(uri))
                         value = AssetLoader.Open(uri);
                 }
                 catch
-                { }
+                {
+                }
+            }
         }
         else if (obj is Uri uri)
         {

@@ -5,24 +5,30 @@ public class APNG : IDisposable
     Frame defaultImage = new();
     bool disposedValue;
     readonly List<Frame> frames = [];
-    readonly MemoryStream ms;
+    readonly Stream ms;
 
-    public APNG(string fileName)
-        : this(File.ReadAllBytes(fileName))
-    {
-    }
+    //public APNG(string fileName)
+    //    : this(File.ReadAllBytes(fileName))
+    //{
+    //}
 
+    //public APNG(Stream stream)
+    //    : this(LibAPNGHelper.StreamToBytes(stream))
+    //{
+    //}
+
+    //public APNG(byte[] fileBytes)
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="APNG"/> class.
+    /// </summary>
+    /// <param name="stream"></param>
     public APNG(Stream stream)
-        : this(LibAPNGHelper.StreamToBytes(stream))
     {
-    }
-
-    public APNG(byte[] fileBytes)
-    {
-        ms = new MemoryStream(fileBytes);
+        ms = stream;
 
         // check file signature.
-        if (!LibAPNGHelper.IsBytesEqual(ms.ReadBytes(Frame.Signature.Length), Frame.Signature))
+        if (!LibAPNGHelper.IsBytesEqual(ms, Frame.Signature))
             throw new LibAPNGException("File signature incorrect.");
 
         // Read IHDR chunk.

@@ -89,14 +89,39 @@ public class Frame
         // Write image data
         var ms = new MemoryStream();
 
-        ms.WriteBytes(Signature);
-        ms.WriteBytes(ihdrChunk.RawData);
-        otherChunks.ForEach(o => ms.WriteBytes(o.RawData));
-        idatChunks.ForEach(i => ms.WriteBytes(i.RawData));
-        ms.WriteBytes(IENDChunk.ThrowIsNull().RawData);
+        ms.Write(Signature);
+        ihdrChunk.WriteRawData(ms);
+        otherChunks.ForEach(o => o.WriteRawData(ms));
+        idatChunks.ForEach(i => i.WriteRawData(ms));
+        IENDChunk.ThrowIsNull().WriteRawData(ms);
 
         ms.Flush();
         ms.Position = 0;
+
+#if DEBUG
+
+        var s = new MemoryStream();
+        ihdrChunk.WriteRawData(s);
+        var ihdrChunk_raw = Hashs.String.MD5(s.ToArray());
+        s.Dispose();
+
+        s = new();
+        otherChunks.ForEach(o => o.WriteRawData(s));
+        var otherChunks_raw = Hashs.String.MD5(s.ToArray());
+        s.Dispose();
+
+        s = new();
+        idatChunks.ForEach(o => o.WriteRawData(s));
+        var idatChunks_raw = Hashs.String.MD5(s.ToArray());
+        s.Dispose();
+
+        s = new();
+        IENDChunk.ThrowIsNull().WriteRawData(s);
+        var iENDChunk_raw = Hashs.String.MD5(s.ToArray());
+        s.Dispose();
+
+#endif
+
         return ms;
     }
 }
