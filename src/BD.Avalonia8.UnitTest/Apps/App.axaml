@@ -1,8 +1,10 @@
-<Application xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:BD.Avalonia8.UnitTest.Apps"
-             x:Class="BD.Avalonia8.UnitTest.Apps.App">
-	<Application.Styles>
-		<SimpleTheme/>
-	</Application.Styles>
+<Application
+    x:Class="BD.Avalonia8.UnitTest.Apps.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:BD.Avalonia8.UnitTest.Apps"
+    xmlns:sty="using:FluentAvalonia.Styling">
+    <Application.Styles>
+        <sty:FluentAvaloniaTheme PreferSystemTheme="True" PreferUserAccentColor="True" />
+    </Application.Styles>
 </Application>

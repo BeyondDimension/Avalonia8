@@ -32,8 +32,8 @@
 	<ItemGroup>
 		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.Desktop" />
-		<PackageReference Include="Avalonia.Themes.Simple" />
 		<PackageReference Include="ApprovalTests" />
+		<PackageReference Include="FluentAvaloniaUI" />
 	</ItemGroup>
 
 	<Import Project="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.UnitTest.props" />

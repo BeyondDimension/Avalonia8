@@ -6,7 +6,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Description>提供 HarmonyOS 字体</Description>
 		<RootNamespace>BD.Avalonia8.Fonts</RootNamespace>
-		<Version>8.24.10527.11800</Version>
+		<Version>$(Version_Avalonia8_Fonts_HarmonyOS_Sans_SC)</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
