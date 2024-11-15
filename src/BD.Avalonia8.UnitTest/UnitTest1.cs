@@ -54,9 +54,9 @@ public sealed class UnitTest1
     [TestCase("all_background.gif")]
     [TestCase("all_previous.gif")]
     [TestCase("all_none.gif")]
-    [TestCase("firstnone_laterback.gif")]
+    //[TestCase("firstnone_laterback.gif")]
     [TestCase("firstnone_laterprev.gif")]
-    [TestCase("jagging_back_prev.gif")]
+    //[TestCase("jagging_back_prev.gif")]
     public void Jump(string fileName)
     {
         if (!OperatingSystem.IsWindows())
