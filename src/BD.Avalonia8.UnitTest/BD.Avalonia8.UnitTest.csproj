@@ -6,6 +6,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
+		<UseProjectUtils>true</UseProjectUtils>
 		<BeyondDimensionFeatures>
 			BD.Common8.Bcl;
 			BD.Avalonia8.Image2;
