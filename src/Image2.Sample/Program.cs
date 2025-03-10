@@ -10,7 +10,7 @@ static class Program
         Ioc.ConfigureServices(static s =>
         {
             s.AddLogging();
-            s.TryAddHttpPlatformHelper();
+            s.AddSingleton<IHttpPlatformHelperService, HttpPlatformHelperServiceImpl>();
             s.AddFusilladeHttpClientFactory();
             s.AddSingleton<IImageHttpClientService, ImageHttpClientServiceImpl>();
         });
@@ -34,5 +34,10 @@ static class Program
                     .UsePlatformDetect()
                     .LogToTrace();
         return builder;
+    }
+
+    sealed class HttpPlatformHelperServiceImpl : HttpPlatformHelperService
+    {
+        public override string UserAgent => DefaultUserAgent;
     }
 }

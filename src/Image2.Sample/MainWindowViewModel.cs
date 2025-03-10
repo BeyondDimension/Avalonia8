@@ -5,6 +5,7 @@ public partial class MainWindowViewModel : ReactiveObject
     static string[] GetUrlImageSources()
     {
         return [
+            "https://media.st.dl.eccdnx.com/steamcommunity/public/images/items/1955830/c53241ed44089549e9972f31d73432a4ec66bb04.gif",
             "https://6tse5sb49lk6hk0n5edb56hibm4pc0iqom0ocsi2orftnim6hd5vuass.qc.dolfincdnx.net:5147/xdispatch2a304e1874a31533/media.st.dl.eccdnx.com/steamcommunity/public/images/items/1629910/045c57ebb6946fdf7e57a53d5768117dd8543862.gif?bsreqid=f301830fb4dd3faaaa6a682f1482045a&bsxdisp=se",
             "https://image.mossimo.net:5996/images/ys_900x350_0620.jpg",
             "https://bfv6r0mkg5e6b1fhsidqrg5s9oc54o1sd836e0jo17bimn7a684vveag.saxyit.com:5125/steamcommunity/public/images/items/2022180/e081bb44f8c79e9b5ae44d1be71aae559d7fcf88.gif?BSLuBan=eyJob3N0IjoibWVkaWEuc3QuZGwuZWNjZG54LmNvbSIsImRuc19ob3N0IjoienRnZGwudi50cnBjZG4ubmV0IiwidHMiOjE3MDAxMzMzMDYsImJzcmVxaWQiOiJmNDdkZTM0ZGIyNTViY2FhNmI5ZmNlNTNiNTRmOTQwZCIsImNhY2hlX2tleSI6Ilwvc3RlYW1jb21tdW5pdHlcL3B1YmxpY1wvaW1hZ2VzXC9pdGVtc1wvMjAyMjE4MFwvZTA4MWJiNDRmOGM3OWU5YjVhZTQ0ZDFiZTcxYWFlNTU5ZDdmY2Y4OC5naWYiLCJob3N0MzAyIjoiZm9nMzAyLXN0LmJzNThpLmJhaXNoYW5jZG54LmNvbSIsImtleSI6IjAxYWU1YWU1MmUzZTdiNTQ1NWZhY2Q2ZTdmOTY1NTE0IiwiZm9nMzAyIjoib24ifQ==",
