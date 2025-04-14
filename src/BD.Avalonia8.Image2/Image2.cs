@@ -241,7 +241,27 @@ public sealed partial class Image2 : Control, IDisposable
         _customVisual = null;
     }
 
+    void SetNullValue()
+    {
+        InvalidateArrange();
+        InvalidateMeasure();
+        Update();
+    }
+
     async void SourceChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        try
+        {
+            await SourceChangedAsync(e);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(nameof(Image2), ex, "SourceChanged fail");
+            SetNullValue();
+        }
+    }
+
+    async Task SourceChangedAsync(AvaloniaPropertyChangedEventArgs e)
     {
         if (EnableCancelToken)
         {
@@ -285,9 +305,7 @@ public sealed partial class Image2 : Control, IDisposable
 
         if (value == null)
         {
-            InvalidateArrange();
-            InvalidateMeasure();
-            Update();
+            SetNullValue();
             return;
         }
 
@@ -315,22 +333,31 @@ public sealed partial class Image2 : Control, IDisposable
         }
         else if (imageFormat == ImageFormat.PNG)
         {
-            var apngInstance = new ApngInstance(value);
-            if (apngInstance.IsSimplePNG)
+            try
             {
-                isSimplePNG = apngInstance.IsSimplePNG;
-                apngInstance.Dispose();
-                backingRTB = DecodeImage(value);
-            }
-            else
-            {
-                apngInstance.IterationCount = IterationCount.Infinite;
-                if (apngInstance.ApngPixelSize.Width < 1 || apngInstance.ApngPixelSize.Height < 1)
+                var apngInstance = new ApngInstance(value);
+                if (apngInstance.IsSimplePNG)
                 {
-                    return;
+                    isSimplePNG = apngInstance.IsSimplePNG;
+                    apngInstance.Dispose();
+                    backingRTB = DecodeImage(value);
                 }
-                gifInstance = apngInstance;
-                _customVisual?.SendHandlerMessage(gifInstance);
+                else
+                {
+                    apngInstance.IterationCount = IterationCount.Infinite;
+                    if (apngInstance.ApngPixelSize.Width < 1 || apngInstance.ApngPixelSize.Height < 1)
+                    {
+                        return;
+                    }
+                    gifInstance = apngInstance;
+                    _customVisual?.SendHandlerMessage(gifInstance);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(nameof(Image2), ex, "ApngInstance fail");
+                SetNullValue();
+                return;
             }
         }
         else
