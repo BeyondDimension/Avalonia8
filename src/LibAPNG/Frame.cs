@@ -14,7 +14,7 @@ public class Frame
     {
         get
         {
-            var delayDen = (double)(fcTLChunk.ThrowIsNull().DelayDen == 0 ? 100D : fcTLChunk.DelayDen);
+            var delayDen = (fcTLChunk.ThrowIsNull().DelayDen == 0 ? 100D : fcTLChunk.DelayDen);
             var keyTime = fcTLChunk.DelayNum == 0
                 ? TimeSpan.FromMilliseconds(1)
                 : TimeSpan.FromSeconds(fcTLChunk.DelayNum / delayDen);
@@ -86,8 +86,28 @@ public class Frame
             ihdrChunk.ModifyChunkData(4, LibAPNGHelper.ConvertEndian(fcTLChunk.Height));
         }
 
-        // Write image data
-        var ms = new MemoryStream();
+        // 预估所需总容量，避免频繁重新分配内部缓冲区
+        int estimatedCapacity = Signature.Length;
+        estimatedCapacity += (int)(ihdrChunk.Length + 12); // 长度(4) + 类型(4) + 数据(Length) + CRC(4)
+
+        foreach (var chunk in otherChunks)
+        {
+            estimatedCapacity += (int)(chunk.Length + 12);
+        }
+
+        foreach (var chunk in idatChunks)
+        {
+            estimatedCapacity += (int)(chunk.Length + 12);
+        }
+
+        estimatedCapacity += (int)(IENDChunk.ThrowIsNull().Length + 12);
+
+        // 确保容量合理，防止整数溢出
+        estimatedCapacity = Math.Max(estimatedCapacity, 4096);
+        estimatedCapacity = Math.Min(estimatedCapacity, 50 * 1024 * 1024); // 限制最大预分配大小为50MB
+
+        // 使用预估容量创建MemoryStream
+        var ms = new MemoryStream(estimatedCapacity);
 
         ms.Write(Signature);
         ihdrChunk.WriteRawData(ms);
