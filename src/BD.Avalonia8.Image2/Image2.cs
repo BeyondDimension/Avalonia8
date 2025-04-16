@@ -7,27 +7,37 @@ namespace BD.Avalonia8.Image2;
 /// </summary>
 public sealed partial class Image2 : Control, IDisposable
 {
-    public static readonly StyledProperty<object> SourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(Source));
+    public static readonly StyledProperty<object> SourceProperty =
+        AvaloniaProperty.Register<Image2, object>(nameof(Source));
 
-    public static readonly StyledProperty<object> FallbackSourceProperty = AvaloniaProperty.Register<Image2, object>(nameof(FallbackSource));
+    public static readonly StyledProperty<object> FallbackSourceProperty =
+        AvaloniaProperty.Register<Image2, object>(nameof(FallbackSource));
 
     //public static readonly StyledProperty<IterationCount> IterationCountProperty = AvaloniaProperty.Register<Image2, IterationCount>(nameof(IterationCount));
 
-    public static readonly StyledProperty<bool> IsFailedProperty = AvaloniaProperty.Register<Image2, bool>(nameof(IsFailed), true);
+    public static readonly StyledProperty<bool> IsFailedProperty =
+        AvaloniaProperty.Register<Image2, bool>(nameof(IsFailed), true);
 
-    public static readonly StyledProperty<bool> AutoStartProperty = AvaloniaProperty.Register<Image2, bool>(nameof(AutoStart), true);
+    public static readonly StyledProperty<bool> AutoStartProperty =
+        AvaloniaProperty.Register<Image2, bool>(nameof(AutoStart), true);
 
-    public static readonly StyledProperty<int> DecodeWidthProperty = AvaloniaProperty.Register<Image2, int>(nameof(DecodeWidth));
+    public static readonly StyledProperty<int> DecodeWidthProperty =
+        AvaloniaProperty.Register<Image2, int>(nameof(DecodeWidth));
 
-    public static readonly StyledProperty<int> DecodeHeightProperty = AvaloniaProperty.Register<Image2, int>(nameof(DecodeHeight));
+    public static readonly StyledProperty<int> DecodeHeightProperty =
+        AvaloniaProperty.Register<Image2, int>(nameof(DecodeHeight));
 
-    public static readonly StyledProperty<bool> EnableCacheProperty = AvaloniaProperty.Register<Image2, bool>(nameof(EnableCache), true);
+    public static readonly StyledProperty<bool> EnableCacheProperty =
+        AvaloniaProperty.Register<Image2, bool>(nameof(EnableCache), true);
 
-    public static readonly StyledProperty<bool> EnableCancelTokenProperty = AvaloniaProperty.Register<Image2, bool>(nameof(EnableCancelToken), true);
+    public static readonly StyledProperty<bool> EnableCancelTokenProperty =
+        AvaloniaProperty.Register<Image2, bool>(nameof(EnableCancelToken), true);
 
-    public static readonly StyledProperty<StretchDirection> StretchDirectionProperty = AvaloniaProperty.Register<Image2, StretchDirection>(nameof(StretchDirection), StretchDirection.Both);
+    public static readonly StyledProperty<StretchDirection> StretchDirectionProperty =
+        AvaloniaProperty.Register<Image2, StretchDirection>(nameof(StretchDirection), StretchDirection.Both);
 
-    public static readonly StyledProperty<Stretch> StretchProperty = AvaloniaProperty.Register<Image2, Stretch>(nameof(Stretch), Stretch.UniformToFill);
+    public static readonly StyledProperty<Stretch> StretchProperty =
+        AvaloniaProperty.Register<Image2, Stretch>(nameof(Stretch), Stretch.UniformToFill);
 
     IImageInstance? gifInstance;
     CompositionCustomVisual? _customVisual;
@@ -145,6 +155,7 @@ public sealed partial class Image2 : Control, IDisposable
                 _tokenSource.Cancel();
                 _tokenSource = new CancellationTokenSource();
             }
+
             var value = await ResolveObjectToStream(FallbackSource, this, _tokenSource.Token);
             if (value != null)
             {
@@ -152,6 +163,7 @@ public sealed partial class Image2 : Control, IDisposable
                 value.Dispose();
             }
         }
+
         if (imageFormat == ImageFormat.GIF || !isSimplePNG)
         {
             var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
@@ -231,6 +243,7 @@ public sealed partial class Image2 : Control, IDisposable
             var sourceSize = backingRTB.Size;
             return Stretch.CalculateSize(finalSize, sourceSize);
         }
+
         return default;
     }
 
@@ -316,14 +329,12 @@ public sealed partial class Image2 : Control, IDisposable
         {
             try
             {
-                var gifInstance = new GifInstance(value)
-                {
-                    IterationCount = IterationCount.Infinite,
-                };
+                var gifInstance = new GifInstance(value) { IterationCount = IterationCount.Infinite, };
                 if (gifInstance.GifPixelSize.Width < 1 || gifInstance.GifPixelSize.Height < 1)
                 {
                     return;
                 }
+
                 this.gifInstance = gifInstance;
                 _customVisual?.SendHandlerMessage(gifInstance);
             }
@@ -335,11 +346,15 @@ public sealed partial class Image2 : Control, IDisposable
         {
             try
             {
+                // 检查是否是动画PNG
                 var apngInstance = new ApngInstance(value);
                 if (apngInstance.IsSimplePNG)
                 {
                     isSimplePNG = apngInstance.IsSimplePNG;
                     apngInstance.Dispose();
+
+                    // 重置流位置
+                    value.Position = 0;
                     backingRTB = DecodeImage(value);
                 }
                 else
@@ -347,15 +362,24 @@ public sealed partial class Image2 : Control, IDisposable
                     apngInstance.IterationCount = IterationCount.Infinite;
                     if (apngInstance.ApngPixelSize.Width < 1 || apngInstance.ApngPixelSize.Height < 1)
                     {
+                        apngInstance.Dispose();
                         return;
                     }
+
+                    // 如果曾经有旧的实例，先释放它
+                    if (gifInstance != null && gifInstance != apngInstance)
+                    {
+                        gifInstance.Dispose();
+                    }
+
+                    // 设置新的实例
                     gifInstance = apngInstance;
                     _customVisual?.SendHandlerMessage(gifInstance);
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(nameof(Image2), ex, "ApngInstance fail");
+                Log.Error(nameof(Image2), ex, "ApngInstance fail", ex.StackTrace);
                 SetNullValue();
                 return;
             }
@@ -364,6 +388,7 @@ public sealed partial class Image2 : Control, IDisposable
         {
             backingRTB = DecodeImage(value);
         }
+
         InvalidateArrange();
         InvalidateMeasure();
         Update();
@@ -377,6 +402,7 @@ public sealed partial class Image2 : Control, IDisposable
             {
                 return null;
             }
+
             stream.Position = 0;
 
             #region 😣 因为 Bitmap.DecodeTo 有一定内存泄露问题暂时注释
@@ -486,22 +512,23 @@ public sealed partial class Image2 : Control, IDisposable
                 {
                     try
                     {
-                        if (_currentInstance is ApngInstance apngInstance)
+                        // 正常渲染APNG和GIF
+                        if (_currentInstance is ApngInstance)
                         {
                             var ts = new AvaRect(_currentInstance.GetSize(1));
                             var rect = GetRenderBounds();
-                            var scale = rect.Size / ts.Size;
-                            var offsetP = new AvaPoint(apngInstance._targetOffset.X * scale.X, apngInstance._targetOffset.Y * scale.Y);
-                            var ns = new AvaRect(offsetP, rect.Size);
-                            drawingContext.DrawBitmap(bitmap, ts, ns);
+                            drawingContext.DrawBitmap(bitmap, ts, rect);
                         }
                         else
                         {
-                            drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)), GetRenderBounds());
+                            drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)),
+                                GetRenderBounds());
                         }
                     }
-                    catch
+                    catch (Exception renderEx)
                     {
+                        Logger.Sink?.Log(LogEventLevel.Warning, "Image2 Renderer DrawBitmap", this,
+                            renderEx.ToString());
                     }
                 }
             }
