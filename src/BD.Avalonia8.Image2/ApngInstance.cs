@@ -41,6 +41,15 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     public bool _hasNewFrame;
     private bool disposedValue;
 
+    // 帧缓存，用于存储已经解码的帧，避免重复解码
+    private readonly Dictionary<int, WriteableBitmap> _frameCache = new();
+
+    // 缓存容量控制
+    private const int MAX_CACHE_SIZE = 8;
+
+    // 是否正在前台显示（性能优化用）
+    private bool _isVisible = true;
+
     public ApngInstance(Stream stream)
     {
         Stream = stream;
@@ -198,6 +207,13 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     {
         try
         {
+            // 如果控件不可见且不是静默模式，可以跳过复杂处理，直接返回上一帧
+            if (!_isVisible && !silent && _compositeBitmap != null)
+            {
+                _currentFrameIndex = frameIndex;
+                return _compositeBitmap;
+            }
+
             var currentFrame = _apng.Frames[frameIndex];
             var fcTLChunk = currentFrame.fcTLChunk.ThrowIsNull();
             var blendOp = fcTLChunk.BlendOp;
@@ -216,9 +232,40 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             // 应用前一帧的处置操作
             ApplyDisposeOperation();
 
-            // 解码当前帧
-            var frameStream = currentFrame.GetStream();
-            var frameBitmap = WriteableBitmap.Decode(frameStream);
+            // 尝试从缓存获取帧位图
+            WriteableBitmap frameBitmap;
+            if (!_frameCache.TryGetValue(frameIndex, out frameBitmap!))
+            {
+                // 如果缓存中没有，解码当前帧
+                var frameStream = currentFrame.GetStream();
+                frameBitmap = WriteableBitmap.Decode(frameStream);
+
+                // 添加到缓存，如果缓存已满，移除最早添加的项
+                if (_frameCache.Count >= MAX_CACHE_SIZE)
+                {
+                    var oldestKey = _frameCache.Keys.First();
+                    var oldBitmap = _frameCache[oldestKey];
+                    oldBitmap.Dispose();
+                    _frameCache.Remove(oldestKey);
+                }
+
+                // 克隆位图添加到缓存，避免后续被修改
+                var cacheBitmap = new WriteableBitmap(frameBitmap.PixelSize, frameBitmap.Dpi, frameBitmap.Format,
+                    frameBitmap.AlphaFormat);
+                using (var targetContext = cacheBitmap.Lock())
+                using (var sourceContext = frameBitmap.Lock())
+                {
+                    unsafe
+                    {
+                        var source = (byte*)sourceContext.Address;
+                        var target = (byte*)targetContext.Address;
+                        var size = frameBitmap.PixelSize.Width * frameBitmap.PixelSize.Height * 4;
+                        Buffer.MemoryCopy(source, target, size, size);
+                    }
+                }
+
+                _frameCache[frameIndex] = cacheBitmap;
+            }
 
             // 合成当前帧到合成位图
             ComposeFrame(frameBitmap, currentFrameRect, blendOp);
@@ -233,7 +280,11 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             // 更新当前帧索引
             _currentFrameIndex = frameIndex;
 
-            frameBitmap.Dispose();
+            // 如果不是来自缓存的位图，需要释放
+            if (!_frameCache.ContainsValue(frameBitmap))
+            {
+                frameBitmap.Dispose();
+            }
 
             return _compositeBitmap!;
         }
@@ -248,6 +299,15 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             // 如果处理出错，返回当前合成位图
             return _compositeBitmap!;
         }
+    }
+
+    /// <summary>
+    /// 设置APNG实例的可见性状态，用于性能优化
+    /// </summary>
+    /// <param name="isVisible">是否可见</param>
+    public void SetVisibility(bool isVisible)
+    {
+        _isVisible = isVisible;
     }
 
     private void ApplyDisposeOperation()
@@ -350,34 +410,40 @@ public sealed class ApngInstance : IImageInstance, IDisposable
                         byte compositeR = compositePixels[compositeOffset + 2];
                         byte compositeA = compositePixels[compositeOffset + 3];
 
-                        // 执行混合操作
+                        // 执行混合操作，优化版本
                         if (blendOp == BlendOps.APNGBlendOpSource || frameA == 255)
                         {
-                            // 直接覆盖
-                            compositePixels[compositeOffset] = frameB;
-                            compositePixels[compositeOffset + 1] = frameG;
-                            compositePixels[compositeOffset + 2] = frameR;
-                            compositePixels[compositeOffset + 3] = frameA;
+                            // 直接覆盖，批量写入4个字节以提高性能
+                            *(uint*)(compositePixels + compositeOffset) = *(uint*)(framePixels + frameOffset);
                         }
                         else if (frameA > 0)
                         {
-                            // 混合像素 (OVER操作)
-                            float alpha = frameA / 255.0f;
-                            float inverseAlpha = 1.0f - alpha;
-                            float outAlpha = alpha + compositeA / 255.0f * inverseAlpha;
-
-                            if (outAlpha > 0)
+                            // 如果背景完全透明，可以直接使用前景
+                            if (compositeA == 0)
                             {
-                                float alphaFactor = alpha / outAlpha;
-                                float inverseAlphaFactor = 1.0f - alphaFactor;
+                                *(uint*)(compositePixels + compositeOffset) = *(uint*)(framePixels + frameOffset);
+                            }
+                            else
+                            {
+                                // 优化的混合像素算法，使用整数运算代替浮点运算
+                                int alpha = frameA;
+                                int inverseAlpha = 255 - alpha;
+                                int outAlpha = alpha + (compositeA * inverseAlpha) / 255;
 
-                                compositePixels[compositeOffset] =
-                                    (byte)(frameB * alphaFactor + compositeB * inverseAlphaFactor);
-                                compositePixels[compositeOffset + 1] =
-                                    (byte)(frameG * alphaFactor + compositeG * inverseAlphaFactor);
-                                compositePixels[compositeOffset + 2] =
-                                    (byte)(frameR * alphaFactor + compositeR * inverseAlphaFactor);
-                                compositePixels[compositeOffset + 3] = (byte)(outAlpha * 255);
+                                if (outAlpha > 0)
+                                {
+                                    // 使用整数算法，避免浮点运算
+                                    int alphaRatio = (alpha * 255) / outAlpha;
+                                    int inverseAlphaRatio = 255 - alphaRatio;
+
+                                    compositePixels[compositeOffset] =
+                                        (byte)((frameB * alphaRatio + compositeB * inverseAlphaRatio) / 255);
+                                    compositePixels[compositeOffset + 1] =
+                                        (byte)((frameG * alphaRatio + compositeG * inverseAlphaRatio) / 255);
+                                    compositePixels[compositeOffset + 2] =
+                                        (byte)((frameR * alphaRatio + compositeR * inverseAlphaRatio) / 255);
+                                    compositePixels[compositeOffset + 3] = (byte)outAlpha;
+                                }
                             }
                         }
                     }

@@ -169,19 +169,79 @@ public sealed partial class Image2 : Control, IDisposable
             var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
             if (compositor == null || _customVisual?.Compositor == compositor)
                 return;
+
             _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
             ElementComposition.SetElementChildVisual(this, _customVisual);
-            _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
 
-            if (gifInstance is not null)
+            // 恢复动画实例的播放
+            if (gifInstance != null)
             {
                 _customVisual?.SendHandlerMessage(gifInstance);
+            }
+
+            // 仅在实际可见和启动自动播放时才启动动画
+            if (IsEffectivelyVisible && AutoStart)
+            {
+                _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
             }
 
             Update();
         }
 
+        // 注册可见性变化事件
+        this.GetPropertyChangedObservable(IsVisibleProperty)
+            .Subscribe(OnVisibilityChanged);
+
         base.OnAttachedToVisualTree(e);
+    }
+
+    /// <inheritdoc/>
+    protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+    {
+        // 当控件从视觉树分离时暂停动画并释放不必要的资源
+
+        if (_customVisual != null)
+        {
+            _customVisual.SendHandlerMessage(CustomVisualHandler.StopMessage);
+        }
+
+        base.OnDetachedFromVisualTree(e);
+    }
+
+    private void OnVisibilityChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        // 当控件可见性变化时相应地处理动画状态
+        if (e.NewValue is bool isVisible)
+        {
+            if (isVisible && AutoStart)
+            {
+                // 控件变为可见时恢复动画
+                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
+            }
+            else
+            {
+                // 控件变为不可见时暂停动画以节省资源
+                _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
+            }
+        }
+    }
+
+    private void OnEffectiveVisibilityChanged(AvaloniaPropertyChangedEventArgs e)
+    {
+        // 当控件有效可见性变化时处理动画状态
+        if (e.NewValue is bool isEffectivelyVisible)
+        {
+            if (isEffectivelyVisible && AutoStart)
+            {
+                // 控件变为有效可见时恢复动画
+                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
+            }
+            else
+            {
+                // 控件变为有效不可见时暂停动画以节省资源
+                _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
+            }
+        }
     }
 
     /// <inheritdoc/>
@@ -380,7 +440,6 @@ public sealed partial class Image2 : Control, IDisposable
             catch (Exception ex)
             {
                 Log.Error(nameof(Image2), ex, "ApngInstance fail", ex.StackTrace);
-                SetNullValue();
                 return;
             }
         }
@@ -461,8 +520,14 @@ public sealed partial class Image2 : Control, IDisposable
     {
         TimeSpan _animationElapsed;
         TimeSpan? _lastServerTime;
+        TimeSpan _lastFrameRenderTime;
         IImageInstance? _currentInstance;
         bool _running;
+        bool _needsUpdate = false;
+        AvaBitmap? _lastRenderedBitmap;
+
+        // 帧率控制
+        readonly TimeSpan _minFrameInterval = TimeSpan.FromMilliseconds(16); // 约60fps
 
         public static readonly object StopMessage = new();
         public static readonly object StartMessage = new();
@@ -473,6 +538,7 @@ public sealed partial class Image2 : Control, IDisposable
             {
                 _running = true;
                 _lastServerTime = null;
+                _needsUpdate = true;
                 RegisterForNextAnimationFrameUpdate();
             }
             else if (message == StopMessage)
@@ -483,6 +549,7 @@ public sealed partial class Image2 : Control, IDisposable
             {
                 _currentInstance?.Dispose();
                 _currentInstance = instance;
+                _needsUpdate = true;
             }
         }
 
@@ -490,7 +557,18 @@ public sealed partial class Image2 : Control, IDisposable
         {
             if (!_running)
                 return;
-            Invalidate();
+
+            // 计算时间差，确定是否需要更新帧
+            var now = CompositionNow;
+            var timeSinceLastFrame = _lastServerTime.HasValue ? now - _lastServerTime.Value : TimeSpan.Zero;
+
+            // 只有当时间间隔超过最小帧间隔或者有强制更新标记时才更新
+            if (timeSinceLastFrame >= _minFrameInterval || _needsUpdate)
+            {
+                _needsUpdate = false;
+                Invalidate();
+            }
+
             RegisterForNextAnimationFrameUpdate();
         }
 
@@ -498,8 +576,14 @@ public sealed partial class Image2 : Control, IDisposable
         {
             if (_running)
             {
-                if (_lastServerTime.HasValue) _animationElapsed += CompositionNow - _lastServerTime.Value;
-                _lastServerTime = CompositionNow;
+                var now = CompositionNow;
+                if (_lastServerTime.HasValue)
+                {
+                    var elapsed = now - _lastServerTime.Value;
+                    _animationElapsed += elapsed;
+                }
+
+                _lastServerTime = now;
             }
 
             try
@@ -507,34 +591,52 @@ public sealed partial class Image2 : Control, IDisposable
                 if (_currentInstance is null || _currentInstance.IsDisposed)
                     return;
 
+                // 计算距离上次渲染帧的时间
+                var timeSinceLastRender = CompositionNow - _lastFrameRenderTime;
+
+                // 如果时间间隔太短且已有渲染过的位图，直接使用上次的位图避免频繁处理
+                if (timeSinceLastRender < _minFrameInterval && _lastRenderedBitmap != null)
+                {
+                    RenderBitmap(_lastRenderedBitmap, drawingContext);
+                    return;
+                }
+
+                // 处理新帧
                 var bitmap = _currentInstance.ProcessFrameTime(_animationElapsed);
                 if (bitmap is not null)
                 {
-                    try
-                    {
-                        // 正常渲染APNG和GIF
-                        if (_currentInstance is ApngInstance)
-                        {
-                            var ts = new AvaRect(_currentInstance.GetSize(1));
-                            var rect = GetRenderBounds();
-                            drawingContext.DrawBitmap(bitmap, ts, rect);
-                        }
-                        else
-                        {
-                            drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)),
-                                GetRenderBounds());
-                        }
-                    }
-                    catch (Exception renderEx)
-                    {
-                        Logger.Sink?.Log(LogEventLevel.Warning, "Image2 Renderer DrawBitmap", this,
-                            renderEx.ToString());
-                    }
+                    _lastFrameRenderTime = CompositionNow;
+                    _lastRenderedBitmap = bitmap;
+                    RenderBitmap(bitmap, drawingContext);
                 }
             }
             catch (Exception e)
             {
                 Logger.Sink?.Log(LogEventLevel.Error, "Image2 Renderer ", this, e.ToString());
+            }
+        }
+
+        private void RenderBitmap(AvaBitmap bitmap, ImmediateDrawingContext drawingContext)
+        {
+            try
+            {
+                // 正常渲染APNG和GIF
+                if (_currentInstance is ApngInstance)
+                {
+                    var ts = new AvaRect(_currentInstance.GetSize(1));
+                    var rect = GetRenderBounds();
+                    drawingContext.DrawBitmap(bitmap, ts, rect);
+                }
+                else
+                {
+                    drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)),
+                        GetRenderBounds());
+                }
+            }
+            catch (Exception renderEx)
+            {
+                Logger.Sink?.Log(LogEventLevel.Warning, "Image2 Renderer DrawBitmap", this,
+                    renderEx.ToString());
             }
         }
     }
