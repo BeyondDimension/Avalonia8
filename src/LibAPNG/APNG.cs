@@ -25,7 +25,15 @@ public class APNG : IDisposable
     /// <param name="stream"></param>
     public APNG(Stream stream)
     {
-        ms = stream;
+        // 确保使用 RecyclableMemoryStream 以优化内存使用
+        if (stream is not Microsoft.IO.RecyclableMemoryStream && Image2.MemoryStreamManager != null)
+        {
+            ms = stream.ToRecyclableMemoryStream("LibAPNG.APNG.Ctor");
+        }
+        else
+        {
+            ms = stream;
+        }
 
         // check file signature.
         if (!LibAPNGHelper.IsBytesEqual(ms, Frame.Signature))
@@ -86,17 +94,14 @@ public class APNG : IDisposable
                         // for next use
                         if (frame != null)
                             frames.Add(frame);
-                        frame = new Frame
-                        {
-                            IHDRChunk = IHDRChunk,
-                            fcTLChunk = new fcTLChunk(chunk),
-                        };
+                        frame = new Frame { IHDRChunk = IHDRChunk, fcTLChunk = new fcTLChunk(chunk), };
                     }
                     // Otherwise this fcTL is used by the DEFAULT IMAGE.
                     else
                     {
                         defaultImage.fcTLChunk = new fcTLChunk(chunk);
                     }
+
                     break;
                 case "fdAT":
                     // Simple PNG should ignore this.
@@ -121,6 +126,7 @@ public class APNG : IDisposable
                     {
                         f.IENDChunk = new IENDChunk(chunk);
                     }
+
                     break;
 
                 default:

@@ -23,13 +23,16 @@ public sealed class GifInstance : IImageInstance, IDisposable
         string str => GetStreamFromString(str),
         _ => throw new InvalidDataException("Unsupported source object"),
     })
-    { }
+    {
+    }
 
     public GifInstance(string uri) : this(GetStreamFromString(uri))
-    { }
+    {
+    }
 
     public GifInstance(Uri uri) : this(GetStreamFromUri(uri))
-    { }
+    {
+    }
 
     public GifInstance(Stream currentStream)
     {
@@ -39,14 +42,26 @@ public sealed class GifInstance : IImageInstance, IDisposable
         if (!currentStream.CanRead)
             throw new InvalidOperationException("Can't read the stream provided.");
 
-        currentStream.Seek(0, SeekOrigin.Begin);
+        // 确保使用 RecyclableMemoryStream 以优化内存使用
+        Stream optimizedStream;
+        if (currentStream is not Microsoft.IO.RecyclableMemoryStream)
+        {
+            optimizedStream = currentStream.SafeCopyToRecyclableMemoryStream("GifInstance.Ctor", true);
+        }
+        else
+        {
+            optimizedStream = currentStream;
+        }
+
+        optimizedStream.Seek(0, SeekOrigin.Begin);
 
         CurrentCts = new CancellationTokenSource();
 
-        _gifDecoder = new GifDecoder(currentStream, CurrentCts.Token);
+        _gifDecoder = new GifDecoder(optimizedStream, CurrentCts.Token);
         var pixSize = new PixelSize(_gifDecoder.Header.Dimensions.Width, _gifDecoder.Header.Dimensions.Height);
 
-        _targetBitmap = new WriteableBitmap(pixSize, new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
+        _targetBitmap =
+            new WriteableBitmap(pixSize, new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
         GifPixelSize = pixSize;
 
         _totalTime = TimeSpan.Zero;
@@ -76,7 +91,9 @@ public sealed class GifInstance : IImageInstance, IDisposable
             throw new InvalidDataException(
                 "The URI provided is not currently supported.");
 
-        return AssetLoader.Open(uri);
+        // 从资源加载后转换为 RecyclableMemoryStream
+        using var originalStream = AssetLoader.Open(uri);
+        return originalStream.SafeCopyToRecyclableMemoryStream($"GifInstance.AssetLoader.{Guid.NewGuid()}", true);
     }
 
     public int GifFrameCount => _frameTimes.Count;

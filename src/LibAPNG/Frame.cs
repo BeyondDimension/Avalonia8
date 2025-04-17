@@ -76,7 +76,7 @@ public class Frame
     /// <summary>
     ///     Gets the frame as PNG FileStream.
     /// </summary>
-    public MemoryStream GetStream()
+    public Stream GetStream()
     {
         var ihdrChunk = new IHDRChunk(IHDRChunk.ThrowIsNull());
         if (fcTLChunk != null)
@@ -106,8 +106,17 @@ public class Frame
         estimatedCapacity = Math.Max(estimatedCapacity, 4096);
         estimatedCapacity = Math.Min(estimatedCapacity, 50 * 1024 * 1024); // 限制最大预分配大小为50MB
 
-        // 使用预估容量创建MemoryStream
-        var ms = new MemoryStream(estimatedCapacity);
+        // 使用RecyclableMemoryStream替代普通MemoryStream，以优化内存使用
+        Stream ms;
+        if (BD.Avalonia8.Image2.Image2.MemoryStreamManager != null)
+        {
+            ms = BD.Avalonia8.Image2.Image2.MemoryStreamManager.GetStream("Frame.GetStream", estimatedCapacity);
+        }
+        else
+        {
+            // 如果MemoryStreamManager未初始化，则回退到普通MemoryStream
+            ms = new MemoryStream(estimatedCapacity);
+        }
 
         ms.Write(Signature);
         ihdrChunk.WriteRawData(ms);

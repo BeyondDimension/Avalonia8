@@ -14,7 +14,8 @@ partial class Image2
         }
     }
 
-    public static async ValueTask<Stream?> ResolveObjectToStream(object? obj, Image2 img, CancellationToken token = default)
+    public static async ValueTask<Stream?> ResolveObjectToStream(object? obj, Image2 img,
+        CancellationToken token = default)
     {
         Stream? value = null;
         if (obj is string rawUri)
@@ -39,7 +40,8 @@ partial class Image2
                         if (imageHttpClientService == null)
                             return;
 
-                        value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache, cacheFirst: isCache, cancellationToken: token);
+                        value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache,
+                            cacheFirst: isCache, cancellationToken: token);
 
                         if (value == null)
                             return;
@@ -51,7 +53,8 @@ partial class Image2
                     if (imageHttpClientService == null)
                         return null;
 
-                    value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache, cacheFirst: isCache, cancellationToken: token);
+                    value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache,
+                        cacheFirst: isCache, cancellationToken: token);
                 }
 
                 if (value == null)
@@ -61,6 +64,7 @@ partial class Image2
 
                 if (!isImage)
                     return null;
+
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     img.Source = value;
@@ -90,29 +94,36 @@ partial class Image2
         }
         else if (obj is Stream stream)
         {
-            value = stream;
+            if (stream is not Microsoft.IO.RecyclableMemoryStream)
+                value = stream.SafeCopyToRecyclableMemoryStream("ResolveObjectToStream.Stream", true);
+            else
+                value = stream;
         }
         else if (obj is byte[] bytes)
         {
-            value = new MemoryStream(bytes);
+            value = MemoryStreamManager.GetStream("ResolveObjectToStream.Bytes", bytes, 0, bytes.Length);
         }
         else if (obj is ReadOnlyMemory<byte> rom)
         {
-            value = new MemoryStream();
+            value = MemoryStreamManager.GetStream("ResolveObjectToStream.ROM");
             value.Write(rom.Span);
+            value.Position = 0;
         }
         else if (obj is Memory<byte> m)
         {
-            value = new MemoryStream();
+            value = MemoryStreamManager.GetStream("ResolveObjectToStream.Memory");
             value.Write(m.Span);
+            value.Position = 0;
         }
         else if (obj is IEnumerable<byte> byte_enum)
         {
-            value = new MemoryStream();
+            value = MemoryStreamManager.GetStream("ResolveObjectToStream.ByteEnum");
             foreach (var item in byte_enum)
             {
                 value.WriteByte(item);
             }
+
+            value.Position = 0;
         }
         else if (obj is CommonImageSource commonImageSource)
         {

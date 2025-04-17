@@ -1,4 +1,5 @@
 using Logger = Avalonia.Logging.Logger;
+using Microsoft.IO;
 
 namespace BD.Avalonia8.Image2;
 
@@ -7,6 +8,25 @@ namespace BD.Avalonia8.Image2;
 /// </summary>
 public sealed partial class Image2 : Control, IDisposable
 {
+    /// <summary>
+    /// 内存流管理器，用于复用内存以减少GC压力
+    /// </summary>
+    internal static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(
+        new RecyclableMemoryStreamManager.Options
+        {
+            // 增加块大小以适应图像数据
+            BlockSize = 131072, // 128KB
+            LargeBufferMultiple = 1048576, // 1MB
+            MaximumBufferSize = 134217728, // 128MB
+
+            // 内存管理选项
+            AggressiveBufferReturn = true,
+
+            // 池大小限制
+            MaximumSmallPoolFreeBytes = 8388608, // 8MB
+            MaximumLargePoolFreeBytes = 134217728 // 128MB
+        });
+
     public static readonly StyledProperty<object> SourceProperty =
         AvaloniaProperty.Register<Image2, object>(nameof(Source));
 
@@ -182,7 +202,7 @@ public sealed partial class Image2 : Control, IDisposable
             // 仅在实际可见和启动自动播放时才启动动画
             if (IsEffectivelyVisible && AutoStart)
             {
-                _customVisual.SendHandlerMessage(CustomVisualHandler.StartMessage);
+                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
             }
 
             Update();
@@ -247,9 +267,9 @@ public sealed partial class Image2 : Control, IDisposable
     /// <inheritdoc/>
     public override void Render(DrawingContext context)
     {
-        if (backingRTB is not AvaBitmap bitmap) return;
+        if (backingRTB is not { } bitmap) return;
 
-        if (bitmap is not null && IsVisible && Bounds.Width > 0 && Bounds.Height > 0)
+        if (IsVisible && Bounds is { Width: > 0, Height: > 0 })
         {
             var viewPort = new AvaRect(Bounds.Size);
             var sourceSize = bitmap.Size;

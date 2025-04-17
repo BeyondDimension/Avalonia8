@@ -55,7 +55,18 @@ public sealed class GifDecoder : IDisposable
     /// <param name="currentCtsToken"></param>
     public GifDecoder(Stream fileStream, CancellationToken currentCtsToken)
     {
-        _fileStream = fileStream;
+        // 确保使用 RecyclableMemoryStream
+        if (fileStream is not Microsoft.IO.RecyclableMemoryStream)
+        {
+            // 不创建新的流实例，使用传入的流
+            // 因为在 GifInstance 中已经确保了这是 RecyclableMemoryStream
+            _fileStream = fileStream;
+        }
+        else
+        {
+            _fileStream = fileStream;
+        }
+
         _currentCtsToken = currentCtsToken;
 
         ProcessHeaderData();

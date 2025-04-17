@@ -52,7 +52,15 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
     public ApngInstance(Stream stream)
     {
-        Stream = stream;
+        // 确保使用 RecyclableMemoryStream 以减少内存压力
+        if (stream is not Microsoft.IO.RecyclableMemoryStream)
+        {
+            Stream = stream.SafeCopyToRecyclableMemoryStream("ApngInstance.Ctor", true);
+        }
+        else
+        {
+            Stream = stream;
+        }
 
         if (!stream.CanSeek)
             throw new InvalidDataException("The provided stream is not seekable.");
@@ -237,7 +245,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             if (!_frameCache.TryGetValue(frameIndex, out frameBitmap!))
             {
                 // 如果缓存中没有，解码当前帧
-                var frameStream = currentFrame.GetStream();
+                using var frameStream = currentFrame.GetStream();
                 frameBitmap = WriteableBitmap.Decode(frameStream);
 
                 // 添加到缓存，如果缓存已满，移除最早添加的项
