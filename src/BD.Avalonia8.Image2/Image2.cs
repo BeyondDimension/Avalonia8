@@ -431,11 +431,8 @@ public sealed partial class Image2 : Control, IDisposable
                 if (apngInstance.IsSimplePNG)
                 {
                     isSimplePNG = apngInstance.IsSimplePNG;
+                    backingRTB = DecodeImage(apngInstance!.Stream!);
                     apngInstance.Dispose();
-
-                    // 重置流位置
-                    value.Position = 0;
-                    backingRTB = DecodeImage(value);
                 }
                 else
                 {

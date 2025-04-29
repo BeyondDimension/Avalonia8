@@ -62,13 +62,13 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             Stream = stream;
         }
 
-        if (!stream.CanSeek)
+        if (!Stream.CanSeek)
             throw new InvalidDataException("The provided stream is not seekable.");
 
-        if (!stream.CanRead)
+        if (!Stream.CanRead)
             throw new InvalidOperationException("Can't read the stream provided.");
 
-        stream.Seek(0, SeekOrigin.Begin);
+        Stream.Seek(0, SeekOrigin.Begin);
 
         try
         {
