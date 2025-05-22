@@ -1,4 +1,11 @@
+using Avalonia;
+using Avalonia.Media;
 using BD.Avalonia8.Fonts;
+using BD.Common8.Http.ClientFactory.Extensions;
+using BD.Common8.Http.ClientFactory.Services;
+using BD.Common8.Http.ClientFactory.Services.Implementation;
+using Microsoft.Extensions.DependencyInjection;
+using System.Runtime.CompilerServices;
 
 namespace Image2.Sample;
 
@@ -22,11 +29,11 @@ static class Program
     {
         FontManagerOptions options = new()
         {
-            DefaultFamilyName = CustomFont.Name,
+            DefaultFamilyName = HarmonyOS_Sans_SC.Name,
             FontFallbacks =
             [
-                new FontFallback { FontFamily = CustomFont.Instance },
-                new FontFallback { FontFamily = AvaFontFamily.Default },
+                new FontFallback { FontFamily = HarmonyOS_Sans_SC.Instance },
+                new FontFallback { FontFamily = FontFamily.Default },
             ],
         };
         var builder = AppBuilder.Configure<App>()

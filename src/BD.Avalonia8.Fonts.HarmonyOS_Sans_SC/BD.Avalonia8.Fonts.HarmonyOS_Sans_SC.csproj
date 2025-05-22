@@ -2,15 +2,23 @@
 
 	<PropertyGroup>
 		<IsPackable Condition="'$(Configuration)'=='Release'">true</IsPackable>
-		<TargetFramework>net$(DotNet_Version)</TargetFramework>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<Description>提供 HarmonyOS 字体</Description>
+		<TargetFrameworks>net$(DotNet_Version);netstandard2.0</TargetFrameworks>
+		<Description>鸿蒙 Sans 字体是 HarmonyOS 的官方字体，支持多种语言和格式，适用于 HarmonyOS 应用的设计和开发。在华为开发者联盟设计资源库，您可以免费下载鸿蒙 Sans 字体包，以及其他 HarmonyOS 的图标、色彩、音效等资源。</Description>
 		<RootNamespace>BD.Avalonia8.Fonts</RootNamespace>
-		<Version>$(Version_Avalonia8_Fonts_HarmonyOS_Sans_SC)</Version>
-	</PropertyGroup>
+		<!--8.yy.1MMdd.1hhmm-->
+		<Version>8.25.10522.11700</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+	
+</PropertyGroup>
 
 	<ItemGroup>
 		<AvaloniaResource Include="**\*.ttf" />
+	</ItemGroup>
+
+	<!-- 👇 引用 NuGet 包 -->
+	<ItemGroup>
+		<PackageReference Include="Avalonia" />
 	</ItemGroup>
 
 </Project>

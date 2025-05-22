@@ -1,3 +1,10 @@
+using Avalonia.Media;
+using Avalonia.Platform;
+using Avalonia.Threading;
+using ReactiveUI;
+using System.Formats;
+using System.Windows.Input;
+
 namespace Image2.Sample;
 
 public partial class MainWindowViewModel : ReactiveObject
@@ -94,7 +101,7 @@ public partial class MainWindowViewModel : ReactiveObject
         ReactiveCommand.Create(() => Dispatcher.UIThread.InvokeAsync(() => Thread.Sleep(5000)));
 }
 
-public record class ImageSource
+public sealed record class ImageSource
 {
     public ImageSource() { }
 

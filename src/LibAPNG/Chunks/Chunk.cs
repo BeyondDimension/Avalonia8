@@ -1,3 +1,6 @@
+using System.Extensions;
+using System.Text;
+
 namespace LibAPNG.Chunks;
 
 public class Chunk

@@ -1,5 +1,16 @@
 using Logger = Avalonia.Logging.Logger;
 using Microsoft.IO;
+using Avalonia.Controls;
+using Avalonia;
+using Avalonia.Media;
+using Avalonia.Rendering.Composition;
+using Avalonia.Media.Imaging;
+using System.Formats;
+using Avalonia.Metadata;
+using Avalonia.Animation;
+using Avalonia.VisualTree;
+using Avalonia.Logging;
+using System.Numerics;
 
 namespace BD.Avalonia8.Image2;
 
@@ -61,7 +72,7 @@ public sealed partial class Image2 : Control, IDisposable
 
     IImageInstance? gifInstance;
     CompositionCustomVisual? _customVisual;
-    AvaBitmap? backingRTB;
+    Bitmap? backingRTB;
     ImageFormat imageFormat;
     bool isSimplePNG;
     CancellationTokenSource _tokenSource = new();
@@ -271,17 +282,17 @@ public sealed partial class Image2 : Control, IDisposable
 
         if (IsVisible && Bounds is { Width: > 0, Height: > 0 })
         {
-            var viewPort = new AvaRect(Bounds.Size);
+            var viewPort = new Rect(Bounds.Size);
             var sourceSize = bitmap.Size;
 
             var scale = Stretch.CalculateScaling(Bounds.Size, sourceSize, StretchDirection);
             var scaledSize = sourceSize * scale;
             var destRect = viewPort
-                .CenterRect(new AvaRect(scaledSize))
+                .CenterRect(new Rect(scaledSize))
                 .Intersect(viewPort);
 
-            var sourceRect = new AvaRect(sourceSize)
-                .CenterRect(new AvaRect(destRect.Size / scale));
+            var sourceRect = new Rect(sourceSize)
+                .CenterRect(new Rect(destRect.Size / scale));
 
             //var interpolationMode = RenderOptions.GetBitmapInterpolationMode(this);
             context.DrawImage(bitmap, sourceRect, destRect);
@@ -293,7 +304,7 @@ public sealed partial class Image2 : Control, IDisposable
     /// </summary>
     /// <param name="availableSize">The available size.</param>
     /// <returns>The desired size of the control.</returns>
-    protected override AvaSize MeasureOverride(AvaSize availableSize)
+    protected override Size MeasureOverride(Size availableSize)
     {
         if (gifInstance != null)
         {
@@ -310,7 +321,7 @@ public sealed partial class Image2 : Control, IDisposable
     }
 
     /// <inheritdoc/>
-    protected override AvaSize ArrangeOverride(AvaSize finalSize)
+    protected override Size ArrangeOverride(Size finalSize)
     {
         if (gifInstance != null)
         {
@@ -374,7 +385,7 @@ public sealed partial class Image2 : Control, IDisposable
         }
 
         Stream? value;
-        if (e.NewValue is AvaBitmap bitmap)
+        if (e.NewValue is Bitmap bitmap)
         {
             IsFailed = false;
             backingRTB = bitmap;
@@ -470,7 +481,7 @@ public sealed partial class Image2 : Control, IDisposable
         Update();
     }
 
-    AvaBitmap? DecodeImage(Stream stream)
+    Bitmap? DecodeImage(Stream stream)
     {
         try
         {
@@ -496,7 +507,7 @@ public sealed partial class Image2 : Control, IDisposable
             #endregion
 
             //https://github.com/mono/SkiaSharp/issues/1551
-            return new AvaBitmap(stream);
+            return new Bitmap(stream);
         }
         catch (Exception e)
         {
@@ -513,12 +524,12 @@ public sealed partial class Image2 : Control, IDisposable
 
         var dpi = this.GetVisualRoot()?.RenderScaling ?? 1.0d;
         var sourceSize = gifInstance.GetSize(dpi);
-        var viewPort = new AvaRect(Bounds.Size);
+        var viewPort = new Rect(Bounds.Size);
 
         var scale = Stretch.CalculateScaling(Bounds.Size, sourceSize, StretchDirection);
         var scaledSize = sourceSize * scale;
         var destRect = viewPort
-            .CenterRect(new AvaRect(scaledSize))
+            .CenterRect(new Rect(scaledSize))
             .Intersect(viewPort);
 
         if (Stretch == Stretch.None)
@@ -541,7 +552,7 @@ public sealed partial class Image2 : Control, IDisposable
         IImageInstance? _currentInstance;
         bool _running;
         bool _needsUpdate = false;
-        AvaBitmap? _lastRenderedBitmap;
+        Bitmap? _lastRenderedBitmap;
 
         // 帧率控制
         readonly TimeSpan _minFrameInterval = TimeSpan.FromMilliseconds(16); // 约60fps
@@ -633,20 +644,20 @@ public sealed partial class Image2 : Control, IDisposable
             }
         }
 
-        private void RenderBitmap(AvaBitmap bitmap, ImmediateDrawingContext drawingContext)
+        private void RenderBitmap(Bitmap bitmap, ImmediateDrawingContext drawingContext)
         {
             try
             {
-                // 正常渲染APNG和GIF
+                // 正常渲染 APNG 和 GIF
                 if (_currentInstance is ApngInstance)
                 {
-                    var ts = new AvaRect(_currentInstance.GetSize(1));
+                    var ts = new Rect(_currentInstance.GetSize(1));
                     var rect = GetRenderBounds();
                     drawingContext.DrawBitmap(bitmap, ts, rect);
                 }
-                else
+                else if (_currentInstance != null)
                 {
-                    drawingContext.DrawBitmap(bitmap, new AvaRect(_currentInstance.GetSize(1)),
+                    drawingContext.DrawBitmap(bitmap, new Rect(_currentInstance.GetSize(1)),
                         GetRenderBounds());
                 }
             }

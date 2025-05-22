@@ -1,6 +1,11 @@
+using Avalonia;
+using Avalonia.Animation;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using LibAPNG;
+using LibAPNG.Chunks;
 using System.Buffers;
+using System.Extensions;
 
 namespace BD.Avalonia8.Image2;
 
@@ -34,8 +39,8 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     private TimeSpan _totalTime;
     private readonly List<TimeSpan> _frameTimes;
     private DisposeOps _prevDisposeOp = DisposeOps.APNGDisposeOpNone;
-    private AvaRect _prevFrameRect; // 上一帧的区域
-    public AvaPoint _targetOffset;
+    private Rect _prevFrameRect; // 上一帧的区域
+    public Point _targetOffset;
     private int _currentFrameIndex = -1;
     private uint _iterationCount;
     public bool _hasNewFrame;
@@ -95,14 +100,14 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             // 初始化合成帧和目标帧
             _compositeBitmap = new WriteableBitmap(
                 new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
-                new AvaVector(96, 96),
-                AvaPixelFormat.Bgra8888,
+                new Vector(96, 96),
+                PixelFormat.Bgra8888,
                 AlphaFormat.Premul);
 
             _prevCompositeBitmap = new WriteableBitmap(
                 new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
-                new AvaVector(96, 96),
-                AvaPixelFormat.Bgra8888,
+                new Vector(96, 96),
+                PixelFormat.Bgra8888,
                 AlphaFormat.Premul);
 
             // 用透明色填充初始帧
@@ -127,11 +132,11 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
         _totalTime = TimeSpan.Zero;
 
-        _frameTimes = _apng.Frames.Select(frame =>
+        _frameTimes = [.. _apng.Frames.Select(frame =>
         {
             _totalTime = _totalTime.Add(frame.FrameDelay);
             return _totalTime;
-        }).ToList();
+        })];
     }
 
     public WriteableBitmap? GetBitmap() => _targetBitmap;
@@ -143,10 +148,10 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     }
 
     /// <inheritdoc/>
-    public AvaSize GetSize(double scaling) => ApngPixelSize.ToSize(scaling);
+    public Size GetSize(double scaling) => ApngPixelSize.ToSize(scaling);
 
     /// <inheritdoc/>
-    public AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
+    public Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
     {
         if (!IterationCount.IsInfinite && _iterationCount > IterationCount.Value)
             return null;
@@ -208,10 +213,10 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         }
 
         _prevDisposeOp = DisposeOps.APNGDisposeOpNone;
-        _prevFrameRect = new AvaRect();
+        _prevFrameRect = new Rect();
     }
 
-    internal AvaBitmap ProcessFrameIndex(int frameIndex, bool silent = false)
+    internal Bitmap ProcessFrameIndex(int frameIndex, bool silent = false)
     {
         try
         {
@@ -227,11 +232,11 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             var blendOp = fcTLChunk.BlendOp;
             var disposeOp = fcTLChunk.DisposeOp;
 
-            _targetOffset = new AvaPoint(fcTLChunk.XOffset, fcTLChunk.YOffset);
+            _targetOffset = new Point(fcTLChunk.XOffset, fcTLChunk.YOffset);
             var frameWidth = fcTLChunk.Width;
             var frameHeight = fcTLChunk.Height;
 
-            var currentFrameRect = new AvaRect(
+            var currentFrameRect = new Rect(
                 fcTLChunk.XOffset,
                 fcTLChunk.YOffset,
                 frameWidth,
@@ -350,7 +355,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         }
     }
 
-    private unsafe void ClearRegion(byte* pixelData, AvaRect region)
+    private unsafe void ClearRegion(byte* pixelData, Rect region)
     {
         int startX = Math.Max(0, (int)region.X);
         int startY = Math.Max(0, (int)region.Y);
@@ -372,7 +377,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         }
     }
 
-    private void ComposeFrame(WriteableBitmap frameBitmap, AvaRect frameRect, BlendOps blendOp)
+    private void ComposeFrame(WriteableBitmap frameBitmap, Rect frameRect, BlendOps blendOp)
     {
         if (_compositeBitmap == null)
             return;

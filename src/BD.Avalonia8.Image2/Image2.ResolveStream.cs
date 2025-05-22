@@ -1,3 +1,8 @@
+using Avalonia.Platform;
+using Avalonia.Threading;
+using BD.Common8.Http.ClientFactory.Services;
+using System.Formats;
+
 namespace BD.Avalonia8.Image2;
 
 partial class Image2
@@ -40,8 +45,10 @@ partial class Image2
                         if (imageHttpClientService == null)
                             return;
 
+#pragma warning disable CS0618 // 类型或成员已过时
                         value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache,
                             cacheFirst: isCache, cancellationToken: token);
+#pragma warning restore CS0618 // 类型或成员已过时
 
                         if (value == null)
                             return;
@@ -53,8 +60,10 @@ partial class Image2
                     if (imageHttpClientService == null)
                         return null;
 
+#pragma warning disable CS0618 // 类型或成员已过时
                     value = await imageHttpClientService.GetImageMemoryStreamAsync(rawUri, cache: isCache,
                         cacheFirst: isCache, cancellationToken: token);
+#pragma warning restore CS0618 // 类型或成员已过时
                 }
 
                 if (value == null)
@@ -94,7 +103,7 @@ partial class Image2
         }
         else if (obj is Stream stream)
         {
-            if (stream is not Microsoft.IO.RecyclableMemoryStream)
+            if (stream is not global::Microsoft.IO.RecyclableMemoryStream)
                 value = stream.SafeCopyToRecyclableMemoryStream("ResolveObjectToStream.Stream", true);
             else
                 value = stream;
@@ -125,7 +134,7 @@ partial class Image2
 
             value.Position = 0;
         }
-        else if (obj is CommonImageSource commonImageSource)
+        else if (obj is global::System.Drawing.CommonImageSource commonImageSource)
         {
             value = commonImageSource.Stream;
         }

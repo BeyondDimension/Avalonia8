@@ -1,0 +1,43 @@
+<Solution>
+  <Folder Name="/1.Root/">
+    <File Path=".github/ISSUE_TEMPLATE/bug-report.en.md" />
+    <File Path=".github/ISSUE_TEMPLATE/bug-report.md" />
+    <File Path=".github/ISSUE_TEMPLATE/question.en.md" />
+    <File Path=".github/ISSUE_TEMPLATE/question.md" />
+    <File Path=".github/workflows/CI.yml" />
+    <File Path=".gitignore" />
+    <File Path="README.md" />
+    <File Path="ref/Common/src/Directory.Packages.props" />
+    <File Path="src/.editorconfig" />
+    <File Path="src/Directory.Build.props" />
+    <File Path="src/Directory.Build.targets" />
+    <File Path="src/GeneratePackage.props" />
+    <File Path="src/Version.props" />
+  </Folder>
+  <Folder Name="/2.Document/" />
+  <Folder Name="/3.SharedLibrary/">
+    <Project Path="src/BD.Avalonia8.Fonts.HarmonyOS_Sans_SC/BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
+    <Project Path="src/BD.Avalonia8.Fonts.MiSans/BD.Avalonia8.Fonts.MiSans.csproj" />
+    <Project Path="src/BD.Avalonia8.Image2/BD.Avalonia8.Image2.csproj" />
+  </Folder>
+  <Folder Name="/3.SharedLibrary/Reference/" />
+  <Folder Name="/3.SharedLibrary/Reference/Common8/">
+    <Project Path="ref/Common/src/BD.Common8.Bcl/BD.Common8.Bcl.csproj" />
+    <Project Path="ref/Common/src/BD.Common8.Http.ClientFactory/BD.Common8.Http.ClientFactory.csproj" />
+    <Project Path="ref/Common/src/BD.Common8.Primitives.ApiRsp/BD.Common8.Primitives.ApiRsp.csproj" />
+    <Project Path="ref/Common/src/BD.Common8.Primitives/BD.Common8.Primitives.csproj" />
+    <Project Path="ref/Common/src/BD.Common8.SourceGenerator.Bcl/BD.Common8.SourceGenerator.Bcl.csproj" />
+    <Project Path="ref/Common/src/BD.Common8.SourceGenerator.ResX/BD.Common8.SourceGenerator.ResX.csproj" />
+  </Folder>
+  <Folder Name="/4.SourceGenerator/" />
+  <Folder Name="/5.Tools/">
+    <Project Path="src/Tools.Build/Tools.Build.csproj" />
+    <Project Path="src/Tools.DocFX/Tools.DocFX.csproj" />
+  </Folder>
+  <Folder Name="/6.Sample/">
+    <Project Path="src/Image2.Sample/Image2.Sample.csproj" />
+  </Folder>
+  <Folder Name="/7.UnitTest/">
+    <Project Path="src/BD.Avalonia8.UnitTest/BD.Avalonia8.UnitTest.csproj" />
+  </Folder>
+</Solution>

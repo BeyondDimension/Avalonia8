@@ -1,3 +1,6 @@
+using Avalonia;
+using Avalonia.Media.Imaging;
+
 namespace BD.Avalonia8.Image2;
 
 public interface IImageInstance : IDisposable
@@ -8,7 +11,7 @@ public interface IImageInstance : IDisposable
 
     double Width { get; }
 
-    AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed);
+    Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed);
 
-    AvaSize GetSize(double scaling);
+    Size GetSize(double scaling);
 }

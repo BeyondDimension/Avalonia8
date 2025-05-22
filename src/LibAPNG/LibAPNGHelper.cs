@@ -1,6 +1,7 @@
-namespace LibAPNG;
-
+using System.Runtime.CompilerServices;
 using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
+
+namespace LibAPNG;
 
 internal static class LibAPNGHelper
 {

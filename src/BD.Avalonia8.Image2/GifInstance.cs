@@ -1,3 +1,10 @@
+using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using BD.Avalonia8.Image2.Decoding;
+using System.Extensions;
+
 namespace BD.Avalonia8.Image2;
 
 public sealed class GifInstance : IImageInstance, IDisposable
@@ -61,7 +68,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         var pixSize = new PixelSize(_gifDecoder.Header.Dimensions.Width, _gifDecoder.Header.Dimensions.Height);
 
         _targetBitmap =
-            new WriteableBitmap(pixSize, new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
+            new WriteableBitmap(pixSize, new Vector(96, 96), PixelFormat.Bgra8888, AlphaFormat.Opaque);
         GifPixelSize = pixSize;
 
         _totalTime = TimeSpan.Zero;
@@ -118,7 +125,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
     public bool IsDisposed { get; private set; }
 
     /// <inheritdoc/>
-    public AvaBitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
+    public Bitmap? ProcessFrameTime(TimeSpan stopwatchElapsed)
     {
         if (!IterationCount.IsInfinite && _iterationCount > IterationCount.Value)
             return null;
@@ -149,5 +156,5 @@ public sealed class GifInstance : IImageInstance, IDisposable
     }
 
     /// <inheritdoc/>
-    public AvaSize GetSize(double scaling) => GifPixelSize.ToSize(scaling);
+    public Size GetSize(double scaling) => GifPixelSize.ToSize(scaling);
 }

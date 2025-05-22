@@ -1,3 +1,6 @@
+using BD.Avalonia8.Image2;
+using LibAPNG.Chunks;
+
 namespace LibAPNG;
 
 public class APNG : IDisposable
@@ -26,7 +29,7 @@ public class APNG : IDisposable
     public APNG(Stream stream)
     {
         // 确保使用 RecyclableMemoryStream 以优化内存使用
-        if (stream is not Microsoft.IO.RecyclableMemoryStream && Image2.MemoryStreamManager != null)
+        if (stream is not global::Microsoft.IO.RecyclableMemoryStream && Image2.MemoryStreamManager != null)
         {
             ms = stream.ToRecyclableMemoryStream("LibAPNG.APNG.Ctor");
         }

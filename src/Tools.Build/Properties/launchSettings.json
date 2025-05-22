@@ -1,0 +1,20 @@
+{
+  "profiles": {
+    "Tools.Build": {
+      "commandName": "Project",
+      "commandLineArgs": "b"
+    },
+    "Tools.Build(Clean)": {
+      "commandName": "Project",
+      "commandLineArgs": "clean"
+    },
+    "Tools.Build(TestProjects)": {
+      "commandName": "Project",
+      "commandLineArgs": "build --test"
+    },
+    "Tools.Build(NuGetPush)": {
+      "commandName": "Project",
+      "commandLineArgs": "push"
+    }
+  }
+}

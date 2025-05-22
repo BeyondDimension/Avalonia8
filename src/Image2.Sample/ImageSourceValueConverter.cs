@@ -1,3 +1,8 @@
+using Avalonia.Data.Converters;
+using Avalonia.Platform;
+using System.Formats;
+using System.Globalization;
+
 namespace Image2.Sample;
 
 sealed class ImageSourceValueConverter : IValueConverter

@@ -2,23 +2,35 @@
 
 	<PropertyGroup>
 		<IsPackable Condition="'$(Configuration)'=='Release'">true</IsPackable>
-		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Description>提供动图控件，支持 Gif/Apng</Description>
+		<!--8.yy.1MMdd.1hhmm-->
+		<Version>8.25.10522.11700</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
 	</PropertyGroup>
 
-	<Import Project="$(MSBuildThisFileDirectory)..\Sdk\Links\LibAPNG.props" />
+	<Import Project="$(MSBuildThisFileDirectory)..\TFM_NETX_ALL.props" />
 
-	<!-- 👇 NuGet 打包配置 -->
+	<!-- 📄 源码引用 LibAPNG -->
 	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\buildTransitive\BD.Avalonia8.Image2.targets" Pack="true" PackagePath="buildTransitive" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\buildTransitive\BD.Avalonia8.Image2.props" Pack="true" PackagePath="buildTransitive" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\Projects\BD.Avalonia8.*.props" Pack="true" PackagePath="buildTransitive\src\Sdk\Projects" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\BD.Avalonia8.Sdk.targets" Pack="true" PackagePath="buildTransitive\src\Sdk" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\BD.Avalonia8.Sdk.Lib.targets" Pack="true" PackagePath="buildTransitive\src\Sdk" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Sdk\BD.Avalonia8.Sdk.Ref.Package.targets" Pack="true" PackagePath="buildTransitive\src\Sdk" Visible="false" />
-		<None Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings*.props" Pack="true" PackagePath="buildTransitive\src\Shared" Visible="false" />
-		<None Remove="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.Tools*.props" Pack="true" PackagePath="buildTransitive\src\Shared" Visible="false" />
+		<Compile Include="$(MSBuildThisFileDirectory)..\LibAPNG\**\*.cs">
+			<LinkBase>_SourceReference\LibAPNG</LinkBase>
+			<Exclude>bin\**;obj\**</Exclude>
+		</Compile>
+		<Compile Remove="$(MSBuildThisFileDirectory)..\LibAPNG\bin\**\*.cs" />
+		<Compile Remove="$(MSBuildThisFileDirectory)..\LibAPNG\obj\**\*.cs" />
+	</ItemGroup>
+
+	<!-- 👇 引用 NuGet 包 -->
+	<ItemGroup>
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\ref\Common\src\BD.Common8.Bcl\BD.Common8.Bcl.csproj" />
+		<ProjectReference Include="..\..\ref\Common\src\BD.Common8.Http.ClientFactory\BD.Common8.Http.ClientFactory.csproj" />
 	</ItemGroup>
 
 </Project>

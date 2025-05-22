@@ -1,3 +1,5 @@
+using Avalonia.Threading;
+
 namespace BD.Avalonia8.UnitTest.Utils;
 
 [AttributeUsage(AttributeTargets.Method, Inherited = true, AllowMultiple = false)]

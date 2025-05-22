@@ -1,6 +1,11 @@
+using Avalonia;
+using Avalonia.Markup.Xaml;
+using System.Extensions;
+using System.Reflection;
+
 namespace Image2.Sample;
 
-public sealed class App : AvaApplication
+public sealed class App : Application
 {
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
@@ -16,9 +21,7 @@ public sealed class App : AvaApplication
     {
         try
         {
-#pragma warning disable CS8603 // 可能返回 null 引用。
             return Assembly.GetExecutingAssembly().GetName().Name.ThrowIsNull();
-#pragma warning restore CS8603 // 可能返回 null 引用。
         }
         catch
         {

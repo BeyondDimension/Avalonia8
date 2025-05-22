@@ -1,3 +1,5 @@
+using System.Extensions;
+
 namespace LibAPNG.Chunks;
 
 #pragma warning disable IDE1006 // 命名样式

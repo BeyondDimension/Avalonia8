@@ -1,4 +1,6 @@
 using System.Buffers.Binary;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace BD.Avalonia8.UnitTest;
 

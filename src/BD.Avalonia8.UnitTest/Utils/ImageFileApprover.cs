@@ -1,8 +1,35 @@
+using ApprovalTests.Approvers;
+using ApprovalTests.Core;
+using ApprovalTests.Core.Exceptions;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
+
 namespace BD.Avalonia8.UnitTest.Utils;
 
 [SupportedOSPlatform("windows")]
 public sealed class ImageFileApprover(IApprovalWriter writer, IApprovalNamer namer, bool normalizeLineEndingsForTextFiles = false) : FileApprover(writer, namer, normalizeLineEndingsForTextFiles)
 {
+    static Bitmap GetBitmap(string filePath)
+    {
+        lock (ApprovalImageWriter.fileRWLock)
+        {
+            try
+            {
+                // 命令行执行测试并发可能导致 new Bitmap(string) 时引发 System.IO.IOException : The process cannot access the file {0} because it is being used by another process.
+                using var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete);
+                return new(fileStream);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"GetBitmap fail, filePath: {filePath}", ex);
+            }
+
+        }
+    }
+
+
     public override ApprovalException? Approve(string approvedPath, string receivedPath)
     {
         if (Path.GetExtension(approvedPath) != ".png")
@@ -16,8 +43,8 @@ public sealed class ImageFileApprover(IApprovalWriter writer, IApprovalNamer nam
         // FIXME: I have no idea to compare bitmap with Avalonia.Media.Imaging
         //        This logic use System.Drawing, So only run on Windows.
 
-        using var approvedImg = new SDBitmap(approvedPath);
-        using var receivedImg = new SDBitmap(receivedPath);
+        using var approvedImg = GetBitmap(approvedPath);
+        using var receivedImg = GetBitmap(receivedPath);
 
         var approvedByte = BitmapToByte(approvedImg);
         var receivedByte = BitmapToByte(receivedImg);
@@ -27,10 +54,10 @@ public sealed class ImageFileApprover(IApprovalWriter writer, IApprovalNamer nam
                 null;
     }
 
-    static byte[] BitmapToByte(SDBitmap bmp)
+    static byte[] BitmapToByte(Bitmap bmp)
     {
-        var rect = new SDRectangle(0, 0, bmp.Width, bmp.Height);
-        var bDt = bmp.LockBits(rect, ImageLockMode.ReadOnly, SDPixelFormat.Format24bppRgb);
+        var rect = new Rectangle(0, 0, bmp.Width, bmp.Height);
+        var bDt = bmp.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
         var bary = new byte[bmp.Width * bmp.Height * 3];
 

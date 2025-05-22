@@ -1,7 +1,15 @@
+using ApprovalTests;
+using ApprovalTests.Reporters;
+using Avalonia.Animation;
+using BD.Avalonia8.Image2;
+using BD.Avalonia8.UnitTest.Apps;
+using BD.Avalonia8.UnitTest.Utils;
+using System.Reflection;
+
 namespace BD.Avalonia8.UnitTest;
 
 [UseReporter(typeof(DiffReporter))]
-public sealed class UnitTest1
+public sealed class Image2Test
 {
     IDisposable? _disposable;
 

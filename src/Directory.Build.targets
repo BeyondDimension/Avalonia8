@@ -1,19 +1,4 @@
 <Project>
-	<PropertyGroup>
-		<Path_Submodule>$(MSBuildThisFileDirectory)..\ref\</Path_Submodule>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\.gitmodules') AND Exists('$(MSBuildThisFileDirectory)..\..\Common\README.md')">
-		<Path_Submodule>$(MSBuildThisFileDirectory)..\..\</Path_Submodule>
-	</PropertyGroup>
-
 	<!-- 👇 配置 NuGet 包生成 -->
-	<Import Project="$(MSBuildThisFileDirectory)Sdk\GeneratePackage.props" />
-
-	<!-- 👇 SDK 配置 -->
-	<Import Project="$(MSBuildThisFileDirectory)Sdk\BD.Avalonia8.Sdk.Ref.Project.targets" />
-	<Import Project="$(MSBuildThisFileDirectory)Sdk\BD.Avalonia8.Sdk.targets" />
-	<Import Project="$(Path_Submodule)Common\src\Sdk\BD.Common8.Sdk.Ref.Project.targets" />
-	<Import Project="$(Path_Submodule)Common\src\Sdk\BD.Common8.Sdk.targets" />
-
+	<Import Condition="$(IsPackable) == 'true'" Project="$(MSBuildThisFileDirectory)GeneratePackage.props" />
 </Project>

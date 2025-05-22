@@ -1,3 +1,5 @@
+using System.Extensions;
+
 namespace LibAPNG.Chunks;
 
 public class IHDRChunk : Chunk

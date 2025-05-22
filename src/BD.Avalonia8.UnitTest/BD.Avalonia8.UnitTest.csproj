@@ -1,22 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
+		<!-- 此单元测试不可多 TFM，多 TFM 引发并发测试多个进程将触发文件占用 IOException -->
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<IsPackable>false</IsPackable>
 		<IsTestProject>true</IsTestProject>
-		<UseProjectUtils>true</UseProjectUtils>
-		<BeyondDimensionFeatures>
-			BD.Common8.Bcl;
-			BD.Avalonia8.Image2;
-		</BeyondDimensionFeatures>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\ref\Common\src\BD.Common8.UnitTest\Templates\*.cs">
-			<LinkBase>Templates</LinkBase>
-		</Compile>
+		<Compile Include="..\..\ref\Common\src\ProjectUtils.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -31,18 +25,210 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="NUnit" />
+		<PackageReference Include="NUnit3TestAdapter" />
+		<PackageReference Include="NUnit.Analyzers" />
+		<PackageReference Include="coverlet.collector" />
 		<PackageReference Include="Avalonia" />
 		<PackageReference Include="Avalonia.Desktop" />
 		<PackageReference Include="ApprovalTests" />
 		<PackageReference Include="FluentAvaloniaUI" />
 	</ItemGroup>
 
-	<Import Project="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.UnitTest.props" />
+	<ItemGroup>
+		<Using Include="NUnit.Framework" />
+		<Using Include="NUnit.Framework.Interfaces" />
+		<Using Include="NUnit.Framework.Internal" />
+		<Using Include="NUnit.Framework.Internal.Commands" />
+	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="$(MSBuildThisFileDirectory)..\Shared\GlobalUsings.BD.Avalonia8.UnitTest.props">
-			<LinkBase>Properties</LinkBase>
-		</None>
+	  <ProjectReference Include="..\..\ref\Common\src\BD.Common8.Bcl\BD.Common8.Bcl.csproj" />
+	  <ProjectReference Include="..\BD.Avalonia8.Image2\BD.Avalonia8.Image2.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="Image2Test.Jump#all_background@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_background@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_background@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_background@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_none@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_none@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_none@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_none@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_previous@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_previous@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_previous@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#all_previous@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterback@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterback@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterback@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterback@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterback@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterprev@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterprev@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterprev@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterprev@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#firstnone_laterprev@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Jump#jagging_back_prev@5.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_background@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_background@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_background@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_background@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_none@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_none@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_none@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_none@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_previous@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_previous@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_previous@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#all_previous@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterback@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterback@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterback@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterback@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterback@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterprev@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterprev@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterprev@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterprev@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#firstnone_laterprev@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@4.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Sequencial#jagging_back_prev@5.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Timespan#all_none@0.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Timespan#all_none@1.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Timespan#all_none@2.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
+	  <None Update="Image2Test.Timespan#all_none@3.approved.png">
+	    <DependentUpon>Image2Test.cs</DependentUpon>
+	  </None>
 	</ItemGroup>
 
 </Project>

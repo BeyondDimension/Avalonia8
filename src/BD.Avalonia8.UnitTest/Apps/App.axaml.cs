@@ -1,6 +1,12 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+
 namespace BD.Avalonia8.UnitTest.Apps;
 
-public sealed class App : AvaApplication
+public sealed class App : Application
 {
     public override void Initialize()
     {

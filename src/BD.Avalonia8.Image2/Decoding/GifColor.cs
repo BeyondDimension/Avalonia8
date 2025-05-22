@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace BD.Avalonia8.Image2.Decoding;
 
 /// <summary>

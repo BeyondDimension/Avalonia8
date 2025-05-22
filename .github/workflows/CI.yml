@@ -2,7 +2,8 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - dev8
+      - dev8-experimental
     tags:
       - "*"
   pull_request:
@@ -66,18 +67,21 @@ jobs:
       - name: Verify dotnet info
         if: ${{ matrix.os != 'aigio-win10ltsc-vm' }}
         run: dotnet --info
-
+        
       - name: Build tools
-        run: dotnet build -c Release src\Tools.Build\Tools.Build.csproj --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false 
+        shell: cmd
+        run: dotnet build -c Release src\Tools.Build\Tools.Build.csproj --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false
 
       - name: Test projects
-        run: .\src\artifacts\bin\Tools.Build\release\Tools.Build.exe build --test
+        shell: cmd
+        run: .\src\artifacts\bin\Tools.Build\release_net9.0-windows10.0.19041.0\Tools.Build.exe build --test
 
-      - name: UnitTest(Debug)
-        run: dotnet test src/BD.Avalonia8.UnitTest/BD.Avalonia8.UnitTest.csproj -c Debug -p:GeneratePackageOnBuild=false -p:AnalysisLevel=none --nologo -v q /property:WarningLevel=0 --logger:"trx;LogFilePrefix=testResults" 
+      # - name: UnitTest(Debug)
+      #   run: dotnet test src/BD.Avalonia8.UnitTest/BD.Avalonia8.UnitTest.csproj -c Debug -p:GeneratePackageOnBuild=false -p:AnalysisLevel=none --nologo -v q /property:WarningLevel=0 --logger:"trx;LogFilePrefix=testResults"
 
       - name: UnitTest(Release)
-        run: dotnet test src/BD.Avalonia8.UnitTest/BD.Avalonia8.UnitTest.csproj -c Release -p:GeneratePackageOnBuild=false -p:AnalysisLevel=none --nologo -v q /property:WarningLevel=0 --logger:"trx;LogFilePrefix=testResults" 
+        shell: cmd
+        run: dotnet test src/BD.Avalonia8.UnitTest/BD.Avalonia8.UnitTest.csproj -c Release -p:GeneratePackageOnBuild=false -p:AnalysisLevel=none --nologo -v q /property:WarningLevel=0 --logger:"trx;LogFilePrefix=testResults"
 
   build:
     name: Build
@@ -141,13 +145,16 @@ jobs:
         run: dotnet --info
 
       - name: Build tools
-        run: dotnet build -c Release src\Tools.Build\Tools.Build.csproj --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false 
+        shell: cmd
+        run: dotnet build -c Release src\Tools.Build\Tools.Build.csproj --nologo -v q /property:WarningLevel=0 -p:AnalysisLevel=none -p:GeneratePackageOnBuild=false
 
       - name: Build projects
-        run: .\src\artifacts\bin\Tools.Build\release\Tools.Build.exe build
+        shell: cmd
+        run: .\src\artifacts\bin\Tools.Build\release_net9.0-windows10.0.19041.0\Tools.Build.exe build
 
       - name: Push NuGet packages
-        run: .\src\artifacts\bin\Tools.Build\release\Tools.Build.exe push --token_github ${{ secrets.RMBADMIN_TOKEN }} --token_nuget ${{ secrets.NUGET_API_KEY }}
+        shell: cmd
+        run: .\src\artifacts\bin\Tools.Build\release_net9.0-windows10.0.19041.0\Tools.Build.exe push --token_github ${{ secrets.RMBADMIN_TOKEN }} --token_nuget ${{ secrets.NUGET_API_KEY }} --token_local ${{ secrets.LOCAL_NUGET_API_KEY }}
 
       - name: Delete nuget packages
         if: ${{ matrix.os == 'aigio-win10ltsc-vm' }}

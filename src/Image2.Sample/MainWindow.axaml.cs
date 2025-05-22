@@ -1,3 +1,5 @@
+using Avalonia.Controls;
+
 namespace Image2.Sample;
 
 public partial class MainWindow : Window

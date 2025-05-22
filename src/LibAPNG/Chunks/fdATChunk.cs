@@ -1,3 +1,5 @@
+using System.Extensions;
+
 namespace LibAPNG.Chunks;
 
 #pragma warning disable IDE1006 // 命名样式
@@ -71,7 +73,10 @@ internal class fdATChunk : Chunk
 
         #region Calculate by Concat
 
-        var enumerable = new byte[] { (byte)'I', (byte)'D', (byte)'A', (byte)'T' }.Concat(frameDataArray);
+        var idat = "IDAT"u8;
+        var enumerable = new byte[idat.Length + frameDataArray.Length];
+        idat.CopyTo(enumerable);
+        frameDataArray.CopyTo(enumerable.AsSpan(idat.Length));
         var newCrc = CrcHelper.Calculate(enumerable);
 
         #endregion

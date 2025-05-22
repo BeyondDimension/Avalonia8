@@ -1,14 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net$(DotNet_Version)</TargetFramework>
 		<AssemblyName>img2</AssemblyName>
-		<BeyondDimensionFeatures>
-			BD.Common8.Bcl;
-			BD.Avalonia8.Image2;
-			BD.Avalonia8.Fonts.HarmonyOS_Sans_SC;
-		</BeyondDimensionFeatures>
 		<PublishTrimmed>true</PublishTrimmed>
 	</PropertyGroup>
 
@@ -31,6 +26,12 @@
 		<PackageReference Include="ReactiveUI" />
 		<PackageReference Include="ReactiveUI.Fody" />
 		<PackageReference Include="FluentAvaloniaUI" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\ref\Common\src\BD.Common8.Bcl\BD.Common8.Bcl.csproj" />
+	  <ProjectReference Include="..\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC\BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
+	  <ProjectReference Include="..\BD.Avalonia8.Image2\BD.Avalonia8.Image2.csproj" />
 	</ItemGroup>
 
 </Project>

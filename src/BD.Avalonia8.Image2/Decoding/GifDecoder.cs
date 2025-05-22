@@ -6,6 +6,13 @@
 // The rest of the source file is licensed under MIT License.
 // Copyright (C) 2018 Jumar A. Macato, All Rights Reserved.
 
+using Avalonia;
+using Avalonia.Media.Imaging;
+using System.Buffers;
+using System.Extensions;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Text;
 using static BD.Avalonia8.Image2.StreamExtensions;
 
 namespace BD.Avalonia8.Image2.Decoding;
@@ -190,25 +197,30 @@ public sealed class GifDecoder : IDisposable
     void RenderFrameAt(int idx, WriteableBitmap writeableBitmap)
     {
         var tmpB = ArrayPool<byte>.Shared.Rent(MaxTempBuf);
-
-        var curFrame = Frames[idx];
-        DecompressFrameToIndexBuffer(curFrame, _indexBuf, tmpB);
-
-        if (_hasFrameBackups & curFrame.ShouldBackup)
+        try
         {
-            Buffer.BlockCopy(_indexBuf, 0, _backupFrameIndexBuf.ThrowIsNull(), 0, curFrame.Dimensions.TotalPixels);
-            _backupFrame = idx;
+            var curFrame = Frames[idx];
+            DecompressFrameToIndexBuffer(curFrame, _indexBuf, tmpB);
+
+            if (_hasFrameBackups & curFrame.ShouldBackup)
+            {
+                Buffer.BlockCopy(_indexBuf, 0, _backupFrameIndexBuf.ThrowIsNull(), 0, curFrame.Dimensions.TotalPixels);
+                _backupFrame = idx;
+            }
+
+            DrawFrame(curFrame, _indexBuf);
+
+            _prevFrame = idx;
+            _hasNewFrame = true;
+
+            using var lockedBitmap = writeableBitmap.Lock();
+            WriteBackBufToFb(lockedBitmap.Address);
+
         }
-
-        DrawFrame(curFrame, _indexBuf);
-
-        _prevFrame = idx;
-        _hasNewFrame = true;
-
-        using var lockedBitmap = writeableBitmap.Lock();
-        WriteBackBufToFb(lockedBitmap.Address);
-
-        ArrayPool<byte>.Shared.Return(tmpB);
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(tmpB);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -454,36 +466,41 @@ public sealed class GifDecoder : IDisposable
     {
         var str = _fileStream;
         var tmpB = ArrayPool<byte>.Shared.Rent(MaxTempBuf);
-        var tempBuf = tmpB.AsSpan();
-
-        str.Read(tmpB, 0, 6);
-
-        var g87AMagic = "GIF87a"u8;
-
-        if (!tempBuf[..3].SequenceEqual(g87AMagic[..3]))
-            throw new InvalidGifStreamException("Not a GIF stream.");
-
-        var g89AMagic = "GIF89a"u8;
-
-        if (!(tempBuf[..6].SequenceEqual(g87AMagic) |
-              tempBuf[..6].SequenceEqual(g89AMagic)))
-            throw new InvalidGifStreamException("Unsupported GIF Version: " +
-                                                Encoding.ASCII.GetString(tempBuf[..6].ToArray()));
-
-        ProcessScreenDescriptor(tmpB);
-
-        Header = new GifHeader
+        try
         {
-            Dimensions = _gifDimensions,
-            HasGlobalColorTable = _gctUsed,
-            // GlobalColorTableCacheID = _globalColorTable,
-            GlobarColorTable = ProcessColorTable(ref str, tmpB, _gctSize),
-            GlobalColorTableSize = _gctSize,
-            BackgroundColorIndex = _bgIndex,
-            HeaderSize = _fileStream.Position,
-        };
+            var tempBuf = tmpB.AsSpan();
 
-        ArrayPool<byte>.Shared.Return(tmpB);
+            str.Read(tmpB, 0, 6);
+
+            var g87AMagic = "GIF87a"u8;
+
+            if (!tempBuf[..3].SequenceEqual(g87AMagic[..3]))
+                throw new InvalidGifStreamException("Not a GIF stream.");
+
+            var g89AMagic = "GIF89a"u8;
+
+            if (!(tempBuf[..6].SequenceEqual(g87AMagic) |
+                  tempBuf[..6].SequenceEqual(g89AMagic)))
+                throw new InvalidGifStreamException("Unsupported GIF Version: " +
+                                                    Encoding.ASCII.GetString(tempBuf[..6].ToArray()));
+
+            ProcessScreenDescriptor(tmpB);
+
+            Header = new GifHeader
+            {
+                Dimensions = _gifDimensions,
+                HasGlobalColorTable = _gctUsed,
+                // GlobalColorTableCacheID = _globalColorTable,
+                GlobarColorTable = ProcessColorTable(ref str, tmpB, _gctSize),
+                GlobalColorTableSize = _gctSize,
+                BackgroundColorIndex = _bgIndex,
+                HeaderSize = _fileStream.Position,
+            };
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(tmpB);
+        }
     }
 
     /// <summary>
@@ -538,46 +555,51 @@ public sealed class GifDecoder : IDisposable
         _fileStream.Position = Header.HeaderSize;
 
         var tempBuf = ArrayPool<byte>.Shared.Rent(MaxTempBuf);
-
-        var terminate = false;
-        var curFrame = 0;
-
-        Frames.Add(new());
-
-        do
+        try
         {
-            var blockType = (BlockTypes)_fileStream.ReadByteS(tempBuf);
 
-            switch (blockType)
+            var terminate = false;
+            var curFrame = 0;
+
+            Frames.Add(new());
+
+            do
             {
-                case BlockTypes.Empty:
-                    break;
+                var blockType = (BlockTypes)_fileStream.ReadByteS(tempBuf);
 
-                case BlockTypes.Extension:
-                    ProcessExtensions(ref curFrame, tempBuf);
-                    break;
+                switch (blockType)
+                {
+                    case BlockTypes.Empty:
+                        break;
 
-                case BlockTypes.ImageDescriptor:
-                    ProcessImageDescriptor(ref curFrame, tempBuf);
-                    _fileStream.SkipBlocks(tempBuf);
-                    break;
+                    case BlockTypes.Extension:
+                        ProcessExtensions(ref curFrame, tempBuf);
+                        break;
 
-                case BlockTypes.Trailer:
-                    Frames.RemoveAt(Frames.Count - 1);
-                    terminate = true;
-                    break;
+                    case BlockTypes.ImageDescriptor:
+                        ProcessImageDescriptor(ref curFrame, tempBuf);
+                        _fileStream.SkipBlocks(tempBuf);
+                        break;
 
-                default:
-                    _fileStream.SkipBlocks(tempBuf);
-                    break;
-            }
+                    case BlockTypes.Trailer:
+                        Frames.RemoveAt(Frames.Count - 1);
+                        terminate = true;
+                        break;
 
-            // Break the loop when the stream is not valid anymore.
-            if (_fileStream.Position >= _fileStream.Length & terminate == false)
-                throw new InvalidProgramException("Reach the end of the filestream without trailer block.");
-        } while (!terminate);
+                    default:
+                        _fileStream.SkipBlocks(tempBuf);
+                        break;
+                }
 
-        ArrayPool<byte>.Shared.Return(tempBuf);
+                // Break the loop when the stream is not valid anymore.
+                if (_fileStream.Position >= _fileStream.Length & terminate == false)
+                    throw new InvalidProgramException("Reach the end of the filestream without trailer block.");
+            } while (!terminate);
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(tempBuf);
+        }
     }
 
     /// <summary>
