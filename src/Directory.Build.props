@@ -1,6 +1,23 @@
 <Project>
 	<Import Project="$(MSBuildThisFileDirectory)Version.props" />
 
+	<Choose>
+		<When Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\.gitmodules') AND Exists('$(MSBuildThisFileDirectory)..\..\Common\README.md')">
+			<PropertyGroup>
+				<Path_Submodule>$(MSBuildThisFileDirectory)..\..\</Path_Submodule>
+			</PropertyGroup>
+		</When>
+		<When Condition="Exists('$(MSBuildThisFileDirectory)..\ref')">
+			<PropertyGroup>
+				<Path_Submodule>$(MSBuildThisFileDirectory)..\ref\</Path_Submodule>
+			</PropertyGroup>
+		</When>
+	</Choose>
+
+	<PropertyGroup>
+		<Path_Submodule_Common>$(Path_Submodule)Common\</Path_Submodule_Common>
+	</PropertyGroup>
+
 	<!-- 👇 全局 Property 配置 -->
 	<PropertyGroup>
 		<Deterministic>true</Deterministic>
@@ -20,6 +37,11 @@
 	<!-- 👇 TFM != .NET Framework 3.5 -->
 	<PropertyGroup Condition="!$(TargetFramework.StartsWith('net35'))">
 		<ImplicitUsings>true</ImplicitUsings>
+	</PropertyGroup>
+
+	<!-- 👇 Avalonia -->
+	<PropertyGroup>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	</PropertyGroup>
 
 	<!-- 👇 程序集信息 -->

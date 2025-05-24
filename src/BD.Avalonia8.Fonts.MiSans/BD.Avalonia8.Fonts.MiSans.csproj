@@ -12,10 +12,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<None Include="$(MSBuildProjectDirectory)\MiSans Font Intellectual Property License Agreement.pdf" Pack="true" PackagePath=""/>
-	</ItemGroup>
-
-	<ItemGroup>
 		<AvaloniaResource Include="**\*.ttf" />
 	</ItemGroup>
 

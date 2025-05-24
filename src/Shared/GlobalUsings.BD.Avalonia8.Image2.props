@@ -1,6 +1,0 @@
-<Project>
-	<ItemGroup>
-		<Using Include="BD.Avalonia8.Image2" />
-		<Using Include="BD.Avalonia8.Image2.Decoding" />
-	</ItemGroup>
-</Project>

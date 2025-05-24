@@ -1,6 +1,0 @@
-<Project>
-	<ItemGroup>
-		<Using Include="LibAPNG" />
-		<Using Include="LibAPNG.Chunks" />
-	</ItemGroup>
-</Project>

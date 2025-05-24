@@ -1,24 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFramework>net$(DotNet_Version)</TargetFramework>
-	</PropertyGroup>
-
 	<ItemGroup>
-		<Compile Include="..\..\ref\Common\src\ProjectUtils.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="..\..\ref\Common\src\Tools.DocFX\**\*.cs">
+		<Compile Include="$(Path_Submodule_Common)\src\Tools.DocFX\**\*.cs">
 			<Exclude>bin\**;obj\**</Exclude>
 		</Compile>
-		<Compile Remove="..\..\ref\Common\src\Tools.DocFX\bin\**\*.cs" />
-		<Compile Remove="..\..\ref\Common\src\Tools.DocFX\obj\**\*.cs" />
+		<Compile Remove="$(Path_Submodule_Common)\src\Tools.DocFX\bin\**\*.cs" />
+		<Compile Remove="$(Path_Submodule_Common)\src\Tools.DocFX\obj\**\*.cs" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\..\ref\Common\src\BD.Common8.Bcl\BD.Common8.Bcl.csproj" />
-	</ItemGroup>
+	<Import Project="$(Path_Submodule_Common)src\SharedProject\Tools.DocFX.props" />
 
 </Project>

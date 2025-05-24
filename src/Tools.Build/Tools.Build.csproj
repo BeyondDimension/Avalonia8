@@ -1,51 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<OutputType>Exe</OutputType>
-		<TargetFrameworks>net$(DotNet_Version)</TargetFrameworks>
-		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net$(DotNet_Version);net$(DotNet_Version)-windows$(WinSDK_Version)</TargetFrameworks>
-	</PropertyGroup>
-
 	<ItemGroup>
-		<Using Include="System.CommandLine" />
-		<Using Include="Tools.Build.Commands.Abstractions" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="System.CommandLine" />
-		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" />
-		<PackageReference Include="System.Security.Cryptography.ProtectedData" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="..\..\ref\Common\src\ProjectUtils.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Compile Include="..\..\ref\Common\src\Tools.Build\**\*.cs">
+		<Compile Include="$(Path_Submodule_Common)\src\Tools.Build\**\*.cs">
 			<Exclude>bin\**;obj\**</Exclude>
 		</Compile>
-		<Compile Remove="..\..\ref\Common\src\Tools.Build\bin\**\*.cs" />
-		<Compile Remove="..\..\ref\Common\src\Tools.Build\obj\**\*.cs" />
+		<Compile Remove="$(Path_Submodule_Common)\src\Tools.Build\bin\**\*.cs" />
+		<Compile Remove="$(Path_Submodule_Common)\src\Tools.Build\obj\**\*.cs" />
 	</ItemGroup>
 
-	<Choose>
-		<When Condition="Exists('..\..\..\Constants.Secret.NuGet.Push.cs')">
-			<ItemGroup>
-				<Compile Remove="..\..\ref\Common\src\Tools.Build\Constants.Secret.NuGet.Push.cs" />
-				<Compile Include="..\..\..\Constants.Secret.NuGet.Push.cs" />
-			</ItemGroup>
-		</When>
-		<When Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\..\.gitmodules') AND Exists('$(MSBuildThisFileDirectory)..\..\..\..\..\Constants.Secret.NuGet.Push.cs')">
-			<ItemGroup>
-				<Compile Remove="..\..\ref\Common\src\Tools.Build\Constants.Secret.NuGet.Push.cs" />
-				<Compile Include="$(MSBuildThisFileDirectory)..\..\..\..\..\Constants.Secret.NuGet.Push.cs" />
-			</ItemGroup>
-		</When>
-	</Choose>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\ref\Common\src\BD.Common8.Bcl\BD.Common8.Bcl.csproj" />
-	</ItemGroup>
+	<Import Project="$(Path_Submodule_Common)src\SharedProject\Tools.Build.props" />
 
 </Project>
