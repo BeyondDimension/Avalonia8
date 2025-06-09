@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:gif="using:BD.Avalonia8.Image2"
     xmlns:local="using:Image2.Sample"
-    Title="BD.Avalonia8.Image2.Sample - MainWindow"
+    Title="Image2.Sample - MainWindow"
     Width="1400"
     Height="860"
     x:DataType="local:MainWindowViewModel"

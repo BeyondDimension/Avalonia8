@@ -16,6 +16,7 @@
 
 	<PropertyGroup>
 		<Path_Submodule_Common>$(Path_Submodule)Common\</Path_Submodule_Common>
+		<Path_Submodule_Avalonia8>$(MSBuildThisFileDirectory)..\</Path_Submodule_Avalonia8>
 	</PropertyGroup>
 
 	<!-- 👇 全局 Property 配置 -->

@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BD.Avalonia8.Fonts.MiSans", "BD.Avalonia8.Fonts.MiSans.csproj", "{0F12E353-7122-E03C-C862-23C288F9F5CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0F12E353-7122-E03C-C862-23C288F9F5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F12E353-7122-E03C-C862-23C288F9F5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F12E353-7122-E03C-C862-23C288F9F5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F12E353-7122-E03C-C862-23C288F9F5CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62C6CCC4-E3F2-4975-925E-FD75BB94BA00}
+	EndGlobalSection
+EndGlobal
