@@ -48,7 +48,7 @@ partial struct ColorF // Microsoft.DotNet.Wpf
         if (!(val > 0.0))       // Handles NaN case too. (Though, NaN isn't actually
                                 // possible in this case.)
         {
-            return 0.0f;
+            return 0.0;
         }
         else if (val <= 0.04045)
         {

@@ -8,7 +8,7 @@ partial struct ColorF // Parse
 {
     public static ColorF Parse(string? value)
     {
-        if (TryParse(value, out var c) && c != default)
+        if (TryParse(value, out var c))
             return c;
 
         throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(ColorF)}");
