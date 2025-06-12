@@ -8,6 +8,7 @@ using SkiaSharp;
 using SDColor = System.Drawing.Color;
 using AvaColor = Avalonia.Media.Color;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace BD.Avalonia8.Media;
 
@@ -28,16 +29,33 @@ public class JsonColorConverter : JsonConverter<ColorF>
         return false;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if IOS || MACCATALYST || MACOS
+    static FormattableString _(nfloat t)
+    {
+        var s = t.Value.ToString();
+        return $"{s}{(s.Contains('.') ? null : ".0")}";
+    }
+#else
+    static string _(byte t)
+    {
+        var s = t.ToString();
+        return s;
+    }
+#endif
+
     protected virtual string? GetString(ColorF value)
     {
         string result;
         if (IsAlphaMaxValue(value))
         {
-            result = $"rgb({value.Red}, {value.Green}, {value.Blue})";
+            result =
+                $"rgb({_(value.Red)}, {_(value.Green)}, {_(value.Blue)})";
         }
         else
         {
-            result = $"rgba({value.Red}, {value.Green}, {value.Blue}, {value.Alpha})";
+            result =
+                $"rgba({_(value.Red)}, {_(value.Green)}, {_(value.Blue)}, {_(value.Alpha)})";
         }
         return result;
     }
