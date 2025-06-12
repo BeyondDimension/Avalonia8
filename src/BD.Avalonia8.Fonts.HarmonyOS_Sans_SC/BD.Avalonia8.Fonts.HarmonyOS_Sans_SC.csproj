@@ -18,7 +18,7 @@
 
 	<!-- 👇 引用 NuGet 包 -->
 	<ItemGroup>
-		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia" PrivateAssets="all" />
 	</ItemGroup>
 
 </Project>

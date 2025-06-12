@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<IsPackable Condition="'$(Configuration)'=='Release'">true</IsPackable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<RootNamespace>BD.Avalonia8.Media</RootNamespace>
+		<!--8.yy.1MMdd.1hhmm-->
+		<Version>8.25.10612.11950</Version>
+		<FileVersion>$(Version)</FileVersion>
+		<AssemblyVersion>$(Version)</AssemblyVersion>
+	</PropertyGroup>
+
+	<Choose>
+		<!-- 👇 在 Windows 上开发 -->
+		<When Condition="$([System.OperatingSystem]::IsWindows())">
+			<PropertyGroup>
+				<TargetFrameworks>net462;netstandard2.0;netstandard2.1;net6.0;net6.0-windows;net7.0;net7.0-windows;net8.0;net8.0-windows;net9.0;net9.0-windows</TargetFrameworks>
+				<!-- 👇 当文件不存在时，添加需要工作负载的 TFM -->
+				<TargetFrameworks Condition="!Exists('C:\BD.Common8.ExcludeMobile.msbuild.prop')">$(TargetFrameworks);net9.0-android;net9.0-ios;net9.0-macos</TargetFrameworks>
+			</PropertyGroup>
+			<PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">
+				<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+				<TargetPlatformMinVersion>7.0</TargetPlatformMinVersion>
+			</PropertyGroup>
+		</When>
+		<!-- 👇 在 macOS 上开发 -->
+		<When Condition="$([System.OperatingSystem]::IsMacOS())">
+			<PropertyGroup>
+				<TargetFrameworks>net9.0;net9.0-ios;net9.0-macos</TargetFrameworks>
+			</PropertyGroup>
+		</When>
+		<!-- 👇 在 Linux 上开发 -->
+		<Otherwise>
+			<PropertyGroup>
+				<TargetFrameworks>net9.0</TargetFrameworks>
+			</PropertyGroup>
+		</Otherwise>
+	</Choose>
+
+	<!-- 👇 引用 NuGet 包 -->
+	<ItemGroup>
+		<PackageReference Include="Avalonia" PrivateAssets="all" />
+		<PackageReference Include="SkiaSharp" />
+		<PackageReference Condition=" $(TargetFramework.StartsWith('netstandard2')) OR ($(TargetFramework.StartsWith('net4')) AND !$(TargetFramework.StartsWith('net40')) AND !$(TargetFramework.StartsWith('net45')) AND !$(TargetFramework.StartsWith('net461'))) " Include="Microsoft.Bcl.Numerics" />
+		<PackageReference Condition=" $(TargetFramework.StartsWith('netstandard2')) OR $(TargetFramework.StartsWith('net4')) " Include="System.Text.Json" />
+	</ItemGroup>
+
+</Project>

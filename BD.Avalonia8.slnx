@@ -20,6 +20,7 @@
     <Project Path="src/BD.Avalonia8.Fonts.HarmonyOS_Sans_SC/BD.Avalonia8.Fonts.HarmonyOS_Sans_SC.csproj" />
     <Project Path="src/BD.Avalonia8.Fonts.MiSans/BD.Avalonia8.Fonts.MiSans.csproj" />
     <Project Path="src/BD.Avalonia8.Image2/BD.Avalonia8.Image2.csproj" />
+    <Project Path="src/BD.Avalonia8.Media.ColorF/BD.Avalonia8.Media.ColorF.csproj" Id="9c747840-40c8-487c-9579-060eb468c3a4" />
   </Folder>
   <Folder Name="/3.SharedLibrary/Reference/" />
   <Folder Name="/3.SharedLibrary/Reference/Common8/">
