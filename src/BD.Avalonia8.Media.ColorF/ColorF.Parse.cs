@@ -19,7 +19,7 @@ partial struct ColorF // Parse
         if (string.IsNullOrWhiteSpace(value))
         {
             color = default;
-            return true;
+            return false;
         }
         return TryParse(value.AsSpan(), out color);
     }

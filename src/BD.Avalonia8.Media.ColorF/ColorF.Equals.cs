@@ -181,7 +181,107 @@ partial struct ColorF : IEquatable<ColorF>, IEquatable<Vector4>, IEquatable<SDCo
         {
             return Equals(v4.X, v4.Y, v4.Z, v4.W);
         }
+        else if (obj is int int32)
+        {
+            return Equals(int32);
+        }
+        else if (obj is uint uint32)
+        {
+            return Equals(uint32);
+        }
+        else if (obj is long int64)
+        {
+            return Equals(int64);
+        }
+        else if (obj is ulong uint64)
+        {
+            return Equals(uint64);
+        }
+        else if (obj is string str)
+        {
+            return Equals(str);
+        }
         return base.Equals(obj);
+    }
+}
+
+partial struct ColorF : IEquatable<int>, IEquatable<uint>, IEquatable<long>, IEquatable<ulong>, IEquatable<int?>, IEquatable<uint?>, IEquatable<long?>, IEquatable<ulong?>
+{
+    /// <inheritdoc/>
+    public bool Equals(int other)
+    {
+        return ToInt() == other;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(int? other)
+    {
+        if (other.HasValue)
+        {
+            return Equals(other.Value);
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(uint other)
+    {
+        return ToUint() == other;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(uint? other)
+    {
+        if (other.HasValue)
+        {
+            return Equals(other.Value);
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(long other)
+    {
+        return ToInt() == other;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(long? other)
+    {
+        if (other.HasValue)
+        {
+            return Equals(other.Value);
+        }
+        return false;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(ulong other)
+    {
+        return ToUint() == other;
+    }
+
+    /// <inheritdoc/>
+    public bool Equals(ulong? other)
+    {
+        if (other.HasValue)
+        {
+            return Equals(other.Value);
+        }
+        return false;
+    }
+}
+
+partial struct ColorF : IEquatable<string?>
+{
+    /// <inheritdoc/>
+    public bool Equals(string? other)
+    {
+        if (TryParse(other, out var c))
+        {
+            return Equals(c);
+        }
+        return false;
     }
 }
 

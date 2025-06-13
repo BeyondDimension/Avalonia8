@@ -5,7 +5,7 @@ namespace BD.Avalonia8.Media;
 partial struct ColorF // Hex
 {
     /// <summary>
-    /// 返回 <see cref="ColorF"/> 的十六进制 <see langword="string"/> 表示形式
+    /// 返回 <see cref="ColorF"/> 的十六进制 <see langword="string"/> 表示形式（仅 #RRGGBB）
     /// </summary>
     /// <returns></returns>
     public string ToHex()
@@ -45,7 +45,7 @@ partial struct ColorF // Hex
     }
 
     /// <summary>
-    /// 返回 <see cref="ColorF"/> 的 ARGB 十六进制 <see langword="string"/> 表示形式
+    /// 返回 <see cref="ColorF"/> 的 ARGB 十六进制 <see langword="string"/> 表示形式（#AARRGGBB）
     /// </summary>
     /// <param name="includeAlpha"></param>
     /// <returns></returns>
@@ -54,7 +54,7 @@ partial struct ColorF // Hex
 #if IOS || MACCATALYST || MACOS
         if (includeAlpha || Alpha < 1)
 #else
-        if (includeAlpha || Alpha < byte.MinValue)
+        if (includeAlpha || Alpha < byte.MaxValue)
 #endif
         {
             const int strLen = 9;

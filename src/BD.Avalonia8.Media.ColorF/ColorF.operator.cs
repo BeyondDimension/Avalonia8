@@ -93,6 +93,1074 @@ partial struct ColorF // operator !=
     }
 }
 
+partial struct ColorF // operator ==(string)
+{
+    public static bool operator ==(ColorF left, string? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(string? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, string? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return right == null;
+        }
+    }
+
+    public static bool operator ==(string? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return left == null;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(string)
+{
+    public static bool operator !=(ColorF left, string? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(string? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, string? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right != null;
+        }
+    }
+
+    public static bool operator !=(string? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left != null;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(int)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] int? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] int? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, int right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(int left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, int? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(int? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, int right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(int left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(int)
+{
+    public static bool operator !=(ColorF left, int? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(int? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, int right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(int left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, int? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(int? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, int right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(int left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(uint)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] uint? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] uint? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, uint right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(uint left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, uint? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(uint? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, uint right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(uint left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(uint)
+{
+    public static bool operator !=(ColorF left, uint? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(uint? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, uint right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(uint left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, uint? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(uint? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, uint right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(uint left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(long)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] long? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] long? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, long right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(long left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, long? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(long? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, long right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(long left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(long)
+{
+    public static bool operator !=(ColorF left, long? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(long? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, long right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(long left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, long? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(long? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, long right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(long left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(ulong)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] ulong? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] ulong? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, ulong right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(ulong left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, ulong? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(ulong? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, ulong right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(ulong left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(ulong)
+{
+    public static bool operator !=(ColorF left, ulong? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(ulong? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, ulong right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(ulong left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, ulong? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(ulong? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, ulong right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(ulong left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(Vector4)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] Vector4? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] Vector4? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, Vector4 right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(Vector4 left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, Vector4? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(Vector4? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, Vector4 right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(Vector4 left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(Vector4)
+{
+    public static bool operator !=(ColorF left, Vector4? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(Vector4? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, Vector4 right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(Vector4 left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, Vector4? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(Vector4? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, Vector4 right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(Vector4 left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(SDColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] SDColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] SDColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, SDColor right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(SDColor left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, SDColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(SDColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, SDColor right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(SDColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(SDColor)
+{
+    public static bool operator !=(ColorF left, SDColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(SDColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, SDColor right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(SDColor left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, SDColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(SDColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, SDColor right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(SDColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+partial struct ColorF // operator ==(AvaColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] AvaColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] AvaColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, AvaColor right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(AvaColor left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, AvaColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(AvaColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, AvaColor right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(AvaColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(AvaColor)
+{
+    public static bool operator !=(ColorF left, AvaColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(AvaColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, AvaColor right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(AvaColor left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, AvaColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(AvaColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, AvaColor right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(AvaColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
 partial struct ColorF // implicit operator To
 {
     public static implicit operator ColorF(Vector4 color) => new(color);
@@ -114,6 +1182,10 @@ partial struct ColorF // implicit operator To
 
     [return: NotNullIfNotNull(nameof(color))]
     public static implicit operator ColorF?(SKColor? color) => color.HasValue ? new(color.Value.Red, color.Value.Green, color.Value.Blue, color.Value.Alpha) : null;
+
+    public static implicit operator ColorF?(string? color) => TryParse(color, out var r) ? r : default;
+
+    public static implicit operator ColorF?(ReadOnlySpan<char> color) => TryParse(color, out var r) ? r : default;
 }
 
 partial struct ColorF // implicit operator From
@@ -187,7 +1259,7 @@ partial struct ColorF // implicit operator From
     public static implicit operator AvaColor(ColorF color)
     {
         color.ToRgba(out var r, out var g, out var b, out var a);
-        return new AvaColor(r, g, b, a);
+        return new AvaColor(a, r, g, b);
     }
 
     [return: NotNullIfNotNull(nameof(color))]
@@ -200,9 +1272,87 @@ partial struct ColorF // implicit operator From
         }
         return null;
     }
+
+    public static implicit operator string(ColorF color) => color.ToArgbHex();
+
+    public static implicit operator string?(ColorF? color) => color.HasValue ? color.Value.ToArgbHex() : null;
 }
 
 #if IOS || MACCATALYST
+partial struct ColorF // operator ==(UIColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] UIColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] UIColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, UIColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return right == null;
+        }
+    }
+
+    public static bool operator ==(UIColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return left == null;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(UIColor)
+{
+    public static bool operator !=(ColorF left, UIColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(UIColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, UIColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right != null;
+        }
+    }
+
+    public static bool operator !=(UIColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left != null;
+        }
+    }
+}
+
 partial struct ColorF // implicit operator To(iOS)
 {
     public static implicit operator ColorF(UIColor color)
@@ -236,6 +1386,80 @@ partial struct ColorF // implicit operator From(iOS)
 #endif
 
 #if IOS || MACCATALYST || MACOS
+partial struct ColorF // operator ==(CGColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] CGColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] CGColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, CGColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return right == (object?)null;
+        }
+    }
+
+    public static bool operator ==(CGColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return left == (object?)null;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(CGColor)
+{
+    public static bool operator !=(ColorF left, CGColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(CGColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, CGColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right != (object?)null;
+        }
+    }
+
+    public static bool operator !=(CGColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left != (object?)null;
+        }
+    }
+}
+
 partial struct ColorF // implicit operator From(CGColor)
 {
     public static implicit operator CGColor(ColorF color) => color.ToCGColor();
@@ -246,6 +1470,148 @@ partial struct ColorF // implicit operator From(CGColor)
 #endif
 
 #if ANDROID
+partial struct ColorF // operator ==(AColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] AColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] AColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF left, AColor right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==(AColor left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, AColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return !right.HasValue;
+        }
+    }
+
+    public static bool operator ==(AColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return !left.HasValue;
+        }
+    }
+
+    public static bool operator ==(ColorF? left, AColor right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public static bool operator ==(AColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(AColor)
+{
+    public static bool operator !=(ColorF left, AColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(AColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF left, AColor right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(AColor left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, AColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right.HasValue;
+        }
+    }
+
+    public static bool operator !=(AColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left.HasValue;
+        }
+    }
+
+    public static bool operator !=(ColorF? left, AColor right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return true;
+        }
+    }
+
+    public static bool operator !=(AColor left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
 partial struct ColorF // implicit operator To(Android)
 {
     public static implicit operator ColorF(AColor color)
@@ -285,6 +1651,80 @@ partial struct ColorF // implicit operator From(Android)
 #endif
 
 #if MACOS
+partial struct ColorF // operator ==(NSColor)
+{
+    public static bool operator ==(ColorF left, [NotNullWhen(true)] NSColor? right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator ==([NotNullWhen(true)] NSColor? left, ColorF right)
+    {
+        return right.Equals(left);
+    }
+
+    public static bool operator ==(ColorF? left, NSColor? right)
+    {
+        if (left.HasValue)
+        {
+            return left.Value.Equals(right);
+        }
+        else
+        {
+            return right == null;
+        }
+    }
+
+    public static bool operator ==(NSColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return right.Value.Equals(left);
+        }
+        else
+        {
+            return left == null;
+        }
+    }
+}
+
+partial struct ColorF // operator !=(NSColor)
+{
+    public static bool operator !=(ColorF left, NSColor? right)
+    {
+        return !left.Equals(right);
+    }
+
+    public static bool operator !=(NSColor? left, ColorF right)
+    {
+        return !right.Equals(left);
+    }
+
+    public static bool operator !=(ColorF? left, NSColor? right)
+    {
+        if (left.HasValue)
+        {
+            return !left.Value.Equals(right);
+        }
+        else
+        {
+            return right != null;
+        }
+    }
+
+    public static bool operator !=(NSColor? left, ColorF? right)
+    {
+        if (right.HasValue)
+        {
+            return !right.Value.Equals(left);
+        }
+        else
+        {
+            return left != null;
+        }
+    }
+}
+
 partial struct ColorF // implicit operator To(macOS)
 {
     public static implicit operator ColorF(NSColor color) => color.AsColor();

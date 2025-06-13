@@ -16,11 +16,11 @@ public sealed partial class ColorTypeConverter : TypeConverter
     public override object? ConvertFrom(ITypeDescriptorContext? context, CultureInfo? culture, object fromValue)
     {
         var r = ColorF.Converter.ConvertFrom(fromValue);
-        if (r == null && fromValue != null)
+        if (!r.HasValue && fromValue != null)
         {
             return ColorF.Parse(fromValue.ToString());
         }
-        else if (r != null)
+        else if (r.HasValue)
         {
             return r;
         }

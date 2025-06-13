@@ -1,22 +1,27 @@
 #if ANDROID
 using AColor = Android.Graphics.Color;
 #endif
-using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using SkiaSharp;
-using SDColor = System.Drawing.Color;
-using AvaColor = Avalonia.Media.Color;
-using System.Text;
-using System.Runtime.CompilerServices;
 
 namespace BD.Avalonia8.Media;
 
 public class JsonColorConverter : JsonConverter<ColorF>
 {
+    /// <summary>
+    /// 获取从 Json 反序列化时解析失败时的默认值
+    /// </summary>
+    /// <returns></returns>
     protected virtual ColorF GetDefaultValue() => default;
 
-    protected virtual bool IsAlphaMaxValue(ColorF value)
+    /// <summary>
+    /// 是否写入 Json 时必定包含 alpha 通道值，默认为 <see langword="false"/> 当 alpha 通道值为最大值时（例如 255 或 1.0f）则不包含 alpha 通道值
+    /// </summary>
+    /// <returns></returns>
+    protected virtual bool GetIncludeAlpha() => false;
+
+    bool IsAlphaMaxValue(ColorF value)
     {
 #if IOS || MACCATALYST || MACOS
         if (value.Alpha == 1)
@@ -44,10 +49,10 @@ public class JsonColorConverter : JsonConverter<ColorF>
     }
 #endif
 
-    protected virtual string? GetString(ColorF value)
+    string? GetString(ColorF value)
     {
         string result;
-        if (IsAlphaMaxValue(value))
+        if (!GetIncludeAlpha() && IsAlphaMaxValue(value))
         {
             result =
                 $"rgb({_(value.Red)}, {_(value.Green)}, {_(value.Blue)})";

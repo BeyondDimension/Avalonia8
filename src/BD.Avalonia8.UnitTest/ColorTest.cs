@@ -140,4 +140,78 @@ Byte: {b}({fb}|{db}), Float: {ToString(f)}, Double: {ToString(d)}, X2: {b:X2}
         TestContext.Out.WriteLine("----- Avalonia KnownColors -----");
         Print(knownAvaColors);
     }
+
+    static void EqualsTest(KeyValuePair<string, ColorF> it)
+    {
+        {
+            AvaColor avaColor = it.Value;
+            Assert.That(avaColor == it.Value, Is.True, $"{it.Key} == {it.Value} failed.");
+            Assert.That(it.Value == avaColor, Is.True, $"{it.Key} == {avaColor} failed.");
+            Assert.That(avaColor != it.Value, Is.False, $"{it.Key} != {it.Value} failed.");
+            Assert.That(it.Value != avaColor, Is.False, $"{it.Key} != {avaColor} failed.");
+            Assert.That(it.Value.Equals(avaColor), Is.True, $"{it.Key}.Equals({avaColor}) failed.");
+        }
+        {
+            SDColor sDColor = it.Value;
+            Assert.That(sDColor == it.Value, Is.True, $"{it.Key} == {it.Value} failed.");
+            Assert.That(it.Value == sDColor, Is.True, $"{it.Key} == {sDColor} failed.");
+            Assert.That(sDColor != it.Value, Is.False, $"{it.Key} != {it.Value} failed.");
+            Assert.That(it.Value != sDColor, Is.False, $"{it.Key} != {sDColor} failed.");
+            Assert.That(it.Value.Equals(sDColor), Is.True, $"{it.Key}.Equals({sDColor}) failed.");
+        }
+        {
+            AvaColor? avaColorN = null;
+            Assert.That(avaColorN == it.Value, Is.False, $"{avaColorN} == {it.Value} failed.");
+            Assert.That(it.Value == avaColorN, Is.False, $"{it.Value} == {avaColorN} failed.");
+            Assert.That(avaColorN != it.Value, Is.True, $"{avaColorN} != {it.Value} failed.");
+            Assert.That(it.Value != avaColorN, Is.True, $"{it.Value} != {avaColorN} failed.");
+            Assert.That(!it.Value.Equals(avaColorN), Is.True, $"!{it.Value}.Equals({avaColorN}) failed.");
+        }
+        {
+            ColorF? colorFN = null;
+            Assert.That(colorFN == it.Value, Is.False, $"{colorFN} == {it.Value} failed.");
+            Assert.That(it.Value == colorFN, Is.False, $"{it.Value} == {colorFN} failed.");
+            Assert.That(colorFN != it.Value, Is.True, $"{colorFN} != {it.Value} failed.");
+            Assert.That(it.Value != colorFN, Is.True, $"{it.Value} != {colorFN} failed.");
+            Assert.That(!it.Value.Equals(colorFN), Is.True, $"!{it.Value}.Equals({colorFN}) failed.");
+        }
+        {
+            string argbHex = it.Value;
+            ColorF? colorFN = argbHex;
+            Assert.That(colorFN == it.Value, Is.True, $"{colorFN} == {it.Value} failed.");
+            Assert.That(it.Value == colorFN, Is.True, $"{it.Value} == {colorFN} failed.");
+            Assert.That(colorFN != it.Value, Is.False, $"{colorFN} != {it.Value} failed.");
+            Assert.That(it.Value != colorFN, Is.False, $"{it.Value} != {colorFN} failed.");
+            Assert.That(!it.Value.Equals(colorFN), Is.False, $"!{it.Value}.Equals({colorFN}) failed.");
+            ColorF colorF = colorFN.GetValueOrDefault();
+            Assert.That(colorF == it.Value, Is.True, $"{colorF} == {it.Value} failed.");
+            Assert.That(it.Value == colorF, Is.True, $"{it.Value} == {colorF} failed.");
+            Assert.That(colorF != it.Value, Is.False, $"{colorF} != {it.Value} failed.");
+            Assert.That(it.Value != colorF, Is.False, $"{it.Value} != {colorF} failed.");
+            Assert.That(!it.Value.Equals(colorF), Is.False, $"!{it.Value}.Equals({colorF}) failed.");
+        }
+    }
+
+    [Test]
+    public void EqualsTest()
+    {
+        foreach (var it in knownAvaColors)
+        {
+            ColorF val = it.Value;
+            var it2 = KeyValuePair.Create(it.Key, val);
+            EqualsTest(it2);
+        }
+        foreach (var it in knownColors)
+        {
+            ColorF val = it.Value;
+            var it2 = KeyValuePair.Create(it.Key, val);
+            EqualsTest(it2);
+        }
+        foreach (var it in systemColors)
+        {
+            ColorF val = it.Value;
+            var it2 = KeyValuePair.Create(it.Key, val);
+            EqualsTest(it2);
+        }
+    }
 }
