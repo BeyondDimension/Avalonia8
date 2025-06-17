@@ -5,7 +5,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<RootNamespace>BD.Avalonia8.Media</RootNamespace>
 		<!--8.yy.1MMdd.1hhmm-->
-		<Version>8.25.10613.11000</Version>
+		<Version>8.25.10617.11616</Version>
 		<FileVersion>$(Version)</FileVersion>
 		<AssemblyVersion>$(Version)</AssemblyVersion>
 	</PropertyGroup>
@@ -39,8 +39,8 @@
 
 	<!-- 👇 引用 NuGet 包 -->
 	<ItemGroup>
-		<PackageReference Include="Avalonia" PrivateAssets="all" />
-		<PackageReference Include="SkiaSharp" />
+		<PackageReference Include="Avalonia" />
+		<PackageReference Include="Avalonia.Skia" />
 		<PackageReference Condition=" $(TargetFramework.StartsWith('netstandard2')) OR ($(TargetFramework.StartsWith('net4')) AND !$(TargetFramework.StartsWith('net40')) AND !$(TargetFramework.StartsWith('net45')) AND !$(TargetFramework.StartsWith('net461'))) " Include="Microsoft.Bcl.Numerics" />
 		<PackageReference Condition=" $(TargetFramework.StartsWith('netstandard2')) OR $(TargetFramework.StartsWith('net4')) " Include="System.Text.Json" />
 	</ItemGroup>
