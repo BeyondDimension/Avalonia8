@@ -1,0 +1,9 @@
+<Project>
+	<!-- 👇 git 子模块路径定义 -->
+	<PropertyGroup>
+		<Path_Submodule>$(MSBuildThisFileDirectory)..\ref\</Path_Submodule>
+		<Path_Submodule_Common>$(Path_Submodule)Common\</Path_Submodule_Common>
+		<Path_Submodule_Avalonia8>$(MSBuildThisFileDirectory)..\</Path_Submodule_Avalonia8>
+	</PropertyGroup>
+	<Import Condition="Exists('$(MSBuildThisFileDirectory)..\..\..\.gitmodules') AND Exists('$(MSBuildThisFileDirectory)..\..\..\src\Path.Submodule.props')" Project="$(MSBuildThisFileDirectory)..\..\..\src\Path.Submodule.props" />
+</Project>
