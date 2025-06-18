@@ -14,6 +14,8 @@ partial struct ColorF
     {
         public static string[] GetKnownColors() => KnownColors.values;
 
+        public static int GetNamedColorKeyMaxLength() => KnownColors.maxLength.Value;
+
         public static bool CanConvert(Type t) =>
             t == typeof(ColorF) ||
             t == typeof(ColorF?) ||
@@ -323,4 +325,10 @@ file static class KnownColors
     "Yellow",
     "YellowGreen"
 ];
+
+    internal static Lazy<int> maxLength = new(() =>
+    {
+        var max = values.Max(static x => x.Length);
+        return max;
+    });
 }

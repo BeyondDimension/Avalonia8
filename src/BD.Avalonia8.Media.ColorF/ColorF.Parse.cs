@@ -189,7 +189,7 @@ partial struct ColorF // Parse
 
     public static AvaColor? GetNamedColor(ReadOnlySpan<char> value)
     {
-        if (value.Length > 128)
+        if (value.Length > 128 || value.Length > Converter.GetNamedColorKeyMaxLength())
         {
             return null;
         }
@@ -197,9 +197,10 @@ partial struct ColorF // Parse
         // the longest built-in Color's name is much lower than this check, so we should not allocate here in a typical usage
         //Span<char> loweredValue = value.Length <= 128 ? stackalloc char[value.Length] : new char[value.Length];
         Span<char> loweredValue = stackalloc char[value.Length];
-
-        int charsWritten = value.ToLowerInvariant(loweredValue);
-        Debug.Assert(charsWritten == value.Length);
+        for (int i = 0; i < value.Length; i++)
+        {
+            loweredValue[i] = char.ToLowerInvariant(value[i]);
+        }
 
         AvaColor? avaColor = loweredValue switch
         {

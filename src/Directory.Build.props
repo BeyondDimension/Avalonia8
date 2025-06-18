@@ -16,7 +16,7 @@
 
 	<PropertyGroup>
 		<Path_Submodule_Common>$(Path_Submodule)Common\</Path_Submodule_Common>
-		<Path_Submodule_Avalonia8>$(MSBuildThisFileDirectory)..\</Path_Submodule_Avalonia8>
+		<Path_Submodule_Avalonia8>$(Path_Submodule)..\</Path_Submodule_Avalonia8>
 	</PropertyGroup>
 
 	<!-- 👇 全局 Property 配置 -->
@@ -48,7 +48,7 @@
 	<!-- 👇 程序集信息 -->
 	<PropertyGroup>
 		<!--8.yy.1MMdd.1hhmm-->
-		<Version>8.25.10606.11900</Version>
+		<Version>8.25.10618.11900</Version>
 		<Copyright>©️ $(Company). All rights reserved.</Copyright>
 		<Authors>$(Company)</Authors>
 		<FileVersion>$(Version)</FileVersion>
