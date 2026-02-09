@@ -94,10 +94,19 @@ partial class Image2
         }
         else if (obj is Stream stream)
         {
-            if (stream is not Microsoft.IO.RecyclableMemoryStream)
+            if (stream is not Microsoft.IO.RecyclableMemoryStream && !stream.CanSeek)
+            {
+                value = stream.SafeCopyToRecyclableMemoryStream("ResolveObjectToStream.Stream",
+                    !img.KeepSourceStreamOpen);
+            }
+            else if (stream is not Microsoft.IO.RecyclableMemoryStream && !img.KeepSourceStreamOpen)
+            {
                 value = stream.SafeCopyToRecyclableMemoryStream("ResolveObjectToStream.Stream", true);
+            }
             else
+            {
                 value = stream;
+            }
         }
         else if (obj is byte[] bytes)
         {

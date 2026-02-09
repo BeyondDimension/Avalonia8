@@ -34,7 +34,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
     {
     }
 
-    public GifInstance(Stream currentStream)
+    public GifInstance(Stream currentStream, bool leaveOpen = false)
     {
         if (!currentStream.CanSeek)
             throw new InvalidDataException("The provided stream is not seekable.");
@@ -46,7 +46,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
         Stream optimizedStream;
         if (currentStream is not Microsoft.IO.RecyclableMemoryStream)
         {
-            optimizedStream = currentStream.SafeCopyToRecyclableMemoryStream("GifInstance.Ctor", true);
+            optimizedStream = currentStream.SafeCopyToRecyclableMemoryStream("GifInstance.Ctor", !leaveOpen);
         }
         else
         {

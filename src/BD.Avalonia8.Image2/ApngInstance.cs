@@ -43,19 +43,20 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
     // 帧缓存，用于存储已经解码的帧，避免重复解码
     private readonly Dictionary<int, WriteableBitmap> _frameCache = new();
+    private readonly LinkedList<int> _frameCacheOrder = new();
 
-    // 缓存容量控制
-    private const int MAX_CACHE_SIZE = 8;
+    // 缓存容量控制（默认缓存全部帧以提升性能）
+    private readonly int _maxCacheSize;
 
     // 是否正在前台显示（性能优化用）
     private bool _isVisible = true;
 
-    public ApngInstance(Stream stream)
+    public ApngInstance(Stream stream, bool leaveOpen = false)
     {
         // 确保使用 RecyclableMemoryStream 以减少内存压力
         if (stream is not Microsoft.IO.RecyclableMemoryStream)
         {
-            Stream = stream.SafeCopyToRecyclableMemoryStream("ApngInstance.Ctor", true);
+            Stream = stream.SafeCopyToRecyclableMemoryStream("ApngInstance.Ctor", !leaveOpen);
         }
         else
         {
@@ -88,6 +89,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         }
         else if (_apng.Frames.Length != 0)
         {
+            _maxCacheSize = _apng.Frames.Length;
             var firstFrame = _apng.Frames.First();
             var iHDRChunk = firstFrame.IHDRChunk.ThrowIsNull();
             ApngPixelSize = new PixelSize(iHDRChunk.Width, iHDRChunk.Height);
@@ -123,6 +125,10 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             }
 
             _targetBitmap = _compositeBitmap;
+        }
+        else
+        {
+            _maxCacheSize = 0;
         }
 
         _totalTime = TimeSpan.Zero;
@@ -163,22 +169,23 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         if (_currentFrameIndex == currentFrame)
             return _compositeBitmap;
 
-        // 如果帧序列不连续或重新开始，需要处理中间帧
-        if (_currentFrameIndex != -1 &&
-            ((currentFrame != (_currentFrameIndex + 1) % _apng.Frames.Length) ||
-             (currentFrame == 0 && _currentFrameIndex != _apng.Frames.Length - 1)))
+        // 帧跳跃处理：向前跳时补齐中间帧，回绕时重置并从头补齐
+        if (_currentFrameIndex == -1)
         {
-            // 帧跳跃或循环开始，需要重置合成状态
             ResetComposite();
-
-            // 如果不是从第一帧开始，需要渲染所有前面的帧
-            if (currentFrame > 0)
-            {
-                for (int i = 0; i < currentFrame; i++)
-                {
-                    ProcessFrameIndex(i, true);
-                }
-            }
+            for (int i = 0; i <= currentFrame; i++)
+                ProcessFrameIndex(i, true);
+        }
+        else if (currentFrame > _currentFrameIndex)
+        {
+            for (int i = _currentFrameIndex + 1; i <= currentFrame; i++)
+                ProcessFrameIndex(i, true);
+        }
+        else if (currentFrame < _currentFrameIndex)
+        {
+            ResetComposite();
+            for (int i = 0; i <= currentFrame; i++)
+                ProcessFrameIndex(i, true);
         }
 
         _iterationCount = unchecked((uint)(elapsedTicks / _totalTime.Ticks));
@@ -247,32 +254,11 @@ public sealed class ApngInstance : IImageInstance, IDisposable
                 // 如果缓存中没有，解码当前帧
                 using var frameStream = currentFrame.GetStream();
                 frameBitmap = WriteableBitmap.Decode(frameStream);
-
-                // 添加到缓存，如果缓存已满，移除最早添加的项
-                if (_frameCache.Count >= MAX_CACHE_SIZE)
-                {
-                    var oldestKey = _frameCache.Keys.First();
-                    var oldBitmap = _frameCache[oldestKey];
-                    oldBitmap.Dispose();
-                    _frameCache.Remove(oldestKey);
-                }
-
-                // 克隆位图添加到缓存，避免后续被修改
-                var cacheBitmap = new WriteableBitmap(frameBitmap.PixelSize, frameBitmap.Dpi, frameBitmap.Format,
-                    frameBitmap.AlphaFormat);
-                using (var targetContext = cacheBitmap.Lock())
-                using (var sourceContext = frameBitmap.Lock())
-                {
-                    unsafe
-                    {
-                        var source = (byte*)sourceContext.Address;
-                        var target = (byte*)targetContext.Address;
-                        var size = frameBitmap.PixelSize.Width * frameBitmap.PixelSize.Height * 4;
-                        Buffer.MemoryCopy(source, target, size, size);
-                    }
-                }
-
-                _frameCache[frameIndex] = cacheBitmap;
+                AddFrameToCache(frameIndex, frameBitmap);
+            }
+            else
+            {
+                TouchFrameCache(frameIndex);
             }
 
             // 合成当前帧到合成位图
@@ -287,12 +273,6 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
             // 更新当前帧索引
             _currentFrameIndex = frameIndex;
-
-            // 如果不是来自缓存的位图，需要释放
-            if (!_frameCache.ContainsValue(frameBitmap))
-            {
-                frameBitmap.Dispose();
-            }
 
             return _compositeBitmap!;
         }
@@ -316,6 +296,38 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     public void SetVisibility(bool isVisible)
     {
         _isVisible = isVisible;
+    }
+
+    private void AddFrameToCache(int frameIndex, WriteableBitmap bitmap)
+    {
+        if (_maxCacheSize <= 0)
+            return;
+
+        if (_frameCache.Count >= _maxCacheSize)
+        {
+            var oldest = _frameCacheOrder.First;
+            if (oldest != null)
+            {
+                var key = oldest.Value;
+                _frameCacheOrder.RemoveFirst();
+                if (_frameCache.TryGetValue(key, out var oldBitmap))
+                    oldBitmap.Dispose();
+                _frameCache.Remove(key);
+            }
+        }
+
+        _frameCache[frameIndex] = bitmap;
+        _frameCacheOrder.AddLast(frameIndex);
+    }
+
+    private void TouchFrameCache(int frameIndex)
+    {
+        var node = _frameCacheOrder.Find(frameIndex);
+        if (node != null)
+        {
+            _frameCacheOrder.Remove(node);
+            _frameCacheOrder.AddLast(node);
+        }
     }
 
     private void ApplyDisposeOperation()

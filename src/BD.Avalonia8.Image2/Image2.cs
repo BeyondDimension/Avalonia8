@@ -53,6 +53,9 @@ public sealed partial class Image2 : Control, IDisposable
     public static readonly StyledProperty<bool> EnableCancelTokenProperty =
         AvaloniaProperty.Register<Image2, bool>(nameof(EnableCancelToken), true);
 
+    public static readonly StyledProperty<bool> KeepSourceStreamOpenProperty =
+        AvaloniaProperty.Register<Image2, bool>(nameof(KeepSourceStreamOpen));
+
     public static readonly StyledProperty<StretchDirection> StretchDirectionProperty =
         AvaloniaProperty.Register<Image2, StretchDirection>(nameof(StretchDirection), StretchDirection.Both);
 
@@ -108,6 +111,12 @@ public sealed partial class Image2 : Control, IDisposable
     {
         get => GetValue(EnableCancelTokenProperty);
         set => SetValue(EnableCancelTokenProperty, value);
+    }
+
+    public bool KeepSourceStreamOpen
+    {
+        get => GetValue(KeepSourceStreamOpenProperty);
+        set => SetValue(KeepSourceStreamOpenProperty, value);
     }
 
     public int DecodeHeight
@@ -362,6 +371,8 @@ public sealed partial class Image2 : Control, IDisposable
             _tokenSource = new CancellationTokenSource();
         }
 
+        var keepSourceStreamOpen = KeepSourceStreamOpen && e.NewValue is Stream;
+
         gifInstance?.Dispose();
         gifInstance = null;
         backingRTB?.Dispose();
@@ -409,7 +420,7 @@ public sealed partial class Image2 : Control, IDisposable
         {
             try
             {
-                var gifInstance = new GifInstance(value) { IterationCount = IterationCount.Infinite, };
+                var gifInstance = new GifInstance(value, keepSourceStreamOpen) { IterationCount = IterationCount.Infinite, };
                 if (gifInstance.GifPixelSize.Width < 1 || gifInstance.GifPixelSize.Height < 1)
                 {
                     return;
@@ -427,11 +438,13 @@ public sealed partial class Image2 : Control, IDisposable
             try
             {
                 // 检查是否是动画PNG
-                var apngInstance = new ApngInstance(value);
+                var apngInstance = new ApngInstance(value, keepSourceStreamOpen);
                 if (apngInstance.IsSimplePNG)
                 {
                     isSimplePNG = apngInstance.IsSimplePNG;
                     backingRTB = DecodeImage(apngInstance!.Stream!);
+                    if (!keepSourceStreamOpen)
+                        apngInstance.Stream?.Dispose();
                     apngInstance.Dispose();
                 }
                 else
@@ -463,6 +476,8 @@ public sealed partial class Image2 : Control, IDisposable
         else
         {
             backingRTB = DecodeImage(value);
+            if (!keepSourceStreamOpen)
+                value.Dispose();
         }
 
         InvalidateArrange();
@@ -537,14 +552,9 @@ public sealed partial class Image2 : Control, IDisposable
     {
         TimeSpan _animationElapsed;
         TimeSpan? _lastServerTime;
-        TimeSpan _lastFrameRenderTime;
         IImageInstance? _currentInstance;
         bool _running;
         bool _needsUpdate = false;
-        AvaBitmap? _lastRenderedBitmap;
-
-        // 帧率控制
-        readonly TimeSpan _minFrameInterval = TimeSpan.FromMilliseconds(16); // 约60fps
 
         public static readonly object StopMessage = new();
         public static readonly object StartMessage = new();
@@ -575,16 +585,8 @@ public sealed partial class Image2 : Control, IDisposable
             if (!_running)
                 return;
 
-            // 计算时间差，确定是否需要更新帧
-            var now = CompositionNow;
-            var timeSinceLastFrame = _lastServerTime.HasValue ? now - _lastServerTime.Value : TimeSpan.Zero;
-
-            // 只有当时间间隔超过最小帧间隔或者有强制更新标记时才更新
-            if (timeSinceLastFrame >= _minFrameInterval || _needsUpdate)
-            {
-                _needsUpdate = false;
-                Invalidate();
-            }
+            _needsUpdate = false;
+            Invalidate();
 
             RegisterForNextAnimationFrameUpdate();
         }
@@ -608,22 +610,10 @@ public sealed partial class Image2 : Control, IDisposable
                 if (_currentInstance is null || _currentInstance.IsDisposed)
                     return;
 
-                // 计算距离上次渲染帧的时间
-                var timeSinceLastRender = CompositionNow - _lastFrameRenderTime;
-
-                // 如果时间间隔太短且已有渲染过的位图，直接使用上次的位图避免频繁处理
-                if (timeSinceLastRender < _minFrameInterval && _lastRenderedBitmap != null)
-                {
-                    RenderBitmap(_lastRenderedBitmap, drawingContext);
-                    return;
-                }
-
                 // 处理新帧
                 var bitmap = _currentInstance.ProcessFrameTime(_animationElapsed);
                 if (bitmap is not null)
                 {
-                    _lastFrameRenderTime = CompositionNow;
-                    _lastRenderedBitmap = bitmap;
                     RenderBitmap(bitmap, drawingContext);
                 }
             }

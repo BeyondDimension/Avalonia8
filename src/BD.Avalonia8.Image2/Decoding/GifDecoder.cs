@@ -12,8 +12,6 @@ namespace BD.Avalonia8.Image2.Decoding;
 
 public sealed class GifDecoder : IDisposable
 {
-    static readonly TimeSpan FrameDelayThreshold = TimeSpan.FromMilliseconds(10);
-    static readonly TimeSpan FrameDelayDefault = TimeSpan.FromMilliseconds(100);
     static readonly GifColor TransparentColor = new(0, 0, 0, 0);
     static readonly int MaxTempBuf = 768;
     static readonly int MaxStackSize = 4096;
@@ -641,9 +639,6 @@ public sealed class GifDecoder : IDisposable
 
                 currentFrame.FrameDelay =
                     TimeSpan.FromMilliseconds(SpanToShort(tempBuf.AsSpan(1)) * 10);
-
-                if (currentFrame.FrameDelay <= FrameDelayThreshold)
-                    currentFrame.FrameDelay = FrameDelayDefault;
 
                 currentFrame.TransparentColorIndex = tempBuf[3];
                 break;
