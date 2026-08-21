@@ -1,6 +1,7 @@
 <Project>
 	<!-- 版本号 | Version -->
 	<PropertyGroup>
+		<DotNet_Version>11.0</DotNet_Version>
 		<!--8.yy.1MMdd.1hhmm-->
 		<Version_Avalonia8>8.24.10815.11937</Version_Avalonia8>
 		<Version_Avalonia8_Fonts_HarmonyOS_Sans_SC>8.24.10527.11800</Version_Avalonia8_Fonts_HarmonyOS_Sans_SC>
