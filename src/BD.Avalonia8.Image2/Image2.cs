@@ -65,9 +65,11 @@ public sealed partial class Image2 : Control, IDisposable
     IImageInstance? gifInstance;
     CompositionCustomVisual? _customVisual;
     AvaBitmap? backingRTB;
-    ImageFormat imageFormat;
-    bool isSimplePNG;
-    CancellationTokenSource _tokenSource = new();
+    CancellationTokenSource? _tokenSource;
+    int _loadVersion;
+    bool _isAttached;
+    bool _animationInVisual;
+    bool _ownsBitmap;
     bool disposedValue;
 
     [Content]
@@ -113,6 +115,11 @@ public sealed partial class Image2 : Control, IDisposable
         set => SetValue(EnableCancelTokenProperty, value);
     }
 
+    /// <summary>
+    /// Borrow stream sources without closing them or changing their seek position.
+    /// Otherwise ownership transfers to the control. Transferred streams retain one
+    /// stopped decoded result while detached because the consumed stream cannot replay.
+    /// </summary>
     public bool KeepSourceStreamOpen
     {
         get => GetValue(KeepSourceStreamOpenProperty);
@@ -155,7 +162,12 @@ public sealed partial class Image2 : Control, IDisposable
         switch (change.Property.Name)
         {
             case nameof(Source):
-                SourceChanged(change);
+            case nameof(FallbackSource):
+                ReloadSource();
+                break;
+            case nameof(IsVisible):
+            case nameof(AutoStart):
+                UpdateAnimationPlayback();
                 break;
             case nameof(Stretch):
             case nameof(StretchDirection):
@@ -175,102 +187,66 @@ public sealed partial class Image2 : Control, IDisposable
     }
 
     /// <inheritdoc/>
-    protected override async void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
+    protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        if (FallbackSource != null && backingRTB == null)
-        {
-            if (EnableCancelToken)
-            {
-                _tokenSource.Cancel();
-                _tokenSource = new CancellationTokenSource();
-            }
-
-            var value = await ResolveObjectToStream(FallbackSource, this, _tokenSource.Token);
-            if (value != null)
-            {
-                backingRTB = DecodeImage(value);
-                value.Dispose();
-            }
-        }
-
-        if (imageFormat == ImageFormat.GIF || !isSimplePNG)
-        {
-            var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
-            if (compositor == null || _customVisual?.Compositor == compositor)
-                return;
-
-            _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
-            ElementComposition.SetElementChildVisual(this, _customVisual);
-
-            // 恢复动画实例的播放
-            if (gifInstance != null)
-            {
-                _customVisual?.SendHandlerMessage(gifInstance);
-            }
-
-            // 仅在实际可见和启动自动播放时才启动动画
-            if (IsEffectivelyVisible && AutoStart)
-            {
-                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
-            }
-
-            Update();
-        }
-
-        // 注册可见性变化事件
-        this.GetPropertyChangedObservable(IsVisibleProperty)
-            .Subscribe(OnVisibilityChanged);
-
         base.OnAttachedToVisualTree(e);
+        _isAttached = true;
+        if (backingRTB == null && gifInstance == null && _tokenSource == null)
+            ReloadSource();
+        else
+            AttachAnimation();
     }
 
     /// <inheritdoc/>
     protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
     {
-        // 当控件从视觉树分离时暂停动画并释放不必要的资源
+        _isAttached = false;
+        _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
 
-        if (_customVisual != null)
+        // A transferred stream cannot be replayed once consumed. Keep its one decoded
+        // result (including an in-flight result), but never keep frames for URI sources.
+        if (!IsTransferredStream(Source))
         {
-            _customVisual.SendHandlerMessage(CustomVisualHandler.StopMessage);
+            CancelLoad();
+            StopAndDispose();
         }
 
         base.OnDetachedFromVisualTree(e);
     }
 
-    private void OnVisibilityChanged(AvaloniaPropertyChangedEventArgs e)
+    bool IsTransferredStream(object? source) => !KeepSourceStreamOpen && source is Stream;
+
+    void UpdateAnimationPlayback()
     {
-        // 当控件可见性变化时相应地处理动画状态
-        if (e.NewValue is bool isVisible)
-        {
-            if (isVisible && AutoStart)
-            {
-                // 控件变为可见时恢复动画
-                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
-            }
-            else
-            {
-                // 控件变为不可见时暂停动画以节省资源
-                _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
-            }
-        }
+        _customVisual?.SendHandlerMessage(_isAttached && IsEffectivelyVisible && AutoStart
+            ? CustomVisualHandler.StartMessage
+            : CustomVisualHandler.StopMessage);
     }
 
-    private void OnEffectiveVisibilityChanged(AvaloniaPropertyChangedEventArgs e)
+    void AttachAnimation()
     {
-        // 当控件有效可见性变化时处理动画状态
-        if (e.NewValue is bool isEffectivelyVisible)
+        if (!_isAttached || gifInstance == null)
+            return;
+
+        var compositor = ElementComposition.GetElementVisual(this)?.Compositor;
+        if (compositor == null)
+            return;
+
+        if (_customVisual == null || _customVisual.Compositor != compositor)
         {
-            if (isEffectivelyVisible && AutoStart)
-            {
-                // 控件变为有效可见时恢复动画
-                _customVisual?.SendHandlerMessage(CustomVisualHandler.StartMessage);
-            }
-            else
-            {
-                // 控件变为有效不可见时暂停动画以节省资源
-                _customVisual?.SendHandlerMessage(CustomVisualHandler.StopMessage);
-            }
+            _customVisual?.SendHandlerMessage(CustomVisualHandler.ReleaseMessage);
+            _customVisual = compositor.CreateCustomVisual(new CustomVisualHandler());
+            ElementComposition.SetElementChildVisual(this, _customVisual);
+            _animationInVisual = false;
         }
+
+        if (!_animationInVisual)
+        {
+            _customVisual.SendHandlerMessage(gifInstance);
+            _animationInVisual = true;
+        }
+        UpdateAnimationPlayback();
+        Update();
     }
 
     /// <inheritdoc/>
@@ -338,185 +314,185 @@ public sealed partial class Image2 : Control, IDisposable
 
     void StopAndDispose()
     {
-        backingRTB?.Dispose();
-        gifInstance?.Dispose();
+        if (_ownsBitmap)
+            backingRTB?.Dispose();
+        backingRTB = null;
+        _ownsBitmap = false;
+        _customVisual?.SendHandlerMessage(CustomVisualHandler.ReleaseMessage);
+        if (gifInstance is { } animation)
+        {
+            lock (animation)
+                animation.Dispose();
+        }
+        gifInstance = null;
+        _animationInVisual = false;
         _customVisual = null;
+        ElementComposition.SetElementChildVisual(this, null);
+        RefreshImage();
     }
 
-    void SetNullValue()
+    void RefreshImage()
     {
         InvalidateArrange();
         InvalidateMeasure();
+        InvalidateVisual();
         Update();
     }
 
-    async void SourceChanged(AvaloniaPropertyChangedEventArgs e)
+    void CancelLoad()
     {
+        ++_loadVersion;
+        _tokenSource?.Cancel();
+        _tokenSource = null; // The corresponding load disposes its source in finally.
+    }
+
+    async void ReloadSource()
+    {
+        CancelLoad();
+        StopAndDispose();
+        IsFailed = true;
+        if (disposedValue || (!_isAttached && !IsTransferredStream(Source)))
+            return;
+
+        var source = Source;
+        var fallback = FallbackSource;
+        var version = _loadVersion;
+        var keepOpen = KeepSourceStreamOpen;
+        var cache = EnableCache;
+        var scaling = TopLevel.GetTopLevel(this)?.RenderScaling ?? 1d;
+        var decodeWidth = DecodeWidth > 0 ? Math.Max(1, (int)Math.Ceiling(DecodeWidth * scaling)) : 0;
+        var decodeHeight = DecodeHeight > 0 ? Math.Max(1, (int)Math.Ceiling(DecodeHeight * scaling)) : 0;
+        using var cancellation = new CancellationTokenSource();
+        _tokenSource = cancellation;
+        var token = EnableCancelToken ? cancellation.Token : CancellationToken.None;
+        var sourceSubmitted = false;
         try
         {
-            await SourceChangedAsync(e);
+            if (source is AvaBitmap bitmap)
+            {
+                backingRTB = bitmap; // The caller owns bitmap sources.
+                IsFailed = false;
+                RefreshImage();
+                return;
+            }
+
+            if (fallback != null)
+            {
+                var result = await Task.Run(() => LoadImageAsync(fallback, keepOpen, cache, decodeWidth, decodeHeight, token));
+                if (!PublishImage(result, version, true))
+                    return;
+            }
+
+            if (source != null)
+            {
+                sourceSubmitted = true;
+                var result = await Task.Run(() => LoadImageAsync(source, keepOpen, cache, decodeWidth, decodeHeight, token));
+                PublishImage(result, version, false);
+            }
+        }
+        catch (OperationCanceledException) when (cancellation.IsCancellationRequested)
+        {
         }
         catch (Exception ex)
         {
-            Log.Error(nameof(Image2), ex, "SourceChanged fail");
-            SetNullValue();
+            if (version == _loadVersion)
+                Log.Error(nameof(Image2), ex, "SourceChanged fail");
+        }
+        finally
+        {
+            if (!sourceSubmitted && !keepOpen && source is Stream unconsumed)
+                unconsumed.Dispose();
+            if (ReferenceEquals(_tokenSource, cancellation))
+                _tokenSource = null;
         }
     }
 
-    async Task SourceChangedAsync(AvaloniaPropertyChangedEventArgs e)
+    bool PublishImage((AvaBitmap? Bitmap, IImageInstance? Animation) result, int version, bool fallback)
     {
-        if (EnableCancelToken)
+        if (disposedValue || version != _loadVersion)
         {
-            _tokenSource.Cancel();
-            _tokenSource = new CancellationTokenSource();
+            result.Bitmap?.Dispose();
+            result.Animation?.Dispose();
+            return false;
         }
+        if (result.Bitmap == null && result.Animation == null)
+            return true; // Keep an already displayed fallback on failure.
 
-        var keepSourceStreamOpen = KeepSourceStreamOpen && e.NewValue is Stream;
+        StopAndDispose();
+        backingRTB = result.Bitmap;
+        _ownsBitmap = result.Bitmap != null;
+        gifInstance = result.Animation;
+        IsFailed = fallback;
+        AttachAnimation();
+        RefreshImage();
+        return true;
+    }
 
-        gifInstance?.Dispose();
-        gifInstance = null;
-        backingRTB?.Dispose();
-        backingRTB = null;
-        IsFailed = true;
-
-        if (e.NewValue == null && FallbackSource == null)
+    static async Task<(AvaBitmap? Bitmap, IImageInstance? Animation)> LoadImageAsync(
+        object source, bool keepOpen, bool cache, int decodeWidth, int decodeHeight, CancellationToken token)
+    {
+        Stream? stream = await ResolveObjectToStreamCore(source, keepOpen, cache, token).ConfigureAwait(false);
+        IImageInstance? animation = null;
+        AvaBitmap? bitmap = null;
+        try
         {
-            return;
-        }
+            token.ThrowIfCancellationRequested();
+            if (stream == null)
+                return default;
 
-        Stream? value;
-        if (e.NewValue is AvaBitmap bitmap)
-        {
-            IsFailed = false;
-            backingRTB = bitmap;
-            return;
-        }
-        else
-        {
-            if (FallbackSource != null)
+            var format = FileFormat.IsImage(stream, out var imageFormat) ? imageFormat : default;
+            stream.Position = 0;
+            if (format == ImageFormat.GIF)
             {
-                value = await ResolveObjectToStream(FallbackSource, this, _tokenSource.Token);
-                if (value != null)
-                {
-                    IsFailed = true;
-                    backingRTB = DecodeImage(value);
-                    value.Dispose();
-                }
+                animation = new GifInstance(stream) { IterationCount = IterationCount.Infinite };
+                stream = null; // Ownership transferred to the animation.
             }
-
-            value = await ResolveObjectToStream(e.NewValue, this, _tokenSource.Token);
-        }
-
-        if (value == null)
-        {
-            SetNullValue();
-            return;
-        }
-
-        IsFailed = false;
-        imageFormat = FileFormat.IsImage(value, out var imageFormat_) ? imageFormat_ : default;
-
-        if (imageFormat == ImageFormat.GIF)
-        {
-            try
+            else if (format == ImageFormat.PNG)
             {
-                var gifInstance = new GifInstance(value, keepSourceStreamOpen) { IterationCount = IterationCount.Infinite, };
-                if (gifInstance.GifPixelSize.Width < 1 || gifInstance.GifPixelSize.Height < 1)
+                var apng = new ApngInstance(stream, false, false);
+                animation = apng;
+                stream = null;
+                if (apng.IsSimplePNG)
                 {
-                    return;
-                }
-
-                this.gifInstance = gifInstance;
-                _customVisual?.SendHandlerMessage(gifInstance);
-            }
-            catch
-            {
-            }
-        }
-        else if (imageFormat == ImageFormat.PNG)
-        {
-            try
-            {
-                // 检查是否是动画PNG
-                var apngInstance = new ApngInstance(value, keepSourceStreamOpen);
-                if (apngInstance.IsSimplePNG)
-                {
-                    isSimplePNG = apngInstance.IsSimplePNG;
-                    backingRTB = DecodeImage(apngInstance!.Stream!);
-                    if (!keepSourceStreamOpen)
-                        apngInstance.Stream?.Dispose();
-                    apngInstance.Dispose();
+                    bitmap = DecodeImage(apng.Stream!, decodeWidth, decodeHeight);
+                    apng.Dispose();
+                    animation = null;
                 }
                 else
-                {
-                    apngInstance.IterationCount = IterationCount.Infinite;
-                    if (apngInstance.ApngPixelSize.Width < 1 || apngInstance.ApngPixelSize.Height < 1)
-                    {
-                        apngInstance.Dispose();
-                        return;
-                    }
-
-                    // 如果曾经有旧的实例，先释放它
-                    if (gifInstance != null && gifInstance != apngInstance)
-                    {
-                        gifInstance.Dispose();
-                    }
-
-                    // 设置新的实例
-                    gifInstance = apngInstance;
-                    _customVisual?.SendHandlerMessage(gifInstance);
-                }
+                    apng.IterationCount = IterationCount.Infinite;
             }
-            catch (Exception ex)
-            {
-                Log.Error(nameof(Image2), ex, "ApngInstance fail", ex.StackTrace);
-                return;
-            }
+            else
+                bitmap = DecodeImage(stream, decodeWidth, decodeHeight);
+
+            token.ThrowIfCancellationRequested();
+            return (bitmap, animation);
         }
-        else
+        catch
         {
-            backingRTB = DecodeImage(value);
-            if (!keepSourceStreamOpen)
-                value.Dispose();
+            bitmap?.Dispose();
+            animation?.Dispose();
+            throw;
         }
-
-        InvalidateArrange();
-        InvalidateMeasure();
-        Update();
+        finally
+        {
+            stream?.Dispose();
+        }
     }
 
-    AvaBitmap? DecodeImage(Stream stream)
+    static AvaBitmap? DecodeImage(Stream stream, int decodeWidth, int decodeHeight)
     {
         try
         {
-            if (stream == null || stream.CanRead == false || stream.Length == 0)
-            {
-                return null;
-            }
-
             stream.Position = 0;
-
-            #region 😣 因为 Bitmap.DecodeTo 有一定内存泄露问题暂时注释
-
-            //var interpolationMode = RenderOptions.GetBitmapInterpolationMode(this);
-            //if (DecodeWidth > 0)
-            //{
-            //    return Bitmap.DecodeToWidth(stream, DecodeWidth, interpolationMode);
-            //}
-            //else if (DecodeHeight > 0)
-            //{
-            //    return Bitmap.DecodeToHeight(stream, DecodeHeight, interpolationMode);
-            //}
-
-            #endregion
-
-            //https://github.com/mono/SkiaSharp/issues/1551
+            if (decodeWidth > 0)
+                return AvaBitmap.DecodeToWidth(stream, decodeWidth);
+            if (decodeHeight > 0)
+                return AvaBitmap.DecodeToHeight(stream, decodeHeight);
             return new AvaBitmap(stream);
         }
         catch (Exception e)
         {
-            Logger.Sink?.Log(LogEventLevel.Error, "AnimatedImage DecodeImage ", this, e.ToString());
-            // 为了让程序不闪退无视错误
+            Logger.Sink?.Log(LogEventLevel.Error, "AnimatedImage DecodeImage ", null, e.ToString());
             return null;
         }
     }
@@ -554,29 +530,38 @@ public sealed partial class Image2 : Control, IDisposable
         TimeSpan? _lastServerTime;
         IImageInstance? _currentInstance;
         bool _running;
-        bool _needsUpdate = false;
 
         public static readonly object StopMessage = new();
         public static readonly object StartMessage = new();
+        public static readonly object ReleaseMessage = new();
 
         public override void OnMessage(object message)
         {
             if (message == StartMessage)
             {
+                if (_running)
+                    return;
                 _running = true;
                 _lastServerTime = null;
-                _needsUpdate = true;
                 RegisterForNextAnimationFrameUpdate();
             }
             else if (message == StopMessage)
             {
                 _running = false;
+                _lastServerTime = null;
+            }
+            else if (message == ReleaseMessage)
+            {
+                _running = false;
+                _currentInstance = null;
+                Invalidate();
             }
             else if (message is IImageInstance instance)
             {
-                _currentInstance?.Dispose();
                 _currentInstance = instance;
-                _needsUpdate = true;
+                _animationElapsed = TimeSpan.Zero;
+                _lastServerTime = null;
+                Invalidate();
             }
         }
 
@@ -585,7 +570,6 @@ public sealed partial class Image2 : Control, IDisposable
             if (!_running)
                 return;
 
-            _needsUpdate = false;
             Invalidate();
 
             RegisterForNextAnimationFrameUpdate();
@@ -607,14 +591,15 @@ public sealed partial class Image2 : Control, IDisposable
 
             try
             {
-                if (_currentInstance is null || _currentInstance.IsDisposed)
+                if (_currentInstance is not { } instance)
                     return;
-
-                // 处理新帧
-                var bitmap = _currentInstance.ProcessFrameTime(_animationElapsed);
-                if (bitmap is not null)
+                lock (instance)
                 {
-                    RenderBitmap(bitmap, drawingContext);
+                    if (instance.IsDisposed)
+                        return;
+                    var bitmap = instance.ProcessFrameTime(_animationElapsed);
+                    if (bitmap != null)
+                        RenderBitmap(bitmap, drawingContext);
                 }
             }
             catch (Exception e)
@@ -652,16 +637,18 @@ public sealed partial class Image2 : Control, IDisposable
     {
         if (!disposedValue)
         {
+            disposedValue = true;
             if (disposing)
             {
-                // 释放托管状态(托管对象)
+                CancelLoad();
                 StopAndDispose();
+                ClearValue(SourceProperty);
+                ClearValue(FallbackSourceProperty);
             }
 
             // 释放未托管的资源(未托管的对象)并重写终结器
             // 将大型字段设置为 null
 
-            disposedValue = true;
         }
     }
 

@@ -19,27 +19,28 @@ internal static partial class StreamExtensions
     public static RecyclableMemoryStream SafeCopyToRecyclableMemoryStream(this Stream stream, string tag,
         bool disposeOriginal = false)
     {
-        if (Image2.MemoryStreamManager == null)
-            throw new InvalidOperationException("MemoryStreamManager 未初始化");
-
         var result = Image2.MemoryStreamManager.GetStream(tag);
-
-        // 保存当前位置以便稍后恢复
-        var originalPosition = stream.Position;
-        stream.Position = 0;
-
-        // 复制到新的 RecyclableMemoryStream
-        stream.CopyTo(result);
-
-        // 重置位置
-        result.Position = 0;
-        stream.Position = originalPosition;
-
-        // 如果需要，释放原始流
-        if (disposeOriginal)
-            stream.Dispose();
-
-        return result;
+        var originalPosition = stream.CanSeek ? stream.Position : 0;
+        try
+        {
+            if (stream.CanSeek)
+                stream.Position = 0;
+            stream.CopyTo(result);
+            result.Position = 0;
+            return result;
+        }
+        catch
+        {
+            result.Dispose();
+            throw;
+        }
+        finally
+        {
+            if (disposeOriginal)
+                stream.Dispose();
+            else if (stream.CanSeek)
+                stream.Position = originalPosition;
+        }
     }
 
     /// <summary>

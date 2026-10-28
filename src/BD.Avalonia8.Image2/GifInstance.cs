@@ -7,6 +7,7 @@ public sealed class GifInstance : IImageInstance, IDisposable
     public bool AutoStart { get; private set; } = true;
 
     readonly GifDecoder _gifDecoder;
+    readonly Stream _sourceStream;
     readonly WriteableBitmap? _targetBitmap;
     TimeSpan _totalTime;
     readonly List<TimeSpan> _frameTimes;
@@ -42,37 +43,34 @@ public sealed class GifInstance : IImageInstance, IDisposable
         if (!currentStream.CanRead)
             throw new InvalidOperationException("Can't read the stream provided.");
 
-        // 确保使用 RecyclableMemoryStream 以优化内存使用
-        Stream optimizedStream;
-        if (currentStream is not Microsoft.IO.RecyclableMemoryStream)
-        {
-            optimizedStream = currentStream.SafeCopyToRecyclableMemoryStream("GifInstance.Ctor", !leaveOpen);
-        }
-        else
-        {
-            optimizedStream = currentStream;
-        }
-
-        optimizedStream.Seek(0, SeekOrigin.Begin);
-
+        _sourceStream = leaveOpen
+            ? currentStream.SafeCopyToRecyclableMemoryStream("GifInstance.BorrowedSource")
+            : currentStream;
         CurrentCts = new CancellationTokenSource();
-
-        _gifDecoder = new GifDecoder(optimizedStream, CurrentCts.Token);
-        var pixSize = new PixelSize(_gifDecoder.Header.Dimensions.Width, _gifDecoder.Header.Dimensions.Height);
-
-        _targetBitmap =
-            new WriteableBitmap(pixSize, new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
-        GifPixelSize = pixSize;
-
-        _totalTime = TimeSpan.Zero;
-
-        _frameTimes = _gifDecoder.Frames.Select(frame =>
+        try
         {
-            _totalTime = _totalTime.Add(frame.FrameDelay);
-            return _totalTime;
-        }).ToList();
-
-        _gifDecoder.RenderFrame(0, _targetBitmap);
+            _sourceStream.Position = 0;
+            _gifDecoder = new GifDecoder(_sourceStream, CurrentCts.Token);
+            var pixSize = _gifDecoder.Size;
+            _targetBitmap = new WriteableBitmap(pixSize, new AvaVector(96, 96),
+                AvaPixelFormat.Bgra8888, AlphaFormat.Opaque);
+            GifPixelSize = pixSize;
+            _totalTime = TimeSpan.Zero;
+            _frameTimes = _gifDecoder.Frames.Select(frame =>
+            {
+                _totalTime = _totalTime.Add(frame.FrameDelay);
+                return _totalTime;
+            }).ToList();
+            _gifDecoder.RenderFrame(0, _targetBitmap);
+        }
+        catch
+        {
+            _targetBitmap?.Dispose();
+            _gifDecoder?.Dispose();
+            _sourceStream.Dispose();
+            CurrentCts.Dispose();
+            throw;
+        }
     }
 
     static Stream GetStreamFromString(string str)
@@ -109,9 +107,14 @@ public sealed class GifInstance : IImageInstance, IDisposable
     /// <inheritdoc/>
     public void Dispose()
     {
+        if (IsDisposed)
+            return;
         IsDisposed = true;
         CurrentCts.Cancel();
         _targetBitmap?.Dispose();
+        _gifDecoder.Dispose();
+        _sourceStream.Dispose();
+        CurrentCts.Dispose();
     }
 
     /// <inheritdoc/>

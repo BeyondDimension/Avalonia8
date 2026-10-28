@@ -27,12 +27,13 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
     public CancellationTokenSource CurrentCts { get; } = new();
 
-    private APNG _apng;
+    private APNG _apng = null!;
+    private Frame[] _frames = [];
     private WriteableBitmap? _targetBitmap;
     private WriteableBitmap? _compositeBitmap; // 用于合成帧的位图
     private WriteableBitmap? _prevCompositeBitmap; // 保存上一帧合成后的结果
     private TimeSpan _totalTime;
-    private readonly List<TimeSpan> _frameTimes;
+    private readonly List<TimeSpan> _frameTimes = [];
     private DisposeOps _prevDisposeOp = DisposeOps.APNGDisposeOpNone;
     private AvaRect _prevFrameRect; // 上一帧的区域
     public AvaPoint _targetOffset;
@@ -51,93 +52,88 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     // 是否正在前台显示（性能优化用）
     private bool _isVisible = true;
 
-    public ApngInstance(Stream stream, bool leaveOpen = false)
+    public ApngInstance(Stream stream, bool leaveOpen = false) : this(stream, leaveOpen, true)
     {
-        // 确保使用 RecyclableMemoryStream 以减少内存压力
-        if (stream is not Microsoft.IO.RecyclableMemoryStream)
-        {
-            Stream = stream.SafeCopyToRecyclableMemoryStream("ApngInstance.Ctor", !leaveOpen);
-        }
-        else
-        {
-            Stream = stream;
-        }
+    }
 
-        if (!Stream.CanSeek)
-            throw new InvalidDataException("The provided stream is not seekable.");
-
-        if (!Stream.CanRead)
-            throw new InvalidOperationException("Can't read the stream provided.");
-
-        Stream.Seek(0, SeekOrigin.Begin);
-
+    internal ApngInstance(Stream stream, bool leaveOpen, bool decodeSimplePng)
+    {
         try
         {
-            _apng = new APNG(Stream);
-            IsSimplePNG = _apng.IsSimplePNG;
-        }
-        finally
-        {
-            Stream.Position = 0;
-        }
+            Stream = leaveOpen || stream is not Microsoft.IO.RecyclableMemoryStream
+                ? stream.SafeCopyToRecyclableMemoryStream("ApngInstance.Ctor", !leaveOpen)
+                : stream;
 
-        if (IsSimplePNG)
-        {
-            _targetBitmap = WriteableBitmap.Decode(Stream);
-            _frameTimes = [];
-            return;
-        }
-        else if (_apng.Frames.Length != 0)
-        {
-            _maxCacheSize = _apng.Frames.Length;
-            var firstFrame = _apng.Frames.First();
-            var iHDRChunk = firstFrame.IHDRChunk.ThrowIsNull();
-            ApngPixelSize = new PixelSize(iHDRChunk.Width, iHDRChunk.Height);
+            if (!Stream.CanSeek)
+                throw new InvalidDataException("The provided stream is not seekable.");
+            if (!Stream.CanRead)
+                throw new InvalidOperationException("Can't read the stream provided.");
 
-            // 初始化合成帧和目标帧
-            _compositeBitmap = new WriteableBitmap(
-                new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
-                new AvaVector(96, 96),
-                AvaPixelFormat.Bgra8888,
-                AlphaFormat.Premul);
-
-            _prevCompositeBitmap = new WriteableBitmap(
-                new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
-                new AvaVector(96, 96),
-                AvaPixelFormat.Bgra8888,
-                AlphaFormat.Premul);
-
-            // 用透明色填充初始帧
-            using (var context = _compositeBitmap.Lock())
+            Stream.Seek(0, SeekOrigin.Begin);
+            try
             {
-                unsafe
-                {
-                    var pixelData = (byte*)context.Address;
-                    var totalBytes = ApngPixelSize.Width * ApngPixelSize.Height * 4;
-                    for (int i = 0; i < totalBytes; i += 4)
-                    {
-                        pixelData[i] = 0; // B
-                        pixelData[i + 1] = 0; // G
-                        pixelData[i + 2] = 0; // R
-                        pixelData[i + 3] = 0; // A (透明)
-                    }
-                }
+                _apng = new APNG(Stream);
+                IsSimplePNG = _apng.IsSimplePNG;
+            }
+            finally
+            {
+                Stream.Position = 0;
             }
 
-            _targetBitmap = _compositeBitmap;
-        }
-        else
-        {
-            _maxCacheSize = 0;
-        }
+            if (IsSimplePNG)
+            {
+                if (decodeSimplePng)
+                    _targetBitmap = WriteableBitmap.Decode(Stream);
+                return;
+            }
 
-        _totalTime = TimeSpan.Zero;
+            _frames = _apng.Frames;
+            if (_frames.Length != 0)
+            {
+                _maxCacheSize = _frames.Length;
+                var firstFrame = _frames[0];
+                var iHDRChunk = firstFrame.IHDRChunk.ThrowIsNull();
+                ApngPixelSize = new PixelSize(iHDRChunk.Width, iHDRChunk.Height);
 
-        _frameTimes = _apng.Frames.Select(frame =>
+                // 初始化合成帧和目标帧
+                _compositeBitmap = new WriteableBitmap(
+                    new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
+                    new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Premul);
+                _prevCompositeBitmap = new WriteableBitmap(
+                    new PixelSize(ApngPixelSize.Width, ApngPixelSize.Height),
+                    new AvaVector(96, 96), AvaPixelFormat.Bgra8888, AlphaFormat.Premul);
+
+                // 用透明色填充初始帧
+                using (var context = _compositeBitmap.Lock())
+                {
+                    unsafe
+                    {
+                        var pixelData = (byte*)context.Address;
+                        var totalBytes = ApngPixelSize.Width * ApngPixelSize.Height * 4;
+                        for (int i = 0; i < totalBytes; i += 4)
+                        {
+                            pixelData[i] = 0;
+                            pixelData[i + 1] = 0;
+                            pixelData[i + 2] = 0;
+                            pixelData[i + 3] = 0;
+                        }
+                    }
+                }
+                _targetBitmap = _compositeBitmap;
+            }
+
+            _totalTime = TimeSpan.Zero;
+            _frameTimes = _frames.Select(frame =>
+            {
+                _totalTime = _totalTime.Add(frame.FrameDelay);
+                return _totalTime;
+            }).ToList();
+        }
+        catch
         {
-            _totalTime = _totalTime.Add(frame.FrameDelay);
-            return _totalTime;
-        }).ToList();
+            Dispose();
+            throw;
+        }
     }
 
     public WriteableBitmap? GetBitmap() => _targetBitmap;
@@ -229,7 +225,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
                 return _compositeBitmap;
             }
 
-            var currentFrame = _apng.Frames[frameIndex];
+            var currentFrame = _frames[frameIndex];
             var fcTLChunk = currentFrame.fcTLChunk.ThrowIsNull();
             var blendOp = fcTLChunk.BlendOp;
             var disposeOp = fcTLChunk.DisposeOp;
@@ -509,11 +505,24 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         {
             if (disposing)
             {
-                // 释放托管状态(托管对象)
-                _targetBitmap?.Dispose();
+                if (!ReferenceEquals(_targetBitmap, _compositeBitmap))
+                    _targetBitmap?.Dispose();
                 _compositeBitmap?.Dispose();
                 _prevCompositeBitmap?.Dispose();
+                foreach (var bitmap in _frameCache.Values)
+                    bitmap.Dispose();
+                _frameCache.Clear();
+                _frameCacheOrder.Clear();
+                _frames = [];
+                _frameTimes.Clear();
+                _targetBitmap = null;
+                _compositeBitmap = null;
+                _prevCompositeBitmap = null;
                 CurrentCts.Cancel();
+                CurrentCts.Dispose();
+                _apng?.Dispose();
+                Stream?.Dispose();
+                Stream = null;
             }
 
             // 释放未托管的资源(未托管的对象)并重写终结器
