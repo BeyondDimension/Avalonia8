@@ -1,5 +1,6 @@
 using Logger = Avalonia.Logging.Logger;
 using Microsoft.IO;
+using System.Buffers.Binary;
 
 namespace BD.Avalonia8.Image2;
 
@@ -14,17 +15,19 @@ public sealed partial class Image2 : Control, IDisposable
     internal static readonly RecyclableMemoryStreamManager MemoryStreamManager = new(
         new RecyclableMemoryStreamManager.Options
         {
-            // 增加块大小以适应图像数据
-            BlockSize = 131072, // 128KB
+            // Keep blocks below the LOH threshold; this is a pool, not image storage.
+            BlockSize = 65536, // 64KB
             LargeBufferMultiple = 1048576, // 1MB
             MaximumBufferSize = 134217728, // 128MB
+            UseExponentialLargeBuffer = true,
 
             // 内存管理选项
             AggressiveBufferReturn = true,
 
             // 池大小限制
-            MaximumSmallPoolFreeBytes = 8388608, // 8MB
-            MaximumLargePoolFreeBytes = 134217728 // 128MB
+            MaximumSmallPoolFreeBytes = 4194304, // 4MB
+            // The limit is per bucket: only 1/2/4MB buckets retain buffers, up to 12MB in total.
+            MaximumLargePoolFreeBytes = 4194304
         });
 
     public static readonly StyledProperty<object> SourceProperty =
@@ -447,19 +450,10 @@ public sealed partial class Image2 : Control, IDisposable
                 animation = new GifInstance(stream) { IterationCount = IterationCount.Infinite };
                 stream = null; // Ownership transferred to the animation.
             }
-            else if (format == ImageFormat.PNG)
+            else if (format == ImageFormat.PNG && IsAnimatedPng(stream, token))
             {
-                var apng = new ApngInstance(stream, false, false);
-                animation = apng;
-                stream = null;
-                if (apng.IsSimplePNG)
-                {
-                    bitmap = DecodeImage(apng.Stream!, decodeWidth, decodeHeight);
-                    apng.Dispose();
-                    animation = null;
-                }
-                else
-                    apng.IterationCount = IterationCount.Infinite;
+                animation = new ApngInstance(stream) { IterationCount = IterationCount.Infinite };
+                stream = null; // Ownership transferred to the animation.
             }
             else
                 bitmap = DecodeImage(stream, decodeWidth, decodeHeight);
@@ -476,6 +470,38 @@ public sealed partial class Image2 : Control, IDisposable
         finally
         {
             stream?.Dispose();
+        }
+    }
+
+    static bool IsAnimatedPng(Stream stream, CancellationToken token)
+    {
+        // PNG requires acTL before the first IDAT. Inspect only chunk headers so a
+        // static cover does not copy compressed pixels into an APNG object graph.
+        Span<byte> header = stackalloc byte[8];
+        try
+        {
+            stream.Position = 8; // Signature already checked by FileFormat.IsImage.
+            while (stream.Length - stream.Position >= 12)
+            {
+                token.ThrowIfCancellationRequested();
+                stream.ReadExactly(header);
+                var length = BinaryPrimitives.ReadUInt32BigEndian(header);
+                if (length > stream.Length - stream.Position - 4)
+                    throw new InvalidDataException("PNG chunk extends past the end of the stream.");
+
+                var type = header[4..];
+                if (type.SequenceEqual("acTL"u8))
+                    return true;
+                if (type.SequenceEqual("IDAT"u8) || type.SequenceEqual("IEND"u8))
+                    return false;
+                stream.Seek((long)length + 4, SeekOrigin.Current); // Data and CRC.
+            }
+
+            throw new InvalidDataException("PNG chunk header is incomplete.");
+        }
+        finally
+        {
+            stream.Position = 0;
         }
     }
 

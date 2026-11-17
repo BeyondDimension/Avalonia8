@@ -33,7 +33,7 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     private WriteableBitmap? _compositeBitmap; // 用于合成帧的位图
     private WriteableBitmap? _prevCompositeBitmap; // 保存上一帧合成后的结果
     private TimeSpan _totalTime;
-    private readonly List<TimeSpan> _frameTimes = [];
+    private TimeSpan[] _frameTimes = [];
     private DisposeOps _prevDisposeOp = DisposeOps.APNGDisposeOpNone;
     private AvaRect _prevFrameRect; // 上一帧的区域
     public AvaPoint _targetOffset;
@@ -42,21 +42,17 @@ public sealed class ApngInstance : IImageInstance, IDisposable
     public bool _hasNewFrame;
     private bool disposedValue;
 
-    // 帧缓存，用于存储已经解码的帧，避免重复解码
-    private readonly Dictionary<int, WriteableBitmap> _frameCache = new();
-    private readonly LinkedList<int> _frameCacheOrder = new();
-
-    // 缓存容量控制（默认缓存全部帧以提升性能）
-    private readonly int _maxCacheSize;
+    // Large animations must not retain every decoded frame. FIFO matches sequential
+    // playback; evicted frames remain available in the compressed source for seeks.
+    const long MaxDecodedFrameCacheBytes = 32 * 1024 * 1024;
+    private WriteableBitmap?[] _frameCache = [];
+    private readonly Queue<int> _cachedFrameOrder = new();
+    private long _decodedFrameCacheBytes;
 
     // 是否正在前台显示（性能优化用）
     private bool _isVisible = true;
 
-    public ApngInstance(Stream stream, bool leaveOpen = false) : this(stream, leaveOpen, true)
-    {
-    }
-
-    internal ApngInstance(Stream stream, bool leaveOpen, bool decodeSimplePng)
+    public ApngInstance(Stream stream, bool leaveOpen = false)
     {
         try
         {
@@ -82,15 +78,14 @@ public sealed class ApngInstance : IImageInstance, IDisposable
 
             if (IsSimplePNG)
             {
-                if (decodeSimplePng)
-                    _targetBitmap = WriteableBitmap.Decode(Stream);
+                _targetBitmap = WriteableBitmap.Decode(Stream);
                 return;
             }
 
             _frames = _apng.Frames;
             if (_frames.Length != 0)
             {
-                _maxCacheSize = _frames.Length;
+                _frameCache = new WriteableBitmap?[_frames.Length];
                 var firstFrame = _frames[0];
                 var iHDRChunk = firstFrame.IHDRChunk.ThrowIsNull();
                 ApngPixelSize = new PixelSize(iHDRChunk.Width, iHDRChunk.Height);
@@ -122,12 +117,12 @@ public sealed class ApngInstance : IImageInstance, IDisposable
                 _targetBitmap = _compositeBitmap;
             }
 
-            _totalTime = TimeSpan.Zero;
-            _frameTimes = _frames.Select(frame =>
+            _frameTimes = new TimeSpan[_frames.Length];
+            for (var i = 0; i < _frames.Length; i++)
             {
-                _totalTime = _totalTime.Add(frame.FrameDelay);
-                return _totalTime;
-            }).ToList();
+                _totalTime = _totalTime.Add(_frames[i].FrameDelay);
+                _frameTimes[i] = _totalTime;
+            }
         }
         catch
         {
@@ -153,14 +148,24 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         if (!IterationCount.IsInfinite && _iterationCount > IterationCount.Value)
             return null;
 
-        if (CurrentCts.IsCancellationRequested || _compositeBitmap is null || _frameTimes.Count == 0)
+        if (CurrentCts.IsCancellationRequested || _compositeBitmap is null || _frameTimes.Length == 0)
             return null;
 
         var elapsedTicks = stopwatchElapsed.Ticks;
         var timeModulus = TimeSpan.FromTicks(elapsedTicks % _totalTime.Ticks);
-        var targetFrame = _frameTimes.FirstOrDefault(x => timeModulus < x);
-        var currentFrame = _frameTimes.IndexOf(targetFrame);
-        if (currentFrame == -1) currentFrame = 0;
+        // Find the first frame whose end is strictly after the current time, without
+        // a captured predicate and two linear scans on every compositor tick.
+        var low = 0;
+        var high = _frameTimes.Length;
+        while (low < high)
+        {
+            var middle = low + (high - low) / 2;
+            if (timeModulus < _frameTimes[middle])
+                high = middle;
+            else
+                low = middle + 1;
+        }
+        var currentFrame = low < _frameTimes.Length ? low : 0;
 
         if (_currentFrameIndex == currentFrame)
             return _compositeBitmap;
@@ -243,22 +248,40 @@ public sealed class ApngInstance : IImageInstance, IDisposable
             // 应用前一帧的处置操作
             ApplyDisposeOperation();
 
-            // 尝试从缓存获取帧位图
-            WriteableBitmap frameBitmap;
-            if (!_frameCache.TryGetValue(frameIndex, out frameBitmap!))
+            var frameBitmap = _frameCache[frameIndex];
+            var transientFrame = false;
+            if (frameBitmap == null)
             {
-                // 如果缓存中没有，解码当前帧
                 using var frameStream = currentFrame.GetStream();
                 frameBitmap = WriteableBitmap.Decode(frameStream);
-                AddFrameToCache(frameIndex, frameBitmap);
-            }
-            else
-            {
-                TouchFrameCache(frameIndex);
+                var frameBytes = GetFrameBytes(frameBitmap);
+                if (frameBytes <= MaxDecodedFrameCacheBytes)
+                {
+                    while (_decodedFrameCacheBytes + frameBytes > MaxDecodedFrameCacheBytes)
+                    {
+                        var evictedIndex = _cachedFrameOrder.Dequeue();
+                        var evicted = _frameCache[evictedIndex]!;
+                        _decodedFrameCacheBytes -= GetFrameBytes(evicted);
+                        _frameCache[evictedIndex] = null;
+                        evicted.Dispose();
+                    }
+                    _frameCache[frameIndex] = frameBitmap;
+                    _cachedFrameOrder.Enqueue(frameIndex);
+                    _decodedFrameCacheBytes += frameBytes;
+                }
+                else
+                    transientFrame = true;
             }
 
-            // 合成当前帧到合成位图
-            ComposeFrame(frameBitmap, currentFrameRect, blendOp);
+            try
+            {
+                ComposeFrame(frameBitmap, currentFrameRect, blendOp);
+            }
+            finally
+            {
+                if (transientFrame)
+                    frameBitmap.Dispose();
+            }
 
             // 保存当前帧的处置操作和区域，用于下一帧
             _prevDisposeOp = disposeOp;
@@ -294,37 +317,6 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         _isVisible = isVisible;
     }
 
-    private void AddFrameToCache(int frameIndex, WriteableBitmap bitmap)
-    {
-        if (_maxCacheSize <= 0)
-            return;
-
-        if (_frameCache.Count >= _maxCacheSize)
-        {
-            var oldest = _frameCacheOrder.First;
-            if (oldest != null)
-            {
-                var key = oldest.Value;
-                _frameCacheOrder.RemoveFirst();
-                if (_frameCache.TryGetValue(key, out var oldBitmap))
-                    oldBitmap.Dispose();
-                _frameCache.Remove(key);
-            }
-        }
-
-        _frameCache[frameIndex] = bitmap;
-        _frameCacheOrder.AddLast(frameIndex);
-    }
-
-    private void TouchFrameCache(int frameIndex)
-    {
-        var node = _frameCacheOrder.Find(frameIndex);
-        if (node != null)
-        {
-            _frameCacheOrder.Remove(node);
-            _frameCacheOrder.AddLast(node);
-        }
-    }
 
     private void ApplyDisposeOperation()
     {
@@ -499,6 +491,9 @@ public sealed class ApngInstance : IImageInstance, IDisposable
         }
     }
 
+    static long GetFrameBytes(WriteableBitmap bitmap) =>
+        (long)bitmap.PixelSize.Width * bitmap.PixelSize.Height * 4;
+
     private void Dispose(bool disposing)
     {
         if (!disposedValue)
@@ -509,12 +504,13 @@ public sealed class ApngInstance : IImageInstance, IDisposable
                     _targetBitmap?.Dispose();
                 _compositeBitmap?.Dispose();
                 _prevCompositeBitmap?.Dispose();
-                foreach (var bitmap in _frameCache.Values)
-                    bitmap.Dispose();
-                _frameCache.Clear();
-                _frameCacheOrder.Clear();
+                foreach (var bitmap in _frameCache)
+                    bitmap?.Dispose();
+                _frameCache = [];
+                _cachedFrameOrder.Clear();
+                _decodedFrameCacheBytes = 0;
                 _frames = [];
-                _frameTimes.Clear();
+                _frameTimes = [];
                 _targetBitmap = null;
                 _compositeBitmap = null;
                 _prevCompositeBitmap = null;
